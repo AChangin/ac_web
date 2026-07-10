@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recents — AC</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:clamp(8px,0.833vw,16px)}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background:#fff;color:#000;
+}
+
+/* Nav (same as index) */
+.nav{
+  position:fixed;top:0;left:0;
+  width:7rem;height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:space-between;
+  padding:2rem 0;
+  z-index:50;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.nav-left{display:flex;align-items:center;justify-content:center}
+.nav-logo{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#000}
+.nav-logo img{display:block;width:2.5rem;height:2.5rem}
+.nav-center{display:flex;flex-direction:column;align-items:flex-start;gap:2.8rem}
+.nav-group{display:flex;flex-direction:column;align-items:flex-start;gap:0.35rem}
+.nav-link{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:400;letter-spacing:0.02em;color:#333;text-decoration:none;transition:color 0.3s ease;cursor:pointer}
+.nav-link:hover{color:#000}
+.nav-link.active{color:#000}
+.nav-parent{font-weight:600;font-size:1.3rem;letter-spacing:0.01em}
+.nav-child{font-size:0.95rem;color:#666;padding-left:0.4rem}
+.nav-child:hover{color:#000}
+.nav-right{display:flex;align-items:center;justify-content:center}
+
+/* Recents page */
+.recents-page{
+  margin-left:7rem;
+  padding:6rem 8rem;
+  min-height:100vh;
+}
+.recents-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:6rem;font-weight:600;
+  letter-spacing:-0.03em;color:#000;
+}
+.recents-sub{
+  font-family:'Inter',sans-serif;
+  font-size:1.4rem;font-weight:300;
+  letter-spacing:0.1em;color:rgba(0,0,0,0.4);
+  margin-top:0.5rem;margin-bottom:4rem;
+}
+.recents-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2.5rem;
+}
+.recents-card{
+  border-bottom:1px solid rgba(0,0,0,0.1);
+  padding-bottom:2rem;
+}
+.recents-card-label{
+  font-family:'Inter',sans-serif;
+  font-size:0.7rem;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(0,0,0,0.35);
+  margin-bottom:0.8rem;
+}
+.recents-card-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:1.8rem;font-weight:600;
+  letter-spacing:-0.02em;color:#000;
+  margin-bottom:0.5rem;
+}
+.recents-card-desc{
+  font-family:'Inter',sans-serif;
+  font-size:0.95rem;font-weight:300;
+  line-height:1.6;color:rgba(0,0,0,0.5);
+}
+
+@media(max-width:768px){
+  .nav{width:100%;height:4.8rem;flex-direction:row;padding:0 1.6rem;border-bottom:1px solid #e5e5e5}
+  .nav-center{display:none}
+  .recents-page{margin-left:0;margin-top:4.8rem;padding:3rem 1.5rem}
+  .recents-title{font-size:3.5rem}
+  .recents-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo" aria-label="AC Home">
+      <img src="public/AC_LOGO_SVG.svg" alt="AC Logo">
+    </a>
+  </div>
+  <div class="nav-center">
+    <div class="nav-group">
+      <a class="nav-link nav-parent" href="index.html">Home</a>
+      <a class="nav-link nav-child" href="index.html">Posts</a>
+    </div>
+    <div class="nav-group">
+      <a class="nav-link nav-parent active">Recents</a>
+      <a class="nav-link nav-child active">Browse</a>
+    </div>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<div class="recents-page">
+  <h1 class="recents-title">Recents</h1>
+  <p class="recents-sub">Browse recent works and explorations.</p>
+  <div class="recents-grid">
+    <div class="recents-card">
+      <p class="recents-card-label">Coming Soon</p>
+      <h3 class="recents-card-title">New projects in progress</h3>
+      <p class="recents-card-desc">Stay tuned for updates to this section.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

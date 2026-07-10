@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AC — Portfolio</title>
+
+<!-- Google Fonts: Playfair Display (serif) + Inter (sans) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+/* ============================================================
+   RESET
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:clamp(8px,0.833vw,16px);-webkit-text-size-adjust:none;text-size-adjust:none}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  font-variant-ligatures:none;
+  background:#fff;
+  color:#000;
+  overflow-x:hidden;
+  overscroll-behavior:none;
+}
+
+/* ============================================================
+   LAYER 1: BACKGROUND VIDEO (Fixed, z-index: -2)
+   ============================================================ */
+.bg-video-layer{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  overflow:hidden;
+  pointer-events:none;
+  user-select:none;
+}
+.bg-video-layer video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+/* Fallback background when no video */
+.bg-fallback{
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  background:linear-gradient(to right, #ededed, #f3f3f3);
+  pointer-events:none;
+}
+
+/* ============================================================
+   LAYER 2: CONTENT WRAPPER (Horizontal Scroll)
+   ============================================================ */
+.scroll-container{
+  position:fixed;
+  top:0;
+  left:0;
+  width:auto;
+  height:100vh;
+  display:flex;
+  flex-direction:row;
+  will-change:transform;
+  backface-visibility:hidden;
+  z-index:2;
+}
+
+/* Each section = 100vw × 100vh */
+.section{
+  width:100vw;
+  height:100vh;
+  flex-shrink:0;
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+/* Logo section 允许色盘溢出 */
+.section.logo-section{
+  overflow:visible;
+  z-index:3;
+  isolation:isolate;
+}
+/* Timeline — overflow hidden prevents parallax bleed into adjacent sections */
+.section.timeline-section{
+  overflow:hidden;
+  z-index:1;
+  isolation:isolate;
+}
+
+/* ============================================================
+   NAVIGATION (Fixed on top of content)
+   ============================================================ */
+.nav{
+  position:fixed;
+  top:0;
+  left:0;
+  width:7rem;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  padding:2rem 0;
+  z-index:50;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  pointer-events:all;
+}
+.nav-left{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.nav-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  color:#000;
+}
+.nav-logo img{
+  display:block;
+  width:2.5rem;
+  height:2.5rem;
+}
+.nav-brand{
+  font-family:'Inter',sans-serif;
+  font-size:1.3rem;
+  font-weight:400;
+  letter-spacing:0.02em;
+  color:#000;
+  text-decoration:none;
+}
+
+.nav-center{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2.8rem;
+}
+.nav-group{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0.35rem;
+}
+.nav-link{
+  font-family:'Inter',sans-serif;
+  font-size:1.1rem;
+  font-weight:400;
+  letter-spacing:0.02em;
+  color:#333;
+  text-decoration:none;
+  transition:color 0.3s ease;
+  cursor:pointer;
+}
+.nav-link:hover{color:#000}
+.nav-link.active{color:#000}
+.nav-parent{font-weight:600;font-size:1.3rem;letter-spacing:0.01em;}
+.nav-child{font-size:0.95rem;color:#666;padding-left:0.4rem;}
+.nav-child:hover{color:#000}
+.nav-child.active{color:#000}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Hamburger menu button */
+.nav-menu-btn{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  width:2.4rem;
+  height:2.4rem;
+  cursor:pointer;
+  background:none;
+  border:none;
+  padding:0;
+  position:relative;
+  z-index:51;
+}
+.nav-menu-btn span{
+  display:block;
+  width:20px;
+  height:1.5px;
+  background:#000;
+  transition:transform 0.3s ease, opacity 0.3s ease;
+  transform-origin:center;
+}
+.nav-menu-btn.open span:nth-child(1){
+  transform:translateY(3.25px) rotate(45deg);
+}
+.nav-menu-btn.open span:nth-child(2){
+  transform:translateY(-3.25px) rotate(-45deg);
+}
+
+/* Mobile menu overlay */
+.mobile-menu{
+  position:fixed;
+  inset:0;
+  z-index:49;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease;
+}
+.mobile-menu.open{
+  opacity:1;
+  pointer-events:all;
+}
+.mobile-menu__inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2.4rem;
+}
+.mobile-menu__link{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:3rem;
+  font-weight:600;
+  letter-spacing:-0.02em;
+  color:#000;
+  text-decoration:none;
+  cursor:pointer;
+  transition:opacity 0.2s ease;
+}
+.mobile-menu__link:hover{opacity:0.6}
+.mobile-menu__link.active{text-decoration:underline;text-underline-offset:8px;text-decoration-thickness:1px;}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.hero{
+  background:transparent;
+  padding:5.6rem 0 0 0;
+}
+.hero-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  width:100%;
+  height:100%;
+  padding-top:20vh;
+  position:relative;
+}
+.hero-eyebrow{
+  font-family:'Inter',sans-serif;
+  font-size:1.1rem;
+  font-weight:400;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(0,0,0,0.45);
+  margin-bottom:2.4rem;
+}
+.hero-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:10rem;
+  font-weight:600;
+  letter-spacing:-0.03em;
+  line-height:1.0;
+  color:#000;
+  margin-bottom:1.6rem;
+}
+.hero-title .italic{
+  font-style:italic;
+  font-weight:500;
+}
+.hero-tags{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  align-self:center;
+  gap:var(--tag-gap, 3rem);
+  margin-top:var(--tag-mt, 4rem);
+  margin-bottom:var(--tag-mb, 12vh);
+}
+/* —— Tag carousel with 3D cube flip —— */
+.tag-carousel{
+  perspective:800px;
+  overflow:visible;
+  height:calc(1em * 0.95);
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:6rem;
+  font-weight:600;
+  font-style:italic;
+  letter-spacing:-0.03em;
+  line-height:0.95;
+  color:#f4840c;
+  opacity:0;
+  transform:translateY(2rem);
+  transition:opacity 0.7s ease, transform 0.7s ease;
+}
+.tag-carousel.revealed{
+  opacity:1;
+  transform:translateY(0);
+}
+.tag-cube{
+  position:relative;
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.tag-face{
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+  font-family:inherit;
+  font-size:inherit;
+  font-weight:inherit;
+  font-style:inherit;
+  letter-spacing:inherit;
+  line-height:inherit;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.1em;
+}
+.tag-logo{
+  height:0.65em;
+  width:auto;
+  flex-shrink:0;
+}
+.hero-subtitle{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:3.6rem;
+  font-weight:500;
+  font-style:italic;
+  letter-spacing:-0.02em;
+  line-height:1.2;
+  color:#000;
+  margin-bottom:3.2rem;
+  max-width:56rem;
+}
+.hero-line{
+  width:6rem;
+  height:1px;
+  background:#000;
+  margin-bottom:3.2rem;
+}
+.hero-desc{
+  font-family:'Inter',sans-serif;
+  font-size:1.35rem;
+  font-weight:300;
+  letter-spacing:0.02em;
+  line-height:1.7;
+  color:rgba(0,0,0,0.6);
+  max-width:48rem;
+}
+.hero-scroll-hint{
+  position:absolute;
+  bottom:3.6rem;
+  left:calc(100vw - 10rem);
+  z-index:101;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:0.6rem;
+  pointer-events:none;
+}
+.hero-scroll-hint span{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;
+  font-weight:400;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(0,0,0,0.4);
+}
+.hero-scroll-arrow{
+  display:flex;
+  align-items:center;
+  gap:0.4rem;
+  animation:arrowPulse 2s ease-in-out infinite;
+}
+.hero-scroll-arrow svg{
+  width:1.8rem;
+  height:1.8rem;
+}
+@keyframes arrowPulse{
+  0%,100%{transform:translateX(0);opacity:0.4}
+  50%{transform:translateX(6px);opacity:1}
+}
+
+/* ============================================================
+   PROJECTS SECTION
+   ============================================================ */
+.projects{
+  background:#fff;
+  padding:5.6rem 0 0 0;
+}
+.projects-inner{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  padding:0 12%;
+}
+.projects-label{
+  font-family:'Inter',sans-serif;
+  font-size:1.1rem;
+  font-weight:400;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(0,0,0,0.45);
+  margin-bottom:4rem;
+}
+.projects-grid{
+  display:flex;
+  flex-direction:row;
+  gap:4rem;
+  width:100%;
+}
+.project-card{
+  flex:1;
+  cursor:pointer;
+  position:relative;
+}
+.project-card-number{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;
+  font-weight:400;
+  letter-spacing:0.1em;
+  color:rgba(0,0,0,0.3);
+  margin-bottom:1.6rem;
+}
+.project-card-image{
+  width:100%;
+  aspect-ratio:4/3;
+  background:#f0f0f0;
+  margin-bottom:2rem;
+  overflow:hidden;
+  position:relative;
+}
+.project-card-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform 0.6s cubic-bezier(0.23,1,0.32,1);
+}
+.project-card:hover .project-card-image img{
+  transform:scale(1.04);
+}
+.project-card-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:2.4rem;
+  font-weight:600;
+  letter-spacing:-0.02em;
+  color:#000;
+  margin-bottom:0.6rem;
+}
+.project-card-meta{
+  font-family:'Inter',sans-serif;
+  font-size:1.1rem;
+  font-weight:400;
+  letter-spacing:0.02em;
+  color:rgba(0,0,0,0.45);
+}
+.project-card-line{
+  width:100%;
+  height:1px;
+  background:#e5e5e5;
+  margin-top:2rem;
+  transition:background 0.3s ease;
+}
+.project-card:hover .project-card-line{
+  background:#000;
+}
+
+/* ============================================================
+   CUSTOM CURSOR — only active inside Timeline section
+   ============================================================ */
+/* .timeline-section,.timeline-section *{cursor:none} */
+
+.tl-cursor{
+  position:fixed;
+  z-index:10000;
+  pointer-events:none;
+  top:0;left:0;
+  will-change:transform;
+  backface-visibility:hidden;
+}
+.tl-cursor-dot{
+  width:60px;               /* ← 改这里调图标大小 */
+  height:auto;
+  position:absolute;
+  left:0;top:0;
+  transform:translateY(-100%);
+  transform-origin:left bottom;
+  pointer-events:none;
+}
+.tl-cursor-card{
+  position:absolute;
+  top:50%;left:50%;
+  width:440px;height:250px;
+  background:#000;              /* fallback behind image */
+  box-shadow:0 12px 60px rgba(0,0,0,0.12),0 3px 10px rgba(0,0,0,0.08);
+  overflow:hidden;
+  opacity:0;
+  pointer-events:none;
+  clip-path:circle(4px at 50% 50%);
+  transform:translate(-50%,-50%) scale(0.4);
+}
+.tl-cursor-card-image{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+}
+.tl-cursor-card-image img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+.tl-cursor-card-info{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  padding:1rem 1.3rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.1rem;
+  background:rgba(0,0,0,0.25);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.tl-cursor-card-category{
+  font-family:'Inter',sans-serif;
+  font-size:0.62rem;font-weight:500;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.75);
+  margin-bottom:0.15rem;
+}
+.tl-cursor-card-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:1.3rem;font-weight:600;
+  letter-spacing:-0.02em;
+  color:#fff;
+  margin:0;line-height:1.15;
+}
+.tl-cursor-card-date{
+  font-family:'Inter',sans-serif;
+  font-size:0.68rem;font-weight:400;
+  color:rgba(255,255,255,0.65);
+  margin-top:0.1rem;
+}
+.tl-cursor-card-desc{
+  font-family:'Inter',sans-serif;
+  font-size:0.7rem;font-weight:300;
+  line-height:1.45;
+  color:rgba(255,255,255,0.7);
+  margin-top:0.2rem;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* ============================================================
+   TIMELINE SECTION (Swiss Style) — responsive via clamp()
+   ============================================================ */
+.timeline-section{
+  background:#fafafa;
+  padding:0;
+  overflow:hidden;
+}
+.tl-container{
+  width:100%;height:100%;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.tl-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:10rem;
+  font-weight:600;
+  letter-spacing:-0.03em;
+  line-height:1.0;
+  color:#000;
+  position:absolute;
+  top:40vh;
+  left:12.5rem;
+  margin:0;
+  pointer-events:none;
+  user-select:none;
+  text-shadow:0 8px 80px rgba(0,0,0,0.1),0 2px 8px rgba(0,0,0,0.06),0 0 180px rgba(0,0,0,0.04);
+  will-change:transform;
+}
+.tl-grid-outer{
+  flex:1;
+  display:flex;
+  padding:clamp(8rem,12vh,10rem) clamp(3rem,4.5vw,5rem) clamp(2rem,4vh,3.5rem) clamp(3rem,4.5vw,5rem);
+  position:relative;
+}
+.tl-month-labels{
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+  width:clamp(2.4rem,3.5vw,3.8rem);
+  position:relative;
+  z-index:5;
+  padding:0.15rem 0;
+  will-change:transform;
+}
+.tl-month-label{
+  flex:1;
+  display:flex;
+  align-items:center;
+  font-family:'Helvetica Neue','Helvetica','Inter',sans-serif;
+  font-size:clamp(0.48rem,0.62vw,0.62rem);font-weight:500;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(0,0,0,0.22);
+  line-height:1;
+}
+.tl-year-columns{
+  display:flex;
+  flex:1;
+  position:relative;
+}
+.tl-year-col{
+  flex:1;
+  position:relative;
+  border-right:1px solid rgba(0,0,0,0.06);
+  display:flex;
+  flex-direction:column;
+  padding-top:0.15rem;
+}
+.tl-year-col:last-child{border-right:none}
+.tl-year-label{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(1rem,1.2vw,1.2rem);font-weight:600;
+  letter-spacing:-0.02em;
+  color:rgba(0,0,0,1);
+  position:absolute;
+  top:clamp(-2.8rem,-3.2vh,-2rem);
+  left:0.3rem;
+}
+.tl-month-row{
+  flex:1;
+  position:relative;
+  border-bottom:1px solid rgba(0,0,0,0.035);
+}
+.tl-month-row:last-child{border-bottom:none}
+
+/* Project Nodes */
+.tl-node{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:#000;
+  display:block;
+  flex-shrink:0;
+  will-change:transform;
+}
+.tl-node.accent{background:#e63946}
+
+.tl-node-cluster{
+  position:absolute;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  gap:3px;
+  z-index:6;
+  pointer-events:none;
+}
+
+/* Crosshair */
+.tl-crosshair{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:8;
+  opacity:0;
+}
+.tl-crosshair-h,.tl-crosshair-v{
+  position:absolute;
+  background:rgba(0,0,0,0.08);
+  pointer-events:none;
+}
+.tl-crosshair-h{left:0;right:0;height:1px}
+.tl-crosshair-v{top:0;bottom:0;width:1px}
+
+/* ============================================================
+   ORBIT NAV — text + white invert overlay clipped by blob shape
+   ============================================================ */
+.orbit-text-stack{
+  position:absolute;
+  top:40vh;
+  left:16rem;
+  transform:translateY(-50%);
+  z-index:10;
+  isolation:isolate;
+}
+.orbit-nav{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(1rem,2vh,1.8rem);
+  position:relative;
+}
+.orbit-nav-link{
+  display:inline-flex;
+  align-items:center;
+  gap:1.2rem;
+  text-decoration:none;
+  color:#000;
+  position:relative;
+  padding-bottom:6px;
+  cursor:pointer;
+  width:fit-content;
+  opacity:0;
+  transform:translateY(2rem);
+  transition:opacity 0.7s cubic-bezier(0.19,1,0.22,1),
+             transform 0.7s cubic-bezier(0.19,1,0.22,1);
+}
+.orbit-nav-link:nth-child(1){ transition-delay:0s; }
+.orbit-nav-link:nth-child(2){ transition-delay:0.12s; }
+.orbit-nav-link:nth-child(3){ transition-delay:0.24s; }
+.orbit-nav-link.revealed{
+  opacity:1;
+  transform:translateY(0);
+}
+.orbit-nav-link::after{
+  content:'';
+  position:absolute;
+  left:0;bottom:0;
+  width:100%;height:1px;
+  background:#000;
+  transform:scaleX(0);
+  transform-origin:left center;
+  transition:transform 0.4s cubic-bezier(0.19,1,0.22,1);
+}
+.orbit-nav-link:hover::after{ transform:scaleX(1); }
+.orbit-nav-text{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(4.8rem,6.4vw,6.4rem);
+  font-weight:600;
+  letter-spacing:-0.02em;
+  paint-order:stroke fill;
+  filter:drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff);
+}
+.orbit-nav-arrow{
+  width:clamp(3.2rem,4.8vw,4.8rem);
+  height:auto;
+  display:block;
+  transition:transform 0.35s cubic-bezier(0.19,1,0.22,1);
+  filter:drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff);
+}
+.orbit-nav-link:hover .orbit-nav-arrow{ transform:translateY(-6px); }
+
+/* ============================================================
+   ORBIT SECTION — Mechanical Pen Orbit System
+   ============================================================ */
+.orbit-section{
+  background:#fff;
+  padding:0;
+  overflow:hidden;
+}
+/* 3D stage — provides the perspective vanishing point */
+.orbit-stage{
+  width:100%;height:100%;
+  perspective:1200px;                /* ← 透视距离（越小越夸张） */
+  perspective-origin:center center;
+}
+/* Scene tilted in 3D space — all children rendered in this tilted plane */
+.orbit-scene{
+  position:relative;
+  width:100%;height:100%;
+  /* no preserve-3d — avoids per-child 3D layers that cause aliasing */
+}
+/* Orbit ring — position set dynamically by JS */
+.orbit-ring-svg{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  overflow:visible;
+}
+/* Pivot */
+.orbit-pivot{
+  position:absolute;
+  width:3px;height:3px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.25);
+  pointer-events:none;
+}
+/* Outer filled circle — same ray, larger radius */
+.orbit-outer{
+  position:absolute;
+  border-radius:50%;
+  background:#000;
+  pointer-events:none;
+  will-change:transform,opacity;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+/* Circle at opposite end of arm */
+.orbit-circle{
+  position:absolute;
+  border-radius:50%;
+  background:#000;
+  pointer-events:none;
+  will-change:transform,opacity;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+/* Pen logo */
+.orbit-pen{
+  position:absolute;
+  pointer-events:none;
+  will-change:transform,opacity;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.orbit-pen img{
+  width:28px;            /* ← 改这里调笔的大小（等比缩放，高≈宽×4） */
+  height:auto;
+  display:block;
+  transform:scaleY(-1);  /* 垂直翻转 */
+  image-rendering:auto;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+
+/* ============================================================
+   LAYER 3a: PC ALPHA VIDEO (z-index: 100 — topmost)
+   16:10 cover — viewport as cropping window, center-crop only.
+   ============================================================ */
+.pc-alpha-layer{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  z-index:100;
+  pointer-events:none;
+  user-select:none;
+}
+.pc-alpha-layer video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center top;
+  transform:translateZ(0);
+  will-change:transform;
+}
+
+/* ============================================================
+   LAYER 3b: BG ALPHA VIDEO (z-index: 1 — behind content text)
+   16:10 cover — identical cropping, always aligned.
+   ============================================================ */
+.bg-alpha-layer{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  z-index:1;
+  pointer-events:none;
+  user-select:none;
+}
+.bg-alpha-layer video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center top;
+  transform:translateZ(0);
+  will-change:transform;
+}
+
+/* ============================================================
+   SCROLL PROGRESS INDICATOR
+   ============================================================ */
+.scroll-progress-bar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  height:2px;
+  background:#000;
+  z-index:60;
+  transform-origin:left center;
+  pointer-events:none;
+}
+
+/* Wide + short windows: shift video up to avoid overlap */
+/* ——— TAG SPACING: edit these to control line gap at each size ——— */
+.hero-tags{
+  --tag-gap:3rem;
+  --tag-mt:4rem;
+  --tag-mb:12vh;
+}
+
+@media(max-height:600px){
+  .pc-alpha-layer video,
+  .bg-alpha-layer video{
+    object-position:center +10%;
+  }
+  .hero-tags{
+    --tag-gap:3rem;
+    --tag-mt:2rem;
+    --tag-mb:8vh;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:1024px){
+  html{font-size:clamp(7px,1.1vw,14px)}
+  .hero-tags{--tag-gap:1rem;--tag-mt:2.5rem;--tag-mb:10vh}
+  .hero-title{font-size:7rem}
+  .tl-title{font-size:7rem;left:12rem}
+  .tl-year-label{font-size:clamp(0.75rem,1vw,0.95rem)}
+  .tl-cursor-card{width:380px;height:220px}
+  .tl-cursor-card-title{font-size:1.15rem}
+  .tl-cursor-card-info{padding:0.8rem 1.1rem}
+  .hero-subtitle{font-size:2.8rem}
+  .nav-center{gap:2.4rem}
+  .nav-link{font-size:1.15rem}
+  .projects-grid{gap:2.4rem}
+  .project-card-title{font-size:2rem}
+  .orbit-text-stack{left:12rem}
+  .orbit-nav-text{font-size:clamp(2rem,3vw,3rem)}
+  .orbit-nav-arrow{width:clamp(1.4rem,2vw,2rem)}
+  .orbit-pen img{width:20px}
+  .orbit-outer{width:14px;height:14px}
+  .orbit-circle{width:20px;height:20px}
+}
+
+@media(max-width:768px){
+  html{font-size:clamp(9px,2vw,15px)}
+  .nav{
+    width:100%;
+    height:4.8rem;
+    flex-direction:row;
+    padding:0 1.6rem;
+    border-right:none;
+    border-bottom:1px solid #e5e5e5;
+  }
+  .nav-center{display:none}
+  .nav-menu-btn{display:flex}
+  .hero-inner{padding-top:20vh;padding-left:6%;padding-right:6%}
+  .hero-title{font-size:5.6rem}
+  .tl-title{font-size:5.6rem;left:6rem}
+  .hero-tags{align-items:flex-start;--tag-gap:2rem;--tag-mt:8rem;--tag-mb:4vh}
+  .tag-carousel{font-size:3.6rem}
+  .hero-subtitle{font-size:2.2rem}
+  .hero-desc{font-size:1.25rem}
+  .hero-scroll-hint{left:calc(100vw - 8rem);bottom:2.4rem}
+  .projects-inner{padding:0 6%}
+  .projects-grid{flex-direction:column;gap:3rem}
+  .timeline-section{padding-top:5rem}        /* clear mobile nav */
+  .tl-title{top:calc(40vh + 2.5rem)}         /* offset for nav */
+  .tl-grid-outer{padding:3.5rem 1.5rem 2rem 1.5rem}
+  .tl-month-labels{width:1.8rem}
+  .tl-month-label{font-size:0.44rem}
+  .tl-year-label{font-size:0.7rem}
+  .tl-cursor-card{width:320px;height:190px}
+  .tl-cursor-card-title{font-size:1.05rem}
+  .tl-cursor-card-info{padding:0.7rem 0.9rem}
+  .orbit-text-stack{left:12rem;top:40vh}
+  .orbit-nav{gap:0.8rem}
+  .orbit-nav-text{font-size:1.8rem}
+  .orbit-nav-arrow{width:1.2rem}
+  .orbit-pen img{width:16px}
+  .orbit-outer{width:12px;height:12px}
+  .orbit-circle{width:16px;height:16px}
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+.fade-in{
+  opacity:0;
+  transform:translateY(2rem);
+  transition:opacity 0.8s cubic-bezier(0.19,1,0.22,1),
+             transform 0.8s cubic-bezier(0.19,1,0.22,1);
+}
+.fade-in.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ============================================================
+   SCROLLBAR HIDE
+   ============================================================ */
+::-webkit-scrollbar{display:none}
+html{-ms-overflow-style:none;scrollbar-width:none}
+</style>
+</head>
+<body>
+
+<!-- ==========================================================
+     LAYER 1: BACKGROUND FALLBACK + VIDEO
+     ========================================================== -->
+<div class="bg-fallback"></div>
+<div class="bg-video-layer" id="bg-video-layer">
+  <!--
+    Replace src with your background video.
+    The fallback (#fafafa) shows when no video is loaded.
+    <video autoplay muted loop playsinline>
+      <source src="bg.mp4" type="video/mp4">
+    </video>
+  -->
+</div>
+
+<!-- ==========================================================
+     LAYER 2: CONTENT
+     ========================================================== -->
+
+<!-- Navigation (Fixed) -->
+<nav class="nav" id="nav">
+  <div class="nav-left">
+    <a href="#" class="nav-logo" aria-label="AC Home">
+      <img src="public/AC_LOGO_SVG.svg" alt="AC Logo" class="nav-logo-img">
+    </a>
+  </div>
+  <div class="nav-center">
+    <div class="nav-group">
+      <a class="nav-link nav-parent active" data-section="0">Home</a>
+      <a class="nav-link nav-child" data-section="2">Posts</a>
+    </div>
+    <div class="nav-group">
+      <a class="nav-link nav-parent" href="recents.html">Recents</a>
+      <a class="nav-link nav-child" href="recents.html">Browse</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu__inner">
+    <a class="mobile-menu__link active" data-section="0">Home</a>
+    <a class="mobile-menu__link" data-section="2">Posts</a>
+    <a class="mobile-menu__link" href="recents.html">Recents</a>
+  </div>
+</div>
+
+<!-- Horizontal Scroll Container -->
+<div class="scroll-container" id="scroll-container">
+
+  <!-- ===== PC ALPHA LAYER (z-index: 100 — topmost, at left edge, scrolls horizontally) ===== -->
+  <div class="pc-alpha-layer" id="pc-alpha-layer">
+    <video
+      id="pc-alpha-video"
+      src="public/pc_alpha_desktop.webm"
+      muted
+      playsinline
+      preload="metadata"
+      autoplay
+    ></video>
+  </div>
+
+  <!-- ===== HERO (Section 0) ===== -->
+  <section class="section hero" data-index="0">
+    <div class="hero-inner">
+      <h1 class="hero-title fade-in">
+        <span class="italic">A-</span>Changin'
+      </h1>
+      <div class="hero-tags" id="hero-tags">
+        <div class="tag-carousel" data-parallax="0.1">
+          <div class="tag-cube"></div>
+        </div>
+        <div class="tag-carousel" data-parallax="0.2">
+          <div class="tag-cube"></div>
+        </div>
+        <div class="tag-carousel" data-parallax="0.3">
+          <div class="tag-cube"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SCROLL HINT (above pc-alpha, z-index: 101) ===== -->
+  <div class="hero-scroll-hint" id="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="hero-scroll-arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1.5">
+        <path d="M5 12h14M13 5l7 7-7 7"/>
+      </svg>
+    </div>
+  </div>
+
+
+  <!-- ===== BG ALPHA LAYER (z-index: 1 — behind content, scrolls horizontally) ===== -->
+  <div class="bg-alpha-layer" id="bg-alpha-layer">
+    <video
+      id="bg-alpha-video"
+      src="public/bg_alpha_desktop.webm"
+      muted
+      playsinline
+      preload="metadata"
+      autoplay
+    ></video>
+  </div>
+
+  <!-- ===== LOGO INTERACTION (Section 1) ===== -->
+  <section class="section logo-section" data-index="1">
+    <div id="logo-mount" data-hue="60" style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    "></div>
+  </section>
+
+  <!-- ===== TIMELINE (Section 2) — Swiss Style Interactive Map ===== -->
+  <section class="section timeline-section" data-index="2" id="timeline-section">
+    <h2 class="tl-title">Posts</h2>
+    <div class="tl-container">
+      <div class="tl-crosshair" id="tl-crosshair">
+        <div class="tl-crosshair-h" id="tl-crosshair-h"></div>
+        <div class="tl-crosshair-v" id="tl-crosshair-v"></div>
+      </div>
+      <div class="tl-grid-outer" id="tl-grid-outer">
+        <div class="tl-month-labels" id="tl-month-labels"></div>
+        <div class="tl-year-columns" id="tl-year-columns"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ORBIT (Section 3) — Mechanical Pen Orbit System ===== -->
+  <section class="section orbit-section" data-index="3" id="orbit-section">
+    <div class="orbit-stage" id="orbit-stage">
+    <div class="orbit-scene" id="orbit-scene">
+      <svg class="orbit-ring-svg" id="orbit-ring-svg">
+        <ellipse id="orbit-ellipse" cx="0" cy="0" rx="0" ry="0"
+                 fill="none" stroke="none"/>
+      </svg>
+      <div class="orbit-pivot" id="orbit-pivot"></div>
+      <div class="orbit-outer" id="orbit-outer"></div>
+      <div class="orbit-circle" id="orbit-circle"></div>
+      <div class="orbit-pen" id="orbit-pen">
+        <img src="icons/penSelector.svg" alt="" id="orbit-pen-svg">
+      </div>
+    </div>
+    </div><!-- /orbit-stage -->
+    <!-- Text links -->
+    <div class="orbit-text-stack" id="orbit-text-stack">
+      <nav class="orbit-nav" id="orbit-nav">
+        <a class="orbit-nav-link" href="#"><span class="orbit-nav-text">See My Rencents</span><img class="orbit-nav-arrow" src="icons/arrow.svg" alt=""></a>
+        <a class="orbit-nav-link" href="#"><span class="orbit-nav-text">See My Works</span><img class="orbit-nav-arrow" src="icons/arrow.svg" alt=""></a>
+        <a class="orbit-nav-link" href="#"><span class="orbit-nav-text">Contact Me</span><img class="orbit-nav-arrow" src="icons/arrow.svg" alt=""></a>
+      </nav>
+    </div>
+  </section>
+
+</div><!-- /scroll-container -->
+
+<!-- ==========================================================
+     SCROLL PROGRESS BAR
+     ========================================================== -->
+<div class="scroll-progress-bar" id="progress-bar"></div>
+
+<!-- ==========================================================
+     SCRIPTS
+     ========================================================== -->
+<!-- Logo Interaction Bundle (React + Framer Motion) -->
+<script src="public/logo-bundle.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  // ========== DOM REFS ==========
+  const scrollContainer = document.getElementById('scroll-container');
+  const progressBar = document.getElementById('progress-bar');
+  const pcAlphaVideo = document.getElementById('pc-alpha-video');
+  const bgAlphaVideo = document.getElementById('bg-alpha-video');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const navMenuBtn = document.getElementById('nav-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuLinks = document.querySelectorAll('.mobile-menu__link');
+  const heroTitle = document.querySelector('.hero-title');
+  const heroScrollHint = document.querySelector('.hero-scroll-hint');
+  const heroTags = document.getElementById('hero-tags');
+  const carousels = document.querySelectorAll('.tag-carousel');
+  const carouselCubes = document.querySelectorAll('.tag-cube');
+  const fadeEls = document.querySelectorAll('.fade-in');
+  let menuOpen = false;
+  let tagsRevealed = false;
+  let aboutRevealed = false;
+
+  // ========== TAG CAROUSEL DATA ==========
+  // Edit these arrays to change the rotating text on each line
+  const carouselWords = [
+    [
+      { text: 'Designs', logo:'icons/design.svg', font: "'Inter',sans-serif", color: '#808080', fontStyle: 'normal' },
+      { text: 'Notes', logo:'icons/note.svg', font: "'Inter',sans-serif", color: '#808080', fontStyle: 'normal' },
+      { text: 'Projects', logo:'icons/project.svg', font: "'Inter',sans-serif", color: '#808080', fontStyle: 'normal' },
+    ],
+    [
+
+    
+      { text: 'Society', logo: '', font: "'Playfair Display',Georgia,serif", color: '#000',  },
+      { text: 'The Future', logo: '', font: "'Playfair Display',Georgia,serif", color: '#000' },
+      { text: 'Theory', logo: '', font: "'Playfair Display',Georgia,serif", color: '#000' },
+    ],
+    [
+      { text: 'Industrial Design', logo: '', font: "'Inter',sans-serif", color: 'f4840c', fontStyle: 'normal'  },
+      { text: 'Graphics', logo: '', font: "'Inter',sans-serif", color: 'f4840c', fontStyle: 'normal' },
+      { text: 'Interaction Design', logo: '', font: "'Inter',sans-serif", color: 'f4840c', fontStyle: 'normal' },
+    ]
+  ];
+  let carouselTimers = [null, null, null];
+
+  // ========== BUILD 3D CAROUSEL FACES ==========
+  function buildCarousels(){
+    carouselCubes.forEach((cube, ci) => {
+      const words = carouselWords[ci] || carouselWords[0];
+      const n = words.length;
+      const angleStep = 360 / n;
+
+      // Get the carousel's computed height for accurate translateZ
+      const carousel = cube.parentElement;
+      const h = carousel ? carousel.offsetHeight : 60;
+      const tz = (h / 2).toFixed(1);
+
+      const defaultLogo = 'public/AC_LOGO_SVG.svg';
+
+      words.forEach((word, fi) => {
+        const face = document.createElement('div');
+        face.className = 'tag-face';
+        const w = typeof word === 'object' ? word : { text: word };
+        const hasLogo = typeof w.logo !== 'undefined';
+        const logoSrc = hasLogo ? w.logo : defaultLogo;
+        face.innerHTML = logoSrc ? `<img src="${logoSrc}" class="tag-logo">` + w.text : w.text;
+        if(w.color)     face.style.color     = w.color;
+        if(w.font)      face.style.fontFamily = w.font;
+        if(w.fontStyle) face.style.fontStyle  = w.fontStyle;
+        face.style.transform = `rotateX(${fi * angleStep}deg) translateZ(${tz}px)`;
+        cube.appendChild(face);
+      });
+    });
+  }
+
+  // ========== CAROUSEL ROTATION ==========
+  function rotateCarousel(ci){
+    const cube = carouselCubes[ci];
+    if(!cube) return;
+    const words = carouselWords[ci] || carouselWords[0];
+    const n = words.length;
+    const angleStep = 360 / n;
+    const currentAngle = parseFloat(cube.dataset.angle || '0');
+    const nextIndex = ((parseInt(cube.dataset.index || '0')) + 1) % n;
+    const targetAngle = currentAngle + angleStep;
+
+    cube.dataset.index = nextIndex;
+    cube.dataset.angle = targetAngle;
+    cube.style.transform = `rotateX(${-targetAngle}deg)`;
+  }
+
+  function startCarousels(){
+    // Stagger: each carousel starts 1s after the previous
+    carouselCubes.forEach((cube, ci) => {
+      cube.dataset.index = '0';
+      cube.dataset.angle = '0';
+      cube.style.transform = 'rotateX(0deg)';
+      const delay = ci * 1000;
+      setTimeout(() => {
+        rotateCarousel(ci); // first flip after delay
+        carouselTimers[ci] = setInterval(() => rotateCarousel(ci), 2500);
+      }, delay);
+    });
+  }
+
+  function stopCarousels(){
+    carouselTimers.forEach(t => clearInterval(t));
+    carouselTimers = [null, null, null];
+  }
+
+  // ========== REGISTER GSAP PLUGINS ==========
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ========== STATE ==========
+  let totalSections = 4;
+  let scrollProgress = 0;
+
+  // ========== INIT FOREGROUND VIDEOS (play once, hold last frame) ==========
+  function initForegroundVideos(){
+    [pcAlphaVideo, bgAlphaVideo].forEach(video => {
+      if(!video) return;
+
+      // Pause at last frame — don't loop
+      video.addEventListener('ended', () => {
+        video.pause();
+      });
+
+      // Monitor video progress → reveal carousels sequentially near end
+      let revealIndex = 0;
+      video.addEventListener('timeupdate', () => {
+        if(tagsRevealed || !video.duration) return;
+        const pct = video.currentTime / video.duration;
+        const thresholds = [0.74, 0.78, 0.82];
+        while(revealIndex < thresholds.length && pct > thresholds[revealIndex]){
+          const carousel = carousels[revealIndex];
+          if(carousel) carousel.classList.add('revealed');
+          revealIndex++;
+        }
+        if(revealIndex >= thresholds.length){
+          tagsRevealed = true;
+          startCarousels();
+        }
+      });
+
+      // Ensure playback; fallback on user interaction if autoplay blocked
+      const play = () => {
+        if(video.paused && !video.ended){
+          video.play().catch(() => {});
+        }
+      };
+      if(video.paused && !video.ended) play();
+      ['click','wheel','touchstart','keydown'].forEach(evt => {
+        document.addEventListener(evt, play, { once: true });
+      });
+    });
+  }
+
+  // ========== GSAP HORIZONTAL SCROLL SETUP ==========
+  function setupHorizontalScroll(){
+    const sections = gsap.utils.toArray('.section');
+    const totalSectionsCount = sections.length;
+    totalSections = totalSectionsCount;
+
+    // Calculate total scroll distance
+    const totalScrollDist = () => {
+      return scrollContainer.scrollWidth - window.innerWidth;
+    };
+
+    // Set body height to allow scrolling the full horizontal distance
+    const setBodyHeight = () => {
+      const dist = totalScrollDist();
+      document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
+    };
+    setBodyHeight();
+
+    // Create the scroll-driven horizontal animation
+    // The container has position:fixed so it's already pinned to viewport.
+    // We just animate its translateX based on scroll position.
+    gsap.to(scrollContainer, {
+      x: () => -totalScrollDist(),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: 'body',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.2,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          scrollProgress = self.progress;
+
+          // Parallax: hero text drifts opposite to scroll for depth
+          const vw = window.innerWidth;
+          const parallaxX = self.progress * (totalSectionsCount - 1) * vw * 0.4;
+          if(heroTitle){
+            heroTitle.style.transform = `translateX(${parallaxX}px)`;
+          }
+          if(heroScrollHint){
+            heroScrollHint.style.transform = `translateX(${parallaxX*0.12}px)`;
+          }
+          carousels.forEach(carousel => {
+            const speed = parseFloat(carousel.getAttribute('data-parallax')) || 0.3;
+            carousel.style.transform = `translateX(${self.progress * (totalSectionsCount - 1) * vw * speed}px)`;
+          });
+
+          // ── Timeline grid parallax (previous behavior) ──
+          var tlSectionIdx = 2;
+          var tlLocal = self.progress - tlSectionIdx / (totalSectionsCount - 1);
+
+          const tlContainer = document.querySelector('.tl-container');
+          if(tlContainer){
+            tlContainer.style.transform = `translateX(${tlLocal * (totalSectionsCount - 1) * vw * 0.18}px)`;
+          }
+
+          // ── Month labels pinning (only labels, grid moves freely) ──
+          var containerShift = tlLocal * (totalSectionsCount - 1) * vw * 0.18;
+          var sectionLeft    = vw * (tlSectionIdx - self.progress * (totalSectionsCount - 1));
+          var gridPadPx      = vw * 0.05;
+          var labelNatural   = sectionLeft + gridPadPx + containerShift;
+          var pinTarget      = vw * 0.20;
+
+          const tlMonthLabels = document.getElementById('tl-month-labels');
+          if(tlMonthLabels){
+            if(labelNatural < pinTarget && sectionLeft > -vw * 0.7){
+              var shift = pinTarget - labelNatural;
+              shift = Math.min(shift, vw * 0.5);
+              tlMonthLabels.style.transform = `translateX(${shift}px)`;
+            } else {
+              tlMonthLabels.style.transform = 'translateX(0px)';
+            }
+          }
+
+          // ── Posts title parallax ──
+          const tlTitle = document.querySelector('.tl-title');
+          if(tlTitle){
+            tlTitle.style.transform = `translateX(${tlLocal * (totalSectionsCount - 1) * vw * 0.32}px)`;
+          }
+
+          // ── About links reveal (play once when entering last section) ──
+          if(!aboutRevealed && self.progress > 0.78){
+            aboutRevealed = true;
+            document.querySelectorAll('.orbit-nav-link').forEach(function(l){
+              l.classList.add('revealed');
+            });
+          }
+
+          // Update progress bar
+          progressBar.style.transform = `scaleX(${self.progress})`;
+
+          // Update nav highlight
+          const activeIndex = Math.round(self.progress * (totalSectionsCount - 1));
+          const setActive = (link) => {
+            const idx = parseInt(link.getAttribute('data-section'));
+            link.classList.toggle('active', idx === activeIndex);
+          };
+          navLinks.forEach(setActive);
+          mobileMenuLinks.forEach(setActive);
+
+          // Reveal fade-in elements as sections come into view
+          fadeEls.forEach(el => {
+            const section = el.closest('.section');
+            if(!section) return;
+            const sectionIdx = parseInt(section.getAttribute('data-index'));
+            const sectionProgress = totalSectionsCount > 1
+              ? sectionIdx / (totalSectionsCount - 1)
+              : 0;
+            if(self.progress >= sectionProgress - 0.08){
+              el.classList.add('visible');
+            }
+          });
+        }
+      }
+    });
+
+    // Store for resize
+    return { setBodyHeight };
+  }
+
+  // ========== MOBILE MENU TOGGLE ==========
+  function toggleMenu(){
+    menuOpen = !menuOpen;
+    navMenuBtn.classList.toggle('open', menuOpen);
+    mobileMenu.classList.toggle('open', menuOpen);
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+  }
+
+  function closeMenu(){
+    if(!menuOpen) return;
+    menuOpen = false;
+    navMenuBtn.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  if(navMenuBtn){
+    navMenuBtn.addEventListener('click', toggleMenu);
+  }
+
+  // Close menu on Escape
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && menuOpen) closeMenu();
+  });
+
+  // ========== NAV CLICK → SCROLL TO SECTION ==========
+  function scrollToSection(sectionIdx){
+    const vw = window.innerWidth;
+    const totalWidth = (totalSections - 1) * vw;
+    const targetX = sectionIdx * vw;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const targetScrollY = totalWidth > 0 ? (targetX / totalWidth) * docH : 0;
+    window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+    closeMenu();
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      scrollToSection(parseInt(link.getAttribute('data-section')));
+    });
+  });
+
+  mobileMenuLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      scrollToSection(parseInt(link.getAttribute('data-section')));
+    });
+  });
+
+  // ========== KEYBOARD NAVIGATION ==========
+  document.addEventListener('keydown', (e) => {
+    const vw = window.innerWidth;
+    const totalWidth = (totalSections - 1) * vw;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+      e.preventDefault();
+      const currentSection = Math.round(scrollProgress * (totalSections - 1));
+      const nextSection = Math.min(currentSection + 1, totalSections - 1);
+      const targetX = nextSection * vw;
+      const targetScrollY = totalWidth > 0 ? (targetX / totalWidth) * docH : 0;
+      window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+    } else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+      e.preventDefault();
+      const currentSection = Math.round(scrollProgress * (totalSections - 1));
+      const prevSection = Math.max(currentSection - 1, 0);
+      const targetX = prevSection * vw;
+      const targetScrollY = totalWidth > 0 ? (targetX / totalWidth) * docH : 0;
+      window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+    }
+  });
+
+  // ========== INIT ==========
+  let scrollSetup = null;
+
+  function init(){
+    // Build 3D carousel faces
+    buildCarousels();
+
+    // Show hero content
+    setTimeout(() => {
+      fadeEls.forEach(el => {
+        const section = el.closest('.section');
+        if(section && parseInt(section.getAttribute('data-index')) === 0){
+          el.classList.add('visible');
+        }
+      });
+    }, 400);
+
+    // Init foreground videos (pc_alpha at left + bg_alpha fullscreen)
+    initForegroundVideos();
+
+    // Setup GSAP horizontal scroll
+    scrollSetup = setupHorizontalScroll();
+
+    // Trigger ScrollTrigger refresh after everything loads
+    window.addEventListener('load', () => {
+      ScrollTrigger.refresh();
+    });
+
+    console.log('%c AC Portfolio %c Ready %c— GSAP Horizontal Scroll Active',
+      'font-size:1.4rem;font-weight:600;',
+      'font-size:1rem;color:#666;',
+      'color:#999;');
+  }
+
+  // ========== RESIZE HANDLER ==========
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if(scrollSetup && scrollSetup.setBodyHeight){
+        scrollSetup.setBodyHeight();
+      }
+      ScrollTrigger.refresh();
+      // Recalculate carousel translateZ after font-size/height changes
+      carouselCubes.forEach((cube, ci) => {
+        const carousel = cube.parentElement;
+        if(!carousel) return;
+        const h = carousel.offsetHeight;
+        const tz = (h / 2).toFixed(1);
+        const words = carouselWords[ci] || carouselWords[0];
+        const n = words.length;
+        const angleStep = 360 / n;
+        cube.querySelectorAll('.tag-face').forEach((face, fi) => {
+          face.style.transform = `rotateX(${fi * angleStep}deg) translateZ(${tz}px)`;
+        });
+      });
+    }, 250);
+  });
+
+  // ========== START ==========
+  init();
+
+})();
+</script>
+
+<!-- Custom Cursor (Swiss Style) — MUST come before the script -->
+<div class="tl-cursor" id="tl-cursor">
+  <div class="tl-cursor-card" id="tl-cursor-card">
+    <div class="tl-cursor-card-image">
+      <img src="" alt="" id="tl-cursor-img">
+    </div>
+    <div class="tl-cursor-card-info">
+      <span class="tl-cursor-card-category" id="tl-cursor-cat"></span>
+      <h3 class="tl-cursor-card-title" id="tl-cursor-title"></h3>
+      <span class="tl-cursor-card-date" id="tl-cursor-date"></span>
+      <p class="tl-cursor-card-desc" id="tl-cursor-desc"></p>
+    </div>
+  </div>
+  <img class="tl-cursor-dot" id="tl-cursor-dot" src="icons/pin.svg" alt="">
+</div>
+
+<!-- ==========================================================
+     TIMELINE INTERACTIVE MAP — Swiss Style
+     ★ Edit CONFIG + projects below to customize ★
+     ========================================================== -->
+<script>
+(function(){
+  'use strict';
+
+  // ============================================================
+  //  CONFIGURATION
+  //  Modify these values to customize the entire timeline.
+  // ============================================================
+  var CONFIG = {
+    // ---- Time Axis ----
+    // Change the order / count / values — the grid adapts automatically.
+    // e.g. [2026,2025,2024] → shows only 3 years, right to left.
+    years:  [2026, 2025, 2024, 2023, 2022, 2021],
+
+    // Month labels — change language or shorten here.
+    months: ['Jan','Feb','Mar','Apr','May','Jun',
+             'Jul','Aug','Sep','Oct','Nov','Dec'],
+
+    // ---- Layout ----
+    // 'horizontal' → years = columns (X-axis), months = rows (Y-axis)
+    // 'vertical'   → years = rows, months = columns (swap the CSS grid too)
+    layout: 'horizontal',
+
+    // ---- Interaction ----
+    hoverRadius: 95,   // px — detection range around each node
+    lerpFactor:  0.14, // cursor inertia (0.05 = very laggy · 0.3 = snappy)
+
+    // ---- Visual ----
+    accentColor: '#e63946',
+
+    // ---- Labels ----
+    sectionLabel: 'Posts',
+  };
+
+  // ============================================================
+  //  PROJECT DATA
+  //  Each project auto-places on the grid by year + month.
+  //  Add / remove / reorder freely.
+  // ============================================================
+  var projects = [
+    { id:1,  title:'Neue Corporate Identity',  coverImage:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', year:2021, month:2,  category:'Brand Identity',     description:'A minimalist corporate identity system rooted in Swiss design principles.',                                            url:'#', color:'#e63946' },
+    { id:2,  title:'Archive Publishing',       coverImage:'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop', year:2021, month:5,  category:'Editorial Design',    description:'Book design series exploring the intersection of typography and archival photography.',                                url:'#', color:'#000' },
+    { id:3,  title:'Mono Type Specimen',       coverImage:'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop', year:2021, month:9,  category:'Typography',          description:'Experimental type specimen for a monospace family, built on a strict modular grid.',                                    url:'#', color:'#000' },
+    { id:4,  title:'Digital Archive',          coverImage:'https://images.unsplash.com/photo-1496150947138-7f21238d30c3?w=400&h=300&fit=crop', year:2022, month:1,  category:'Web Design',          description:'An immersive digital archive for a cultural institution, balancing depth with clarity.',                                url:'#', color:'#e63946' },
+    { id:5,  title:'Poster Series 02',         coverImage:'https://images.unsplash.com/photo-1554188248-986adbb73be4?w=400&h=300&fit=crop', year:2022, month:4,  category:'Poster Design',       description:'A series of typographic posters for an independent film festival.',                                                    url:'#', color:'#000' },
+    { id:6,  title:'Grid Systems Study',       coverImage:'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=300&fit=crop', year:2022, month:6,  category:'Research',            description:'An interactive study of modular grid systems and their application in contemporary UI.',                               url:'#', color:'#000' },
+    { id:7,  title:'Swiss Style Revisited',    coverImage:'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=300&fit=crop', year:2022, month:11, category:'Exhibition',           description:'Curated exhibition and catalog on the enduring legacy of Swiss graphic design.',                                         url:'#', color:'#e63946' },
+    { id:8,  title:'Data Landscapes',          coverImage:'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop', year:2023, month:2,  category:'Data Visualization',  description:'Turning complex datasets into readable, elegant visual narratives.',                                                     url:'#', color:'#000' },
+    { id:9,  title:'Modular Typeface',         coverImage:'https://images.unsplash.com/photo-1569511166180-5ab158f48772?w=400&h=300&fit=crop', year:2023, month:5,  category:'Type Design',         description:'A variable font family built on a strict 8×8 modular grid, exploring constraint as creativity.',                        url:'#', color:'#000' },
+    { id:10, title:'White Space',              coverImage:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop', year:2023, month:8,  category:'Art Direction',       description:'An exploration of absence and silence as active elements in visual communication.',                                      url:'#', color:'#e63946' },
+    { id:11, title:'Chronos Interface',        coverImage:'https://images.unsplash.com/photo-1581291518633-83b4efcf3e33?w=400&h=300&fit=crop', year:2023, month:12, category:'UI / UX',             description:'A timeline-based productivity tool — designing interfaces for temporal thinking.',                                       url:'#', color:'#000' },
+    { id:12, title:'Form Follows Function',    coverImage:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=300&fit=crop', year:2024, month:3,  category:'Essay',               description:'A visual essay examining the Bauhaus principle in the age of digital product design.',                                 url:'#', color:'#000' },
+    { id:13, title:'Negative Space',           coverImage:'https://images.unsplash.com/photo-1511818966892-d7d6716dcb1a?w=400&h=300&fit=crop', year:2024, month:7,  category:'Photography',         description:'A photo series studying the role of negative space in urban architecture and street photography.',                      url:'#', color:'#e63946' },
+    { id:14, title:'Red Accent',               coverImage:'https://images.unsplash.com/photo-1579541590648-0b5b58b0b64a?w=400&h=300&fit=crop', year:2024, month:9,  category:'Branding',            description:'How a single red element transforms a monochrome design system — a case study in restraint.',                          url:'#', color:'#e63946' },
+    { id:15, title:'Motion Studies',           coverImage:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop', year:2025, month:1,  category:'Motion Design',       description:'Frame-by-frame explorations of typography in motion — rhythm, weight, and temporal composition.',                       url:'#', color:'#000' },
+    { id:16, title:'Generative Posters',       coverImage:'https://images.unsplash.com/photo-1563207153-f403bf289096?w=400&h=300&fit=crop', year:2025, month:6,  category:'Creative Coding',     description:'Algorithmically generated poster designs exploring constrained randomness and emergent form.',                          url:'#', color:'#e63946' },
+    { id:17, title:'System UI Kit',            coverImage:'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', year:2025, month:9,  category:'Design System',       description:'A comprehensive UI component library built entirely on an 8px baseline grid.',                                           url:'#', color:'#000' },
+    { id:18, title:'Typography As Architecture',coverImage:'https://images.unsplash.com/photo-1524055988636-436cfa46e59e?w=400&h=300&fit=crop', year:2025, month:12, category:'Publication',         description:'A book examining the spatial and structural qualities of letterforms across scales.',                                    url:'#', color:'#000' },
+    { id:19, title:'Micro Interactions',       coverImage:'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=400&h=300&fit=crop', year:2026, month:2,  category:'Interaction Design',  description:'A curated library of subtle interface micro-interactions — feedback as punctuation.',                                   url:'#', color:'#e63946' },
+    { id:20, title:'The Grid',                 coverImage:'https://images.unsplash.com/photo-1461344577544-4e5dc9487184?w=400&h=300&fit=crop', year:2026, month:5,  category:'Research',            description:'A deep dive into grid-based composition across print, screen, and environmental graphic design.',                      url:'#', color:'#000' }
+  ];
+
+  // ============================================================
+  //  DERIVED — computed from CONFIG, do not edit below here
+  // ============================================================
+  var HOVER_RADIUS = CONFIG.hoverRadius;
+  var LERP_FACTOR  = CONFIG.lerpFactor;
+
+  // ---- DOM references (all elements now exist in DOM) ----
+  var cursorEl     = document.getElementById('tl-cursor');
+  var cursorDot    = document.getElementById('tl-cursor-dot');
+  var cursorCard   = document.getElementById('tl-cursor-card');
+  var cursorImg    = document.getElementById('tl-cursor-img');
+  var cursorCat    = document.getElementById('tl-cursor-cat');
+  var cursorTitle  = document.getElementById('tl-cursor-title');
+  var cursorDate   = document.getElementById('tl-cursor-date');
+  var cursorDesc   = document.getElementById('tl-cursor-desc');
+  var crosshair    = document.getElementById('tl-crosshair');
+  var crosshairH   = document.getElementById('tl-crosshair-h');
+  var crosshairV   = document.getElementById('tl-crosshair-v');
+  var timelineSec  = document.getElementById('timeline-section');
+  var gridOuter    = document.getElementById('tl-grid-outer');
+  var monthLabels  = document.getElementById('tl-month-labels');
+  var yearColumns  = document.getElementById('tl-year-columns');
+
+  // ---- State (cursor starts at screen center so it's visible immediately) ----
+  var mouseX = window.innerWidth / 2;
+  var mouseY = window.innerHeight / 2;
+  var cursorX = mouseX;
+  var cursorY = mouseY;
+  var activeProject = null;
+  var isInGrid = false;
+  var isInSection = false;   // true when mouse is inside the timeline section
+  var nodeTargets = [];
+  var nodeUpdateTicker = 0;
+  var rafId = null;
+
+  // ============================================================
+  //  BUILD GRID — months on left, year columns fill the rest
+  // ============================================================
+  function buildGrid(){
+    monthLabels.innerHTML = '';
+    CONFIG.months.forEach(function(m){
+      var el = document.createElement('div');
+      el.className = 'tl-month-label';
+      el.textContent = m;
+      monthLabels.appendChild(el);
+    });
+
+    yearColumns.innerHTML = '';
+    CONFIG.years.forEach(function(y){
+      var col = document.createElement('div');
+      col.className = 'tl-year-col';
+      col.setAttribute('data-year', y);
+
+      var ylbl = document.createElement('div');
+      ylbl.className = 'tl-year-label';
+      ylbl.textContent = y;
+      col.appendChild(ylbl);
+
+      CONFIG.months.forEach(function(_, mi){
+        var row = document.createElement('div');
+        row.className = 'tl-month-row';
+        row.setAttribute('data-year', y);
+        row.setAttribute('data-month', mi + 1);
+        col.appendChild(row);
+      });
+      yearColumns.appendChild(col);
+    });
+  }
+
+  // ============================================================
+  //  PLACE NODES — group by (year, month), auto-offset clusters
+  // ============================================================
+  function placeNodes(){
+    var oldNodes = gridOuter.querySelectorAll('.tl-node-cluster');
+    for(var i = 0; i < oldNodes.length; i++){ oldNodes[i].remove(); }
+
+    var cellMap = {};
+    projects.forEach(function(p){
+      var key = p.year + '|' + p.month;
+      if(!cellMap[key]) cellMap[key] = [];
+      cellMap[key].push(p);
+    });
+
+    var cols = yearColumns.querySelectorAll('.tl-year-col');
+
+    Object.keys(cellMap).forEach(function(key){
+      var projs = cellMap[key];
+      var first = projs[0];
+      var yIdx = CONFIG.years.indexOf(first.year);
+      var mIdx = first.month - 1;
+      if(yIdx < 0 || mIdx < 0 || yIdx >= cols.length) return;
+
+      var rows = cols[yIdx].querySelectorAll('.tl-month-row');
+      if(mIdx >= rows.length) return;
+      var row = rows[mIdx];
+
+      var cluster = document.createElement('div');
+      cluster.className = 'tl-node-cluster';
+      projs.forEach(function(p){
+        var dot = document.createElement('div');
+        dot.className = 'tl-node' + (p.color === CONFIG.accentColor ? ' accent' : '');
+        dot.setAttribute('data-id', p.id);
+        cluster.appendChild(dot);
+      });
+      row.appendChild(cluster);
+    });
+  }
+
+  // ============================================================
+  //  COMPUTE NODE VIEWPORT POSITIONS (runs every ~133ms)
+  // ============================================================
+  function updateNodeTargets(){
+    nodeTargets = [];
+    var cols = yearColumns.querySelectorAll('.tl-year-col');
+
+    var cellGroups = {};
+    projects.forEach(function(p){
+      var key = p.year + '|' + p.month;
+      if(!cellGroups[key]) cellGroups[key] = [];
+      cellGroups[key].push(p);
+    });
+
+    Object.keys(cellGroups).forEach(function(key){
+      var projs = cellGroups[key];
+      var first = projs[0];
+      var yIdx = CONFIG.years.indexOf(first.year);
+      var mIdx = first.month - 1;
+      if(yIdx < 0 || mIdx < 0 || yIdx >= cols.length) return;
+
+      var rows = cols[yIdx].querySelectorAll('.tl-month-row');
+      if(mIdx >= rows.length) return;
+      var row = rows[mIdx];
+      var rect = row.getBoundingClientRect();
+      var baseCX = rect.left + rect.width / 2;
+      var baseCY = rect.top + rect.height / 2;
+      var count = projs.length;
+
+      projs.forEach(function(p, idx){
+        var offsetX = (idx - (count - 1) / 2) * 7;
+        nodeTargets.push({ project: p, cx: baseCX + offsetX, cy: baseCY });
+      });
+    });
+  }
+
+  // ============================================================
+  //  HOVER DETECTION — distance-based, not hit-test
+  // ============================================================
+  function findNearest(mx, my){
+    var nearest = null, minDist = Infinity;
+    for(var i = 0; i < nodeTargets.length; i++){
+      var t = nodeTargets[i];
+      var dx = mx - t.cx, dy = my - t.cy;
+      var d = Math.sqrt(dx * dx + dy * dy);
+      if(d < minDist){ minDist = d; nearest = t; }
+    }
+    if(nearest && minDist <= HOVER_RADIUS){
+      return { project: nearest.project, distance: minDist };
+    }
+    return null;
+  }
+
+  function checkInGrid(mx, my){
+    var r = gridOuter.getBoundingClientRect();
+    return mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom;
+  }
+
+  // ============================================================
+  //  CURSOR CARD — update content
+  // ============================================================
+  function setCard(proj){
+    cursorImg.src = proj.coverImage;
+    cursorCat.textContent = proj.category;
+    cursorTitle.textContent = proj.title;
+    cursorDate.textContent = proj.year + ' · ' + CONFIG.months[proj.month - 1];
+    cursorDesc.textContent = proj.description;
+  }
+
+  // ============================================================
+  //  CURSOR ANIMATIONS — all via GSAP
+  // ============================================================
+  var cardTween = null;
+
+  function cursorEnter(proj, dist){
+    if(cardTween){ cardTween.kill(); }
+    var t = 1 - Math.min(dist / HOVER_RADIUS, 1);  // 0 (far) → 1 (close)
+
+    cardTween = gsap.timeline();
+    cardTween.to(cursorDot, {
+      scale: 0.2, opacity: 0,
+      duration: 0.22, ease: 'power2.out'
+    }, 0);
+    cardTween.to(cursorCard, {
+      opacity: 1,
+      clipPath: 'circle(280px at 50% 50%)',
+      scale: 0.72 + t * 0.28,
+      duration: 0.35, ease: 'power2.out'
+    }, 0.04);
+  }
+
+  function cursorLeave(){
+    if(cardTween){ cardTween.kill(); }
+    cardTween = gsap.timeline();
+    cardTween.to(cursorCard, {
+      opacity: 0,
+      clipPath: 'circle(4px at 50% 50%)',
+      scale: 0.4,
+      duration: 0.28, ease: 'power2.in'
+    }, 0);
+    cardTween.to(cursorDot, {
+      scale: 1, opacity: 1,
+      duration: 0.22, ease: 'power2.out'
+    }, 0.08);
+  }
+
+  function cursorUpdateDistance(dist){
+    var t = 1 - Math.min(dist / HOVER_RADIUS, 1);
+    gsap.to(cursorCard, {
+      scale: 0.72 + t * 0.28,
+      duration: 0.25, ease: 'power2.out',
+      overwrite: 'auto'
+    });
+  }
+
+  // ============================================================
+  //  CROSSHAIR — thin rules across the grid
+  // ============================================================
+  function updateCrosshair(mx, my){
+    var r = gridOuter.getBoundingClientRect();
+    crosshairH.style.top  = (my - r.top)  + 'px';
+    crosshairV.style.left = (mx - r.left) + 'px';
+  }
+
+  // ============================================================
+  //  SECTION BOUNDARY — is mouse inside the timeline section?
+  // ============================================================
+  function checkInSection(mx, my){
+    var r = timelineSec.getBoundingClientRect();
+    return mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom;
+  }
+
+  // ============================================================
+  //  MAIN LOOP — requestAnimationFrame @ 60fps
+  // ============================================================
+  function loop(){
+    // Lerp cursor for inertia
+    cursorX += (mouseX - cursorX) * LERP_FACTOR;
+    cursorY += (mouseY - cursorY) * LERP_FACTOR;
+    cursorEl.style.transform = 'translate3d(' + cursorX + 'px,' + cursorY + 'px,0)';
+
+    // ---- Section-bound cursor visibility ----
+    var inSection = checkInSection(mouseX, mouseY);
+
+    if(inSection && !isInSection){
+      // Entered timeline section — snap cursor to avoid lerp jump
+      isInSection = true;
+      cursorX = mouseX;
+      cursorY = mouseY;
+      cursorEl.style.transform = 'translate3d(' + cursorX + 'px,' + cursorY + 'px,0)';
+      gsap.to(cursorEl, { opacity: 1, duration: 0.12, overwrite: 'auto' });
+    } else if(!inSection && isInSection){
+      // Left timeline section — hide cursor + reset state
+      isInSection = false;
+      if(activeProject !== null){
+        activeProject = null;
+        cursorLeave();
+      }
+      gsap.to(cursorEl, { opacity: 0, duration: 0.12, overwrite: 'auto' });
+      gsap.to(crosshair, { opacity: 0, duration: 0.25, overwrite: 'auto' });
+      rafId = requestAnimationFrame(loop);
+      return;  // skip grid interaction outside section
+    }
+
+    if(!isInSection){
+      rafId = requestAnimationFrame(loop);
+      return;  // nothing to do outside section
+    }
+
+    // ---- Inside section: grid interaction ----
+    // Refresh node positions periodically (handles horizontal scroll)
+    nodeUpdateTicker = (nodeUpdateTicker + 1) % 8;
+    if(nodeUpdateTicker === 0){ updateNodeTargets(); }
+
+    isInGrid = checkInGrid(mouseX, mouseY);
+
+    var result = null;
+    if(isInGrid){ result = findNearest(mouseX, mouseY); }
+
+    // ---- State machine ----
+    if(result && activeProject === null){
+      // → Enter hover
+      activeProject = result.project;
+      setCard(activeProject);
+      cursorEnter(activeProject, result.distance);
+      gsap.to(crosshair, { opacity: 0.6, duration: 0.2 });
+    } else if(result && activeProject === result.project){
+      // → Stay (distance may change)
+      cursorUpdateDistance(result.distance);
+    } else if(result && activeProject !== result.project){
+      // → Switch to different project
+      activeProject = result.project;
+      setCard(activeProject);
+      cursorEnter(activeProject, result.distance);
+    } else if(!result && activeProject !== null){
+      // → Leave
+      activeProject = null;
+      cursorLeave();
+      gsap.to(crosshair, { opacity: 1, duration: 0.25 });
+    }
+
+    // Crosshair visibility
+    if(isInGrid){
+      updateCrosshair(mouseX, mouseY);
+      if(!result){
+        gsap.to(crosshair, { opacity: 1, duration: 0.25, overwrite: 'auto' });
+      }
+    } else {
+      gsap.to(crosshair, { opacity: 0, duration: 0.35, overwrite: 'auto' });
+    }
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // ============================================================
+  //  EVENT HANDLERS
+  // ============================================================
+  function onMouseMove(e){
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+
+  // ============================================================
+  //  INIT — runs when DOM is fully parsed
+  // ============================================================
+  function init(){
+    buildGrid();
+    placeNodes();
+    updateNodeTargets();
+
+    // Cursor hidden until user enters timeline section
+    cursorEl.style.opacity = '0';
+    cursorEl.style.transform = 'translate3d(' + cursorX + 'px,' + cursorY + 'px,0)';
+
+    document.addEventListener('mousemove', onMouseMove, { passive: true });
+
+    window.addEventListener('resize', function(){
+      updateNodeTargets();
+    });
+
+    rafId = requestAnimationFrame(loop);
+
+    console.log(
+      '%c Timeline Map %c Active %c— ' + CONFIG.years.length + 'yr · ' + projects.length + ' projects',
+      'font-weight:600;','color:#666;','color:#999;'
+    );
+  }
+
+  // Guard: cursor element is now BEFORE this script, but belt-and-suspenders
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+<!-- ==========================================================
+     ORBIT SYSTEM — Mechanical Pen Orbit (Section 3)
+     ========================================================== -->
+<script>
+(function(){
+  'use strict';
+
+  // ============================================================
+  //  CONFIG — all tunable parameters in one place
+  // ============================================================
+  var CFG = {
+    // ---- Orbit (circle in 3D plane, CSS perspective → elliptical projection) ----
+    radiusScale: 0.62,// ← 轨道半径 = 窗口宽度 × 这个比例
+    ratioY:  1.0,     // ← 1.0 = 正圆（CSS rotateX 自动产生椭圆透视）
+    pivotOffsetX: 100,// ← px，圆心在右边缘外侧的距离
+
+    // ---- 3D Plane ----
+    tiltAngle: 55,    // ← 度°，rotateX 倾斜角（0=俯视 · 55=桌面斜角 · 90=平视）
+    pCorrect: 1.75,   // ← Y轴透视补偿（≈ 1/cos(tiltAngle)），越大上方越灵敏
+
+    // ---- Motion ----
+    lerpFactor: 0.07, // angle inertia (0.03=heavy lag · 0.15=snappy)
+
+    // ---- Depth (artistic enhancement, CSS perspective handles geometry) ----
+    depthScaleMin: 0.88,  // scale at far side
+    depthScaleMax: 1.0,   // scale at near side
+    depthOpacityMin: 0.55,// opacity at far side
+    depthOpacityMax: 1.0, // opacity at near side
+
+    // ---- Pen Logo ----
+    // Base (top of SVG) fixed at pivot.  Nib (bottom) traces the orbit.
+    penOriginX: '50%',    // SVG anchor X (%)
+    penOriginY: '100%',   // SVG anchor Y — bottom = base of pen = fixed at pivot
+    penBaseWidth: 28,     // px — rendered width at scale 1 (height ≈ width × 4)
+
+    // ---- Circles ----
+    outerScale: 1.35,  // ← 外层圆轨道半径 = 笔尖半径 × 这个比例
+    outerOffset: -4,  // ← 度°，外层圆逆时针偏移（负=逆时针 · 正=顺时针）
+    outerRadius: 64,    // px — 外层圆大小
+    circleRadius: 14,  // px — 反向圆大小
+
+    // ---- Visual ----
+    armColor: '#000',
+    armWidth: 1,
+    orbitColor: 'transparent',
+    orbitWidth: 0,
+    pivotSize: 3,
+    pivotColor: 'rgba(0,0,0,0.25)',
+  };
+
+  // ============================================================
+  //  MODULE: PointerController
+  //  Reads mouse position → computes target angle from pivot
+  // ============================================================
+  var mouseX = 0, mouseY = 0;
+
+  function onPointerMove(e){
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+
+  function getTargetAngle(pivotCX, pivotCY){
+    var raw = Math.atan2(mouseY - pivotCY, mouseX - pivotCX);
+    // Clamp to left semicircle: [π/2, 3π/2]  (cos < 0 → pen stays left of pivot)
+    if(raw > -Math.PI/2 && raw < Math.PI/2){
+      raw = (raw >= 0) ? Math.PI/2 : -Math.PI/2;
+    }
+    if(raw < Math.PI/2) raw += 2 * Math.PI; // normalize to [π/2, 3π/2]
+    return raw;
+  }
+
+  // ============================================================
+  //  MODULE: OrbitSystem
+  //  Lerps current angle → target angle
+  //  Computes ellipse positions + depth cues
+  // ============================================================
+  var currentAngle = 0;
+
+  function lerpAngle(target){
+    // Normalize delta to shortest path
+    var delta = target - currentAngle;
+    while(delta >  Math.PI) delta -= 2 * Math.PI;
+    while(delta < -Math.PI) delta += 2 * Math.PI;
+    currentAngle += delta * CFG.lerpFactor;
+    return currentAngle;
+  }
+
+  function getOrbitPosition(angle, rx, ry){
+    return {
+      x: Math.cos(angle) * rx,
+      y: Math.sin(angle) * ry
+    };
+  }
+
+  // depth: -1 (far) to +1 (near). We use sin(angle) mapped so
+  // the "bottom" of the ellipse (toward viewer) reads as near.
+  function getDepth(angle){
+    return Math.sin(angle); // -1..+1
+  }
+
+  function depthToScale(depth){
+    var t = (depth + 1) / 2; // 0..1
+    return CFG.depthScaleMin + (CFG.depthScaleMax - CFG.depthScaleMin) * t;
+  }
+
+  function depthToOpacity(depth){
+    var t = (depth + 1) / 2;
+    return CFG.depthOpacityMin + (CFG.depthOpacityMax - CFG.depthOpacityMin) * t;
+  }
+
+  function depthIsFront(depth){
+    return depth > 0; // bottom half = front
+  }
+
+  // ============================================================
+  //  MODULE: PenLogo
+  //  Computes pen transform (position + rotation)
+  // ============================================================
+  function getPenRotation(penX, penY, pivotCX, pivotCY){
+    // Pen body points outward from pivot (radial direction)
+    return Math.atan2(penY - pivotCY, penX - pivotCX);
+  }
+
+  // ============================================================
+  //  MODULE: OrbitRenderer
+  //  Applies transforms to DOM elements each frame
+  //  Pivot is at the RIGHT EDGE of the scene. All positions are
+  //  expressed in scene-local coordinates (origin = scene top-left).
+  // ============================================================
+  var sceneEl, ringSvg, ellipseEl;
+  var pivotEl, outerEl, circleEl, penEl;
+  var pivotSceneX, pivotSceneY; // pivot position in scene coords
+
+  function cacheDom(){
+    sceneEl   = document.getElementById('orbit-scene');
+    ringSvg   = document.getElementById('orbit-ring-svg');
+    ellipseEl = document.getElementById('orbit-ellipse');
+    pivotEl   = document.getElementById('orbit-pivot');
+    outerEl   = document.getElementById('orbit-outer');
+    circleEl  = document.getElementById('orbit-circle');
+    penEl     = document.getElementById('orbit-pen');
+  }
+
+  function resizeOrbit(){
+    if(!sceneEl) return;
+    var w = sceneEl.clientWidth;
+    var h = sceneEl.clientHeight;
+    var rx = w * CFG.radiusScale;
+    var ry = rx * CFG.ratioY;
+    CFG.radiusX = rx;
+    CFG.radiusY = ry;
+
+    // Pivot in scene coordinates: beyond right edge
+    pivotSceneX = w + CFG.pivotOffsetX;
+    pivotSceneY = h / 2;
+
+    // Position ring SVG with its center at the pivot
+    var pad = Math.max(rx, ry) + 60;
+    if(ringSvg){
+      ringSvg.setAttribute('viewBox', [-pad, -pad, pad*2, pad*2].join(' '));
+      ringSvg.style.width  = (pad*2) + 'px';
+      ringSvg.style.height = (pad*2) + 'px';
+      ringSvg.style.left = (w + CFG.pivotOffsetX) + 'px';
+      ringSvg.style.top  = (h / 2) + 'px';
+    }
+
+    // Update ellipse SVG attributes
+    if(ellipseEl){
+      ellipseEl.setAttribute('rx', rx);
+      ellipseEl.setAttribute('ry', ry);
+    }
+
+    // Apply 3D tilt
+    sceneEl.style.transform = 'rotateX(' + CFG.tiltAngle + 'deg)';
+  }
+
+  function render(angle){
+    var rx = CFG.radiusX;
+    var ry = CFG.radiusY;
+
+    // ---- Ray from pivot → mouse, clamped to [π/2, 2π) = 270° range ----
+    var penDir = Math.atan2((mouseY - pivotVpCY) * CFG.pCorrect, mouseX - pivotVpCX);
+    if(penDir < 0) penDir += 2*Math.PI;        // normalize to [0, 2π)
+    if(penDir < Math.PI/2) penDir = Math.PI/2; // floor at 90° (straight down)
+
+    // ---- Pen tip = intersection of ray with orbit ellipse ----
+    var cosA = Math.cos(penDir);
+    var sinA = Math.sin(penDir);
+    var t = 1 / Math.sqrt(
+      (cosA*cosA)/(rx*rx) + (sinA*sinA)/(ry*ry)
+    );
+    var tipX = cosA * t;  // orbit-relative
+    var tipY = sinA * t;
+
+    // Opposite side = circle position
+    var circX = -tipX;
+    var circY = -tipY;
+
+    // Convert to scene coords
+    var circSceneX = pivotSceneX + circX;
+    var circSceneY = pivotSceneY + circY;
+
+    // Depth (pen direction sine)
+    var penDepth  = sinA;
+    var circDepth = -sinA;
+
+    // ---- Pivot dot (right edge, vertical center) ----
+    if(pivotEl){
+      pivotEl.style.left = (pivotSceneX - CFG.pivotSize/2) + 'px';
+      pivotEl.style.top  = (pivotSceneY - CFG.pivotSize/2) + 'px';
+    }
+
+    // ---- Outer circle (offset angle from pen, larger radius) ----
+    if(outerEl){
+      var outerAngle = penDir + CFG.outerOffset * Math.PI / 180;
+      var oc = Math.cos(outerAngle);
+      var os = Math.sin(outerAngle);
+      var ot = 1 / Math.sqrt((oc*oc)/(rx*rx) + (os*os)/(ry*ry));
+      var outerX = oc * ot * CFG.outerScale;
+      var outerY = os * ot * CFG.outerScale;
+      var outerSceneX = pivotSceneX + outerX;
+      var outerSceneY = pivotSceneY + outerY;
+      var ous = depthToScale(penDepth);
+      var ouo = depthToOpacity(penDepth);
+      var ouz = depthIsFront(penDepth) ? 2 : 1;
+      var our = CFG.outerRadius;
+      outerEl.style.width  = (our * 2) + 'px';
+      outerEl.style.height = (our * 2) + 'px';
+      outerEl.style.left   = '0px';
+      outerEl.style.top    = '0px';
+      outerEl.style.transform = 'translate3d(' + (outerSceneX - our) + 'px,' + (outerSceneY - our) + 'px,0) scale(' + ous + ')';
+      outerEl.style.opacity = ouo;
+      outerEl.style.zIndex = ouz;
+      // Color cycles with angle (HSL hue rotation)
+      var hue = ((penDir / (2*Math.PI)) * 360 + 180) % 360;
+      outerEl.style.background = 'hsl(' + hue.toFixed(0) + ', 60%, 25%)';
+    }
+
+    // ---- Circle (opposite of pen tip) ----
+    if(circleEl){
+      var cs = depthToScale(circDepth);
+      var co = depthToOpacity(circDepth);
+      var cz = depthIsFront(circDepth) ? 3 : 1;
+      var cr = CFG.circleRadius;
+      circleEl.style.width  = (cr * 2) + 'px';
+      circleEl.style.height = (cr * 2) + 'px';
+      circleEl.style.left   = '0px';
+      circleEl.style.top    = '0px';
+      circleEl.style.transform = 'translate3d(' + (circSceneX - cr) + 'px,' + (circSceneY - cr) + 'px,0) scale(' + cs + ')';
+      circleEl.style.opacity = co;
+      circleEl.style.zIndex = cz;
+      // Opposite hue
+      circleEl.style.background = 'hsl(' + ((hue + 180) % 360).toFixed(0) + ', 60%, 25%)';
+    }
+
+    // ---- Pen (base at pivot, tip on ellipse, aiming toward mouse) ----
+    if(penEl){
+      var ps = depthToScale(penDepth);
+      var po = depthToOpacity(penDepth);
+      var pz = depthIsFront(penDepth) ? 3 : 1;
+
+      var penImg = document.getElementById('orbit-pen-svg');
+      var penBaseH = penImg ? (penImg.offsetHeight || CFG.penBaseWidth * 4) : CFG.penBaseWidth * 4;
+      var penScale = t / Math.max(penBaseH, 1);
+
+      // SVG flipped: nib at TOP (↑)
+      var rotDeg = (penDir + Math.PI / 2) * (180 / Math.PI);
+
+      penEl.style.left = '0px';
+      penEl.style.top  = '0px';
+      penEl.style.transformOrigin = CFG.penOriginX + ' ' + CFG.penOriginY;
+      penEl.style.transform = 'translate3d(' + pivotSceneX + 'px,' + pivotSceneY + 'px,0) rotate(' + rotDeg + 'deg) scale(' + (penScale * ps) + ')';
+      penEl.style.opacity = po;
+      penEl.style.zIndex = pz;
+    }
+
+  }
+
+  // ============================================================
+  //  MAIN LOOP
+  // ============================================================
+  var rafId = null;
+  var pivotVpCX = 0, pivotVpCY = 0; // pivot in viewport coords (for mouse angle)
+
+  function updatePivotViewport(){
+    if(!sceneEl) return;
+    var rect = sceneEl.getBoundingClientRect();
+    pivotVpCX = rect.right + CFG.pivotOffsetX;  // beyond right edge
+    pivotVpCY = rect.top + rect.height / 2;     // vertical center
+  }
+
+  function loop(){
+    updatePivotViewport();
+    var target = getTargetAngle(pivotVpCX, pivotVpCY);
+    var angle  = lerpAngle(target);
+    render(angle);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // ============================================================
+  //  INIT
+  // ============================================================
+  function init(){
+    cacheDom();
+    resizeOrbit();
+
+    if(penEl){
+      penEl.style.transformOrigin = CFG.penOriginX + ' ' + CFG.penOriginY;
+    }
+    if(ellipseEl){
+      ellipseEl.setAttribute('stroke', CFG.orbitColor);
+      ellipseEl.setAttribute('stroke-width', CFG.orbitWidth);
+    }
+
+    document.addEventListener('mousemove', onPointerMove, { passive: true });
+    window.addEventListener('resize', resizeOrbit);
+
+    updatePivotViewport();
+    rafId = requestAnimationFrame(loop);
+
+    console.log('%c Orbit System %c Active %c— Right-edge Pivot · 180° Left Arc',
+      'font-weight:600;','color:#666;','color:#999;');
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+</body>
+</html>
