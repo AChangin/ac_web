@@ -72,8 +72,8 @@ export function SectorLight() {
 
   // Register with the shared RAF loop
   useEffect(() => {
-    var prevHue = hue;
-    var prevAmbient = -1; // force first write
+    var prevHue = -1;       // force first gradient write
+    var prevAmbient = -1;   // force first opacity write
 
     const unreg = registerLightCone(
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
