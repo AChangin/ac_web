@@ -1102,11 +1102,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   <div class="pc-alpha-layer" id="pc-alpha-layer">
     <video
       id="pc-alpha-video"
-      src="public/pc_alpha_desktop.webm"
       muted
       playsinline
       preload="auto"
-      autoplay
     ></video>
   </div>
 
@@ -1148,7 +1146,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   <div class="bg-alpha-layer" id="bg-alpha-layer">
     <video
       id="bg-alpha-video"
-      src="public/bg_alpha_desktop.webm"
       muted
       playsinline
       preload="auto"
@@ -1230,12 +1227,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   var isApple = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
                 (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent));
   var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  var pcVid = document.getElementById('pc-alpha-video');
+  var bgVid = document.getElementById('bg-alpha-video');
   if(isApple){
     document.body.classList.add('is-apple');
-    var pcVid = document.getElementById('pc-alpha-video');
-    var bgVid = document.getElementById('bg-alpha-video');
-    // iOS: lower-res HEVC (easier on mobile decoder)
-    // macOS Safari: full-res HEVC with native alpha
     if(isIOS){
       if(pcVid) pcVid.src = 'public/pc_prores4444.mov';
       if(bgVid) bgVid.src = 'public/bg_alpha_desktop_ios.mov';
@@ -1243,6 +1238,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(pcVid) pcVid.src = 'public/pc_prores4444.mov';
       if(bgVid) bgVid.src = 'public/bg_alpha_desktop_hevc.mov';
     }
+  } else {
+    // Windows/Chrome: WebM
+    if(pcVid) pcVid.src = 'public/pc_alpha_desktop.webm';
+    if(bgVid) bgVid.src = 'public/bg_alpha_desktop.webm';
   }
   if(isIOS){
     document.body.classList.add('is-ios');
