@@ -1010,9 +1010,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   filter:drop-shadow(2px 2px 16px rgba(0,0,0,0.12));
 }
 
-/* Pre-rasterize scroll container as single GPU layer (avoids per-element compositing) */
+/* Pre-rasterize scroll container as single GPU layer (macOS only — iOS viewport units break) */
 .is-apple .scroll-container{
   will-change:transform;
+}
+.is-ios .scroll-container{
+  will-change:auto;
 }
 /* LightReceiver: restore blur for pre-lit text softness on Apple */
 .is-apple [style*="--li"]{
