@@ -1467,90 +1467,89 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         scrub: isIOS ? 0.4 : 1.2,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          scrollProgress = self.progress;
-
-          // Parallax: hero text drifts opposite to scroll for depth
-          const vw = window.innerWidth;
-          const parallaxX = self.progress * (totalSectionsCount - 1) * vw * 0.4;
-          if(heroTitle){
-            heroTitle.style.transform = `translateX(${parallaxX}px)`;
-          }
-          if(heroScrollHint){
-            heroScrollHint.style.transform = `translateX(${parallaxX*0.12}px)`;
-          }
-          carousels.forEach(carousel => {
-            const speed = parseFloat(carousel.getAttribute('data-parallax')) || 0.3;
-            carousel.style.transform = `translateX(${self.progress * (totalSectionsCount - 1) * vw * speed}px)`;
-          });
-
-          // ── Timeline grid parallax (previous behavior) ──
-          var tlSectionIdx = 2;
-          var tlLocal = self.progress - tlSectionIdx / (totalSectionsCount - 1);
-
-          if(tlContainer){
-            tlContainer.style.transform = `translateX(${tlLocal * (totalSectionsCount - 1) * vw * 0.18}px)`;
-          }
-
-          // ── Month labels pinning (only labels, grid moves freely) ──
-          var containerShift = tlLocal * (totalSectionsCount - 1) * vw * 0.18;
-          var sectionLeft    = vw * (tlSectionIdx - self.progress * (totalSectionsCount - 1));
-          var gridPadPx      = vw * 0.05;
-          var labelNatural   = sectionLeft + gridPadPx + containerShift;
-          var pinTarget      = vw * 0.20;
-
-          if(tlMonthLabels){
-            if(labelNatural < pinTarget && sectionLeft > -vw * 0.7){
-              var shift = pinTarget - labelNatural;
-              shift = Math.min(shift, vw * 0.5);
-              tlMonthLabels.style.transform = `translateX(${shift}px)`;
-            } else {
-              tlMonthLabels.style.transform = 'translateX(0px)';
-            }
-          }
-
-          // ── Posts title parallax ──
-          if(tlTitle){
-            tlTitle.style.transform = `translateX(${tlLocal * (totalSectionsCount - 1) * vw * 0.32}px)`;
-          }
-
-          // ── About links reveal (play once when entering last section) ──
-          if(!aboutRevealed && self.progress > 0.78){
-            aboutRevealed = true;
-            orbitNavLinks.forEach(function(l){
-              l.classList.add('revealed');
-            });
-          }
-
-          // Update progress bar
-          progressBar.style.transform = `scaleX(${self.progress})`;
-
-          // Update nav highlight
-          const activeIndex = Math.round(self.progress * (totalSectionsCount - 1));
-          const setActive = (link) => {
-            const idx = parseInt(link.getAttribute('data-section'));
-            link.classList.toggle('active', idx === activeIndex);
-          };
-          navLinks.forEach(setActive);
-          mobileMenuLinks.forEach(setActive);
-
-          // Reveal fade-in elements as sections come into view
-          fadeEls.forEach(el => {
-            const section = el.closest('.section');
-            if(!section) return;
-            const sectionIdx = parseInt(section.getAttribute('data-index'));
-            const sectionProgress = totalSectionsCount > 1
-              ? sectionIdx / (totalSectionsCount - 1)
-              : 0;
-            if(self.progress >= sectionProgress - 0.08){
-              el.classList.add('visible');
-            }
-          });
+          applyParallax(self.progress);
         }
       }
     });
 
     // Store for resize
     return { setBodyHeight };
+  }
+
+  // ========== PARALLAX — standalone so mobile swipe can drive it too ==========
+  function applyParallax(progress){
+    scrollProgress = progress;
+    var vw = window.innerWidth;
+
+    // Hero parallax
+    var pX = progress * (totalSections - 1) * vw * 0.4;
+    if(heroTitle)       heroTitle.style.transform = 'translateX(' + pX + 'px)';
+    if(heroScrollHint)  heroScrollHint.style.transform = 'translateX(' + (pX * 0.12) + 'px)';
+
+    // Carousel parallax
+    carousels.forEach(function(c){
+      var speed = parseFloat(c.getAttribute('data-parallax')) || 0.3;
+      c.style.transform = 'translateX(' + (progress * (totalSections - 1) * vw * speed) + 'px)';
+    });
+
+    // Timeline grid parallax
+    var tlSectionIdx = 2;
+    var tlLocal = progress - tlSectionIdx / (totalSections - 1);
+    var tlContainerEl = document.querySelector('.tl-container');
+    if(tlContainerEl){
+      tlContainerEl.style.transform = 'translateX(' + (tlLocal * (totalSections - 1) * vw * 0.18) + 'px)';
+    }
+
+    // Month labels pinning
+    var containerShift = tlLocal * (totalSections - 1) * vw * 0.18;
+    var sectionLeft = vw * (tlSectionIdx - progress * (totalSections - 1));
+    var gridPadPx = vw * 0.05;
+    var labelNatural = sectionLeft + gridPadPx + containerShift;
+    var pinTarget = vw * 0.20;
+    var tlMonthLabelsEl = document.getElementById('tl-month-labels');
+    if(tlMonthLabelsEl){
+      if(labelNatural < pinTarget && sectionLeft > -vw * 0.7){
+        var shift = Math.min(pinTarget - labelNatural, vw * 0.5);
+        tlMonthLabelsEl.style.transform = 'translateX(' + shift + 'px)';
+      } else {
+        tlMonthLabelsEl.style.transform = 'translateX(0px)';
+      }
+    }
+
+    // Posts title parallax
+    var tlTitleEl = document.querySelector('.tl-title');
+    if(tlTitleEl){
+      tlTitleEl.style.transform = 'translateX(' + (tlLocal * (totalSections - 1) * vw * 0.32) + 'px)';
+    }
+
+    // About links reveal
+    if(!aboutRevealed && progress > 0.78){
+      aboutRevealed = true;
+      document.querySelectorAll('.orbit-nav-link').forEach(function(l){ l.classList.add('revealed'); });
+    }
+
+    // Progress bar
+    progressBar.style.transform = 'scaleX(' + progress + ')';
+
+    // Nav highlight
+    var activeIndex = Math.round(progress * (totalSections - 1));
+    navLinks.forEach(function(l){
+      var idx = parseInt(l.getAttribute('data-section'));
+      l.classList.toggle('active', idx === activeIndex);
+    });
+    mobileMenuLinks.forEach(function(l){
+      var idx = parseInt(l.getAttribute('data-section'));
+      l.classList.toggle('active', idx === activeIndex);
+    });
+
+    // Fade-in reveals
+    fadeEls.forEach(function(el){
+      var section = el.closest('.section');
+      if(!section) return;
+      var sIdx = parseInt(section.getAttribute('data-index'));
+      var sProg = totalSections > 1 ? sIdx / (totalSections - 1) : 0;
+      if(progress >= sProg - 0.08) el.classList.add('visible');
+    });
   }
 
   // ========== MOBILE MENU TOGGLE ==========
@@ -1699,6 +1698,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var touchStartTranslate = 0;
       var touching = false;
       var currentTranslate = 0;
+      var lastX = 0;
+      var lastTime = 0;
+      var inertiaTween = null;
 
       function getMaxTranslate(){
         return -(scrollContainer.scrollWidth - window.innerWidth);
@@ -1714,26 +1716,64 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         return m.m41;
       }
 
+      function setTranslate(x){
+        currentTranslate = x;
+        scrollContainer.style.transform = 'translateX(' + x + 'px)';
+        // Drive parallax from translateX
+        var totalDist = scrollContainer.scrollWidth - window.innerWidth;
+        var progress = totalDist > 0 ? -x / totalDist : 0;
+        applyParallax(progress);
+      }
+
+      function killInertia(){ if(inertiaTween){ inertiaTween.kill(); inertiaTween = null; } }
+
       scrollContainer.addEventListener('touchstart', function(e){
         if(e.touches.length !== 1) return;
-        if(window.__logoInteracting) return; // don't scroll while color picking
+        if(window.__logoInteracting) return;
+        killInertia();
         touchStartX = e.touches[0].clientX;
         touchStartTranslate = getCurrentTranslate();
-        currentTranslate = touchStartTranslate;
+        lastX = touchStartX;
+        lastTime = performance.now();
         touching = true;
       }, { passive: true });
 
       scrollContainer.addEventListener('touchmove', function(e){
         if(!touching) return;
-        var dx = e.touches[0].clientX - touchStartX;
-        currentTranslate = clamp(touchStartTranslate + dx);
-        scrollContainer.style.transform = 'translateX(' + currentTranslate + 'px)';
+        var x = e.touches[0].clientX;
+        var dx = x - touchStartX;
+        setTranslate(clamp(touchStartTranslate + dx));
+        lastX = x;
+        lastTime = performance.now();
       }, { passive: true });
 
       scrollContainer.addEventListener('touchend', function(e){
         if(!touching) return;
         touching = false;
-        // Free-scroll: no snap, just leave it where the user stopped
+        // Inertia: continue moving with deceleration
+        var dt = performance.now() - lastTime;
+        var vx = dt > 0 ? (lastX - touchStartX) / dt : 0; // px/ms at end of gesture
+        if(Math.abs(vx) < 0.05) return; // too slow, no inertia needed
+        var target = clamp(currentTranslate + vx * 300); // project 300ms ahead
+        killInertia();
+        var startX = currentTranslate;
+        var changeX = target - startX;
+        var startTime = performance.now();
+        var duration = 600; // ms
+        function inertiaStep(){
+          var elapsed = performance.now() - startTime;
+          var t = Math.min(elapsed / duration, 1);
+          // ease-out exponential
+          var eased = 1 - Math.pow(1 - t, 3);
+          var x = startX + changeX * eased;
+          setTranslate(clamp(x));
+          if(t < 1){
+            inertiaTween = requestAnimationFrame(inertiaStep);
+          } else {
+            inertiaTween = null;
+          }
+        }
+        inertiaTween = requestAnimationFrame(inertiaStep);
       }, { passive: true });
     })();
   }
