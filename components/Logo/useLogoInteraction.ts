@@ -33,6 +33,18 @@ const WHEEL_CX = 60 + 55;
 const WHEEL_CY = 80 + 55;
 const WHEEL_RADIUS = 55;
 
+// Apple detection
+const isAppleTL = (function () {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))
+  );
+})();
+
+// Throttle getBoundingClientRect: Apple devices refresh every 3 frames, others every frame
+const RECT_INTERVAL = isAppleTL ? 3 : 1;
+
 // ---------------------------------------------------------------------------
 // Math helpers
 // ---------------------------------------------------------------------------
@@ -91,6 +103,10 @@ export function useLogoInteraction({
       mouseRef.current.y = e.clientY;
     };
 
+    let frameCount = 0;
+    // Cache rect across frames to avoid repeated getBoundingClientRect
+    let cachedRect: DOMRect | null = null;
+
     const tick = () => {
       const el = containerRef.current;
       if (!el) {
@@ -98,7 +114,12 @@ export function useLogoInteraction({
         return;
       }
 
-      const rect = el.getBoundingClientRect();
+      // Throttle getBoundingClientRect on Apple devices
+      frameCount++;
+      if (frameCount % RECT_INTERVAL === 0 || !cachedRect) {
+        cachedRect = el.getBoundingClientRect();
+      }
+      const rect = cachedRect!;
       const logoCx = rect.left + rect.width / 2;
       const logoCy = rect.top + rect.height / 2;
 

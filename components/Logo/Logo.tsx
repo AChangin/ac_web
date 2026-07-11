@@ -17,6 +17,20 @@ const TRANSITION = {
   ease: [0.2, 1, 0.3, 1] as const,
 };
 
+// Apple detection
+const isAppleTL = (function () {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))
+  );
+})();
+
+// Lighter drop-shadow on Apple devices (drop-shadow is CPU-bound on Safari)
+const LOGO_SHADOW = isAppleTL
+  ? "drop-shadow(0 0 16px rgba(0,0,0,0.5))"
+  : "drop-shadow(0 0 32px rgba(0,0,0,0.90)) drop-shadow(0 0 80px rgba(0,0,0,0.8))";
+
 /** 当前选中色 */
 function hueColor(h: number) {
   return `hsl(${h}, 100%, 50%)`;
@@ -63,7 +77,7 @@ export default function Logo({ hue, onHueChange }: LogoProps) {
         width: CONTAINER_SIZE,
         height: CONTAINER_SIZE,
         cursor: "default",
-        filter: "drop-shadow(0 0 32px rgba(0,0,0,0.90)) drop-shadow(0 0 80px rgba(0,0,0,0.8))",
+        filter: LOGO_SHADOW,
       }}
     >
       {/* ════ C：居中，淡出 + 缩小，色彩继承 hue ════ */}

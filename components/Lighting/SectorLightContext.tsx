@@ -4,7 +4,6 @@ import React, {
   useRef,
   useEffect,
   useCallback,
-  useState,
 } from "react";
 import { useHue } from "../../hooks/useHueSystem";
 
@@ -13,29 +12,31 @@ import { useHue } from "../../hooks/useHueSystem";
 // ---------------------------------------------------------------------------
 
 export interface LightState {
-  /** 光源在 viewport 中的 X */
   originX: number;
-  /** 光源在 viewport 中的 Y */
   originY: number;
-  /** 光束角度（= hue，0 = 顶部，顺时针） */
   angle: number;
-  /** 光束半角跨度（°） */
   span: number;
-  /** 光束最大照射距离（px） */
   maxDistance: number;
-  /** 当前 hue */
   hue: number;
-  /** 是否已选色 */
   hasPicked: boolean;
 }
 
-/** 每个注册元素的回调：接收 0-1 的强度值，直接写 DOM */
 type IntensityCallback = (intensity: number) => void;
 
 interface RegisteredElement {
   el: HTMLElement;
   callback: IntensityCallback;
 }
+
+/** Callback for SectorLight to receive per-frame updates without React renders */
+type LightConeUpdater = (data: {
+  opacity: number;
+  rotate: number;
+  offsetX: number;
+  offsetY: number;
+  ambientOpacity: number;
+  hue: number;
+}) => void;
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -44,6 +45,16 @@ interface RegisteredElement {
 const SPAN = 45;
 const MAX_DISTANCE = 1600;
 const FADE_DISTANCE_VW = 80;
+const PARALLAX_FACTOR = 0.95;
+
+// Apple detection (runs once at module load)
+const isAppleTL = (function () {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))
+  );
+})();
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -67,13 +78,15 @@ function getLogoCenter(): { x: number; y: number } {
   return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
 }
 
-/** 高斯衰减 */
 function gaussianWeight(value: number, sigma: number): number {
   return Math.exp(-(value * value) / (2 * sigma * sigma));
 }
 
-/** 平顶衰减：中心 plateau 比例内全亮，外缘高斯衰减 */
-function plateauWeight(normalized: number, plateau: number, sigma: number): number {
+function plateauWeight(
+  normalized: number,
+  plateau: number,
+  sigma: number
+): number {
   if (normalized <= plateau) return 1;
   return gaussianWeight((normalized - plateau) / (1 - plateau), sigma);
 }
@@ -83,21 +96,25 @@ function plateauWeight(normalized: number, plateau: number, sigma: number): numb
 // ---------------------------------------------------------------------------
 
 interface SectorLightContextValue {
-  /** 注册元素到 RAF 循环，返回取消注册函数 */
   register: (el: HTMLElement, cb: IntensityCallback) => () => void;
-  /** 当前光源状态（只读快照，不触发重渲染） */
+  registerLightCone: (updater: LightConeUpdater) => () => void;
   getState: () => LightState;
 }
 
 const Ctx = createContext<SectorLightContextValue | null>(null);
 
 // ---------------------------------------------------------------------------
-// Provider
+// Provider — owns the SINGLE shared RAF loop
 // ---------------------------------------------------------------------------
 
-export function SectorLightProvider({ children }: { children: React.ReactNode }) {
+export function SectorLightProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { hue, hasPicked } = useHue();
   const registryRef = useRef<RegisteredElement[]>([]);
+  const coneUpdatersRef = useRef<LightConeUpdater[]>([]);
   const stateRef = useRef<LightState>({
     originX: window.innerWidth / 2,
     originY: window.innerHeight / 2,
@@ -109,10 +126,14 @@ export function SectorLightProvider({ children }: { children: React.ReactNode })
   });
   const rafRef = useRef(0);
 
-  // 全局 RAF 循环
+  // ---- Single shared RAF loop ----
   useEffect(() => {
     const tick = () => {
+      // ── Read DOM ONCE ──
       const logo = getLogoCenter();
+      const scrollVis = calcScrollVisibility();
+      const globalVis = hasPicked ? scrollVis : 0;
+
       const s = stateRef.current;
       s.originX = logo.x;
       s.originY = logo.y;
@@ -120,41 +141,56 @@ export function SectorLightProvider({ children }: { children: React.ReactNode })
       s.hue = hue;
       s.hasPicked = hasPicked;
 
-      // 计算滚动可见度（与 SectorLight 视觉同步）
-      const scrollVis = calcScrollVisibility();
-      const globalVis = hasPicked ? scrollVis : 0;
+      const vpCx = window.innerWidth / 2;
+      const vpCy = window.innerHeight / 2;
+      const offsetX = (logo.x - vpCx) * PARALLAX_FACTOR;
+      const offsetY = (logo.y - vpCy) * PARALLAX_FACTOR;
+      const ambientOpacity = globalVis * 0.25;
 
-      // 遍历所有注册元素
-      for (const entry of registryRef.current) {
-        if (globalVis < 0.001) {
+      // ── Update SectorLight cone elements directly (no React render) ──
+      for (const updater of coneUpdatersRef.current) {
+        updater({
+          opacity: globalVis,
+          rotate: hue - SPAN,
+          offsetX,
+          offsetY,
+          ambientOpacity: isAppleTL ? 0 : ambientOpacity, // Apple: skip ambient glow
+          hue,
+        });
+      }
+
+      // ── Update LightReceivers ──
+      if (globalVis < 0.001) {
+        for (const entry of registryRef.current) {
           entry.callback(0);
-          continue;
         }
+      } else {
+        for (const entry of registryRef.current) {
+          const rect = entry.el.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
 
-        const rect = entry.el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
+          const dx = cx - s.originX;
+          const dy = cy - s.originY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
 
-        const dx = cx - s.originX;
-        const dy = cy - s.originY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+          const distWeight =
+            dist < s.maxDistance
+              ? plateauWeight(dist / s.maxDistance, 0.4, 0.5)
+              : 0;
 
-        const distWeight =
-          dist < s.maxDistance
-            ? plateauWeight(dist / s.maxDistance, 0.4, 0.5)
-            : 0;
+          const elemAngle =
+            ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
+          let angleDiff = Math.abs(elemAngle - s.angle);
+          if (angleDiff > 180) angleDiff = 360 - angleDiff;
 
-        const elemAngle =
-          ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
-        let angleDiff = Math.abs(elemAngle - s.angle);
-        if (angleDiff > 180) angleDiff = 360 - angleDiff;
+          const angleWeight =
+            angleDiff < s.span * 1.6
+              ? plateauWeight(angleDiff / s.span, 0.4, 0.5)
+              : 0;
 
-        const angleWeight =
-          angleDiff < s.span * 1.6
-            ? plateauWeight(angleDiff / s.span, 0.4, 0.5)
-            : 0;
-
-        entry.callback(distWeight * angleWeight * globalVis);
+          entry.callback(distWeight * angleWeight * globalVis);
+        }
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -164,7 +200,7 @@ export function SectorLightProvider({ children }: { children: React.ReactNode })
     return () => cancelAnimationFrame(rafRef.current);
   }, [hue, hasPicked]);
 
-  // 注册 / 注销
+  // ---- Register / unregister LightReceivers ----
   const register = useCallback(
     (el: HTMLElement, cb: IntensityCallback): (() => void) => {
       const entry: RegisteredElement = { el, callback: cb };
@@ -176,11 +212,24 @@ export function SectorLightProvider({ children }: { children: React.ReactNode })
     []
   );
 
+  // ---- Register / unregister SectorLight cone updaters ----
+  const registerLightCone = useCallback(
+    (updater: LightConeUpdater): (() => void) => {
+      coneUpdatersRef.current.push(updater);
+      return () => {
+        coneUpdatersRef.current = coneUpdatersRef.current.filter(
+          (u) => u !== updater
+        );
+      };
+    },
+    []
+  );
+
   const getState = useCallback(() => stateRef.current, []);
 
   return React.createElement(
     Ctx.Provider,
-    { value: { register, getState } },
+    { value: { register, registerLightCone, getState } },
     children
   );
 }
@@ -191,6 +240,7 @@ export function SectorLightProvider({ children }: { children: React.ReactNode })
 
 export function useSectorLight() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useSectorLight must be inside SectorLightProvider");
+  if (!ctx)
+    throw new Error("useSectorLight must be inside SectorLightProvider");
   return ctx;
 }
