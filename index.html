@@ -68,7 +68,6 @@ body{
   height:100vh;
   display:flex;
   flex-direction:row;
-  will-change:transform;
   backface-visibility:hidden;
   z-index:2;
 }
@@ -499,7 +498,6 @@ body{
   z-index:10000;
   pointer-events:none;
   top:0;left:0;
-  will-change:transform;
   backface-visibility:hidden;
 }
 .tl-cursor-dot{
@@ -604,7 +602,6 @@ body{
   pointer-events:none;
   user-select:none;
   text-shadow:0 8px 80px rgba(0,0,0,0.1),0 2px 8px rgba(0,0,0,0.06),0 0 180px rgba(0,0,0,0.04);
-  will-change:transform;
 }
 .tl-grid-outer{
   flex:1;
@@ -620,7 +617,6 @@ body{
   position:relative;
   z-index:5;
   padding:0.15rem 0;
-  will-change:transform;
 }
 .tl-month-label{
   flex:1;
@@ -670,7 +666,6 @@ body{
   background:#000;
   display:block;
   flex-shrink:0;
-  will-change:transform;
 }
 .tl-node.accent{background:#e63946}
 
@@ -808,7 +803,6 @@ body{
   border-radius:50%;
   background:#000;
   pointer-events:none;
-  will-change:transform,opacity;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
 }
@@ -818,7 +812,6 @@ body{
   border-radius:50%;
   background:#000;
   pointer-events:none;
-  will-change:transform,opacity;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
 }
@@ -826,7 +819,6 @@ body{
 .orbit-pen{
   position:absolute;
   pointer-events:none;
-  will-change:transform,opacity;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
 }
@@ -863,7 +855,6 @@ body{
   object-fit:cover;
   object-position:center top;
   transform:translateZ(0);
-  will-change:transform;
 }
 
 /* ============================================================
@@ -889,7 +880,6 @@ body{
   object-fit:cover;
   object-position:center top;
   transform:translateZ(0);
-  will-change:transform;
 }
 
 /* ============================================================
@@ -1010,6 +1000,37 @@ body{
    ============================================================ */
 ::-webkit-scrollbar{display:none}
 html{-ms-overflow-style:none;scrollbar-width:none}
+
+/* ============================================================
+   SAFARI PERFORMANCE OVERRIDES (body.is-apple / body.is-ios)
+   ============================================================ */
+/* Backdrop-filter kills Safari scroll perf — replace with solid bg */
+.is-apple .nav{
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  background:rgba(255,255,255,0.92);
+}
+.is-apple .tl-cursor-card-info{
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  background:rgba(255,255,255,0.95);
+}
+/* Triple drop-shadow is extremely heavy on Safari — reduce to single */
+.is-apple .orbit-nav-text,
+.is-apple .orbit-nav-arrow{
+  filter:drop-shadow(2px 2px 16px rgba(0,0,0,0.12));
+}
+
+/* iOS: extra simplifications */
+.is-ios .tag-cube{
+  transform-style:flat; /* preserve-3d is buggy on iOS Safari */
+}
+.is-ios .orbit-outer,
+.is-ios .orbit-circle,
+.is-ios .orbit-pen{
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
 </style>
 </head>
 <body>
@@ -1194,11 +1215,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   // ========== APPLE DEVICE — Safari: swap WebM → HEVC .mov (native alpha) ==========
   var isApple = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
                 (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent));
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
   if(isApple){
+    document.body.classList.add('is-apple');
     var pcVid = document.getElementById('pc-alpha-video');
     var bgVid = document.getElementById('bg-alpha-video');
     if(pcVid) pcVid.src = 'public/pc_alpha_desktop_hevc.mov';
     if(bgVid) bgVid.src = 'public/bg_alpha_desktop_hevc.mov';
+  }
+  if(isIOS){
+    document.body.classList.add('is-ios');
   }
 
   // ========== DOM REFS ==========
@@ -1315,43 +1341,76 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   let totalSections = 4;
   let scrollProgress = 0;
 
-  // ========== INIT FOREGROUND VIDEOS (play once, hold last frame) ==========
+  // ========== INIT FOREGROUND VIDEOS (synchronized, play once, hold last frame) ==========
   function initForegroundVideos(){
-    [pcAlphaVideo, bgAlphaVideo].forEach(video => {
-      if(!video) return;
+    // Master: pcAlphaVideo  |  Slave: bgAlphaVideo
+    var master = pcAlphaVideo, slave = bgAlphaVideo;
+    if(!master) return;
 
-      // Pause at last frame — don't loop
-      video.addEventListener('ended', () => {
-        video.pause();
-      });
+    // Sync slave to master (drift correction every 200ms)
+    var syncInterval;
+    function startSync(){
+      syncInterval = setInterval(function(){
+        if(master.readyState < 2 || slave.readyState < 2) return;
+        var drift = Math.abs(master.currentTime - slave.currentTime);
+        if(drift > 0.06){
+          slave.currentTime = master.currentTime;
+        }
+      }, 200);
+    }
+    function stopSync(){
+      clearInterval(syncInterval);
+    }
 
-      // Monitor video progress → reveal carousels sequentially near end
-      let revealIndex = 0;
-      video.addEventListener('timeupdate', () => {
-        if(tagsRevealed || !video.duration) return;
-        const pct = video.currentTime / video.duration;
-        const thresholds = [0.74, 0.78, 0.82];
-        while(revealIndex < thresholds.length && pct > thresholds[revealIndex]){
-          const carousel = carousels[revealIndex];
-          if(carousel) carousel.classList.add('revealed');
-          revealIndex++;
-        }
-        if(revealIndex >= thresholds.length){
-          tagsRevealed = true;
-          startCarousels();
-        }
-      });
+    // Pause at last frame — don't loop
+    master.addEventListener('ended', function(){
+      master.pause();
+      if(slave) slave.pause();
+      stopSync();
+    });
+    master.addEventListener('pause', function(){
+      if(slave && !slave.paused) slave.pause();
+      stopSync();
+    });
+    master.addEventListener('play', function(){
+      if(slave && slave.paused) slave.play().catch(function(){});
+      startSync();
+    });
+    master.addEventListener('seeked', function(){
+      if(slave) slave.currentTime = master.currentTime;
+    });
 
-      // Ensure playback; fallback on user interaction if autoplay blocked
-      const play = () => {
-        if(video.paused && !video.ended){
-          video.play().catch(() => {});
-        }
-      };
-      if(video.paused && !video.ended) play();
-      ['click','wheel','touchstart','keydown'].forEach(evt => {
-        document.addEventListener(evt, play, { once: true });
-      });
+    // Monitor master video progress → reveal carousels sequentially near end
+    var revealIndex = 0;
+    master.addEventListener('timeupdate', function(){
+      if(tagsRevealed || !master.duration) return;
+      var pct = master.currentTime / master.duration;
+      var thresholds = [0.74, 0.78, 0.82];
+      while(revealIndex < thresholds.length && pct > thresholds[revealIndex]){
+        var carousel = carousels[revealIndex];
+        if(carousel) carousel.classList.add('revealed');
+        revealIndex++;
+      }
+      if(revealIndex >= thresholds.length){
+        tagsRevealed = true;
+        startCarousels();
+      }
+    });
+
+    // Also apply to slave for the rare case master fails to play but slave succeeds
+    if(slave){
+      slave.addEventListener('ended', function(){ slave.pause(); stopSync(); });
+    }
+
+    // Ensure playback; fallback on user interaction if autoplay blocked
+    function play(){
+      if(master.paused && !master.ended){
+        master.play().catch(function(){});
+      }
+    }
+    if(master.paused && !master.ended) play();
+    ['click','wheel','touchstart','keydown'].forEach(function(evt){
+      document.addEventListener(evt, play, { once: true });
     });
   }
 
@@ -1360,6 +1419,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     const sections = gsap.utils.toArray('.section');
     const totalSectionsCount = sections.length;
     totalSections = totalSectionsCount;
+
+    // Cache expensive querySelector calls (used in onUpdate at scroll-frame rate)
+    const tlContainer = document.querySelector('.tl-container');
+    const tlMonthLabels = document.getElementById('tl-month-labels');
+    const tlTitle = document.querySelector('.tl-title');
+    const orbitNavLinks = document.querySelectorAll('.orbit-nav-link');
 
     // Calculate total scroll distance
     const totalScrollDist = () => {
@@ -1383,7 +1448,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         trigger: 'body',
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1.2,
+        scrub: isIOS ? 0.4 : 1.2,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           scrollProgress = self.progress;
@@ -1406,7 +1471,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           var tlSectionIdx = 2;
           var tlLocal = self.progress - tlSectionIdx / (totalSectionsCount - 1);
 
-          const tlContainer = document.querySelector('.tl-container');
           if(tlContainer){
             tlContainer.style.transform = `translateX(${tlLocal * (totalSectionsCount - 1) * vw * 0.18}px)`;
           }
@@ -1418,7 +1482,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           var labelNatural   = sectionLeft + gridPadPx + containerShift;
           var pinTarget      = vw * 0.20;
 
-          const tlMonthLabels = document.getElementById('tl-month-labels');
           if(tlMonthLabels){
             if(labelNatural < pinTarget && sectionLeft > -vw * 0.7){
               var shift = pinTarget - labelNatural;
@@ -1430,7 +1493,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           }
 
           // ── Posts title parallax ──
-          const tlTitle = document.querySelector('.tl-title');
           if(tlTitle){
             tlTitle.style.transform = `translateX(${tlLocal * (totalSectionsCount - 1) * vw * 0.32}px)`;
           }
@@ -1438,7 +1500,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           // ── About links reveal (play once when entering last section) ──
           if(!aboutRevealed && self.progress > 0.78){
             aboutRevealed = true;
-            document.querySelectorAll('.orbit-nav-link').forEach(function(l){
+            orbitNavLinks.forEach(function(l){
               l.classList.add('revealed');
             });
           }
@@ -1936,8 +1998,29 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ============================================================
-  //  MAIN LOOP — requestAnimationFrame @ 60fps
+  //  MAIN LOOP — requestAnimationFrame @ 60fps (section-aware)
   // ============================================================
+  var tlLoopRunning = false;
+
+  function startTlLoop(){
+    if(tlLoopRunning) return;
+    tlLoopRunning = true;
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function stopTlLoop(){
+    tlLoopRunning = false;
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    // Hide cursor when stopping
+    gsap.to(cursorEl, { opacity: 0, duration: 0.12, overwrite: 'auto' });
+    gsap.to(crosshair, { opacity: 0, duration: 0.25, overwrite: 'auto' });
+    if(activeProject !== null){
+      activeProject = null;
+      cursorLeave();
+    }
+    isInSection = false;
+  }
+
   function loop(){
     // Lerp cursor for inertia
     cursorX += (mouseX - cursorX) * LERP_FACTOR;
@@ -1947,29 +2030,19 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     // ---- Section-bound cursor visibility ----
     var inSection = checkInSection(mouseX, mouseY);
 
+    if(!inSection){
+      // Left (or outside) timeline section → stop loop, hide cursor
+      stopTlLoop();
+      return;
+    }
+
     if(inSection && !isInSection){
-      // Entered timeline section — snap cursor to avoid lerp jump
+      // Just entered timeline section — snap cursor to avoid lerp jump
       isInSection = true;
       cursorX = mouseX;
       cursorY = mouseY;
       cursorEl.style.transform = 'translate3d(' + cursorX + 'px,' + cursorY + 'px,0)';
       gsap.to(cursorEl, { opacity: 1, duration: 0.12, overwrite: 'auto' });
-    } else if(!inSection && isInSection){
-      // Left timeline section — hide cursor + reset state
-      isInSection = false;
-      if(activeProject !== null){
-        activeProject = null;
-        cursorLeave();
-      }
-      gsap.to(cursorEl, { opacity: 0, duration: 0.12, overwrite: 'auto' });
-      gsap.to(crosshair, { opacity: 0, duration: 0.25, overwrite: 'auto' });
-      rafId = requestAnimationFrame(loop);
-      return;  // skip grid interaction outside section
-    }
-
-    if(!isInSection){
-      rafId = requestAnimationFrame(loop);
-      return;  // nothing to do outside section
     }
 
     // ---- Inside section: grid interaction ----
@@ -2017,6 +2090,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     rafId = requestAnimationFrame(loop);
   }
 
+  // Restart loop on mousemove (when user might re-enter timeline section)
+  document.addEventListener('mousemove', function(e){
+    if(!tlLoopRunning && checkInSection(e.clientX, e.clientY)){
+      startTlLoop();
+    }
+  }, { passive: true });
+
   // ============================================================
   //  EVENT HANDLERS
   // ============================================================
@@ -2043,7 +2123,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       updateNodeTargets();
     });
 
-    rafId = requestAnimationFrame(loop);
+    // RAF starts on demand (when mouse enters timeline section)
+    // Initial mousemove listener added at loop definition above
 
     console.log(
       '%c Timeline Map %c Active %c— ' + CONFIG.years.length + 'yr · ' + projects.length + ' projects',
@@ -2051,11 +2132,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     );
   }
 
-  // Guard: cursor element is now BEFORE this script, but belt-and-suspenders
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  // Guard: skip on iOS (touch device, no cursor)
+  if(!document.body.classList.contains('is-ios')){
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   }
 
 })();
@@ -2340,10 +2423,23 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ============================================================
-  //  MAIN LOOP
+  //  MAIN LOOP (section-aware — only runs when orbit is visible)
   // ============================================================
   var rafId = null;
+  var orbitRunning = false;
   var pivotVpCX = 0, pivotVpCY = 0; // pivot in viewport coords (for mouse angle)
+
+  function startOrbitLoop(){
+    if(orbitRunning) return;
+    orbitRunning = true;
+    updatePivotViewport();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function stopOrbitLoop(){
+    orbitRunning = false;
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+  }
 
   function updatePivotViewport(){
     if(!sceneEl) return;
@@ -2378,17 +2474,35 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     document.addEventListener('mousemove', onPointerMove, { passive: true });
     window.addEventListener('resize', resizeOrbit);
 
-    updatePivotViewport();
-    rafId = requestAnimationFrame(loop);
+    // Only run RAF when orbit section is visible (IntersectionObserver)
+    var orbitSection = document.querySelector('.orbit-section');
+    if(orbitSection && window.IntersectionObserver){
+      var observer = new IntersectionObserver(function(entries){
+        if(entries[0].isIntersecting){
+          updatePivotViewport();
+          startOrbitLoop();
+        } else {
+          stopOrbitLoop();
+        }
+      }, { threshold: 0 });
+      observer.observe(orbitSection);
+    } else {
+      // Fallback: always run (old behavior)
+      updatePivotViewport();
+      startOrbitLoop();
+    }
 
     console.log('%c Orbit System %c Active %c— Right-edge Pivot · 180° Left Arc',
       'font-weight:600;','color:#666;','color:#999;');
   }
 
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  // Skip on iOS (touch device, no mouse orbit)
+  if(!document.body.classList.contains('is-ios')){
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   }
 
 })();
