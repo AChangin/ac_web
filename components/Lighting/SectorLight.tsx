@@ -246,7 +246,7 @@ export function SectorLight() {
           inset: 0,
           background: "#000",
           pointerEvents: "none",
-          zIndex: 0,
+          zIndex: -4,
         }}
       />
 
