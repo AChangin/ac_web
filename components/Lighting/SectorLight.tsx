@@ -67,7 +67,7 @@ function buildSectorGradientSoft(targetHue: number): string {
 }
 
 // Canvas-based cone for Apple: renders at 384×384, GPU upscales (~70x fewer pixels)
-var CANVAS_SIZE = 384;
+var CANVAS_SIZE = 512;
 // Draw sector centered at targetHue; CSS rotation NOT applied on Apple
 function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
   var cx = CANVAS_SIZE / 2, cy = CANVAS_SIZE / 2, r = CANVAS_SIZE / 2;
@@ -295,7 +295,6 @@ export function SectorLight() {
                 width: "100%",
                 height: "100%",
                 display: "block",
-                filter: "blur(0.6px)",  // anti-moiré on upscale, near-zero GPU cost at 384px
                 imageRendering: "auto",
               }}
             />
