@@ -63,7 +63,7 @@ function buildSectorGradientSoft(targetHue: number): string {
       `hsla(${colorHue}, ${SATURATION}%, ${LIGHTNESS}%, ${alpha.toFixed(3)}) ${t * SPAN * 2}deg`
     );
   }
-  return `conic-gradient(from ${-SPAN}deg, transparent 0deg, ${stops.join(", ")}, transparent ${SPAN * 2}deg)`;
+  return `conic-gradient(transparent 0deg, ${stops.join(", ")}, transparent ${SPAN * 2}deg)`;
 }
 
 // Pick gradient + cone style based on platform
