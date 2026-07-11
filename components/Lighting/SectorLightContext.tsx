@@ -135,13 +135,47 @@ export function SectorLightProvider({
 
   // ---- Single shared RAF loop (created ONCE, never restarted) ----
   useEffect(() => {
+    var frameCount = 0;
+    // Throttle expensive getBoundingClientRect calls on Apple
+    var CENTER_INT = isAppleTL ? 2 : 1;     // logo center refresh interval (frames)
+    var RECV_INT  = isAppleTL ? 3 : 1;      // receiver rect refresh interval (frames)
+    // Cached values (updated every CENTER_INT frames)
+    var cachedLogo: { x: number; y: number } | null = null;
+    var cachedScrollVis = 0;
+    // Cached receiver intensities (recalculated every RECV_INT frames)
+    var cachedIntensities: number[] = [];
+    var running = false;
+
+    function startRAF() {
+      if (running) return;
+      running = true;
+      // Invalidate cache on restart so first frame reads fresh
+      cachedLogo = null;
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    function stopRAF() {
+      running = false;
+      if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0; }
+      // Zero out all receivers when paused
+      for (var i = 0; i < registryRef.current.length; i++) {
+        registryRef.current[i].callback(0);
+      }
+      cachedIntensities = [];
+    }
+
     const tick = () => {
+      frameCount++;
       const currentHue = hueRef.current;
       const currentHasPicked = hasPickedRef.current;
 
-      // ── Read DOM ONCE ──
-      const logo = getLogoCenter();
-      const scrollVis = calcScrollVisibility();
+      // ── Refresh logo center + scroll visibility (throttled on Apple) ──
+      if (frameCount % CENTER_INT === 0 || !cachedLogo) {
+        cachedLogo = getLogoCenter();
+        cachedScrollVis = calcScrollVisibility();
+      }
+      const logo = cachedLogo!;
+      const scrollVis = cachedScrollVis;
       const globalVis = currentHasPicked ? scrollVis : 0;
 
       const s = stateRef.current;
@@ -157,7 +191,7 @@ export function SectorLightProvider({
       const offsetY = (logo.y - vpCy) * PARALLAX_FACTOR;
       const ambientOpacity = globalVis * 0.25;
 
-      // ── Update SectorLight cone elements directly (no React render) ──
+      // ── Update SectorLight cone (always call for smooth lerp) ──
       for (const updater of coneUpdatersRef.current) {
         updater({
           opacity: globalVis,
@@ -171,44 +205,73 @@ export function SectorLightProvider({
 
       // ── Update LightReceivers ──
       if (globalVis < 0.001) {
-        for (const entry of registryRef.current) {
-          entry.callback(0);
+        for (var i = 0; i < registryRef.current.length; i++) {
+          registryRef.current[i].callback(0);
         }
+        cachedIntensities = [];
       } else {
-        for (const entry of registryRef.current) {
-          const rect = entry.el.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
+        // Recalculate raw intensities every RECV_INT frames (expensive: getBoundingClientRect)
+        if (frameCount % RECV_INT === 0) {
+          cachedIntensities = [];
+          for (var ri = 0; ri < registryRef.current.length; ri++) {
+            var entry = registryRef.current[ri];
+            var rect = entry.el.getBoundingClientRect();
+            var cx = rect.left + rect.width / 2;
+            var cy = rect.top + rect.height / 2;
 
-          const dx = cx - s.originX;
-          const dy = cy - s.originY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+            var dx = cx - s.originX;
+            var dy = cy - s.originY;
+            var dist = Math.sqrt(dx * dx + dy * dy);
 
-          const distWeight =
-            dist < s.maxDistance
-              ? plateauWeight(dist / s.maxDistance, 0.4, 0.5)
-              : 0;
+            var distWeight =
+              dist < s.maxDistance
+                ? plateauWeight(dist / s.maxDistance, 0.4, 0.5)
+                : 0;
 
-          const elemAngle =
-            ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
-          let angleDiff = Math.abs(elemAngle - s.angle);
-          if (angleDiff > 180) angleDiff = 360 - angleDiff;
+            var elemAngle =
+              ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
+            var angleDiff = Math.abs(elemAngle - s.angle);
+            if (angleDiff > 180) angleDiff = 360 - angleDiff;
 
-          const angleWeight =
-            angleDiff < s.span * 1.6
-              ? plateauWeight(angleDiff / s.span, 0.4, 0.5)
-              : 0;
+            var angleWeight =
+              angleDiff < s.span * 1.6
+                ? plateauWeight(angleDiff / s.span, 0.4, 0.5)
+                : 0;
 
-          entry.callback(distWeight * angleWeight * globalVis);
+            cachedIntensities[ri] = distWeight * angleWeight * globalVis;
+          }
+        }
+        // Always call callbacks (every frame for smooth lerp, using cached intensities)
+        for (var ci = 0; ci < registryRef.current.length; ci++) {
+          registryRef.current[ci].callback(cachedIntensities[ci] || 0);
         }
       }
 
       rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []); // NEVER restart — reads latest values from refs
+    // ── IntersectionObserver: pause RAF when logo section is off-screen ──
+    var observer: IntersectionObserver | null = null;
+    var logoSec = document.querySelector(".logo-section");
+    if (logoSec && window.IntersectionObserver) {
+      observer = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          startRAF();
+        } else {
+          stopRAF();
+        }
+      }, { threshold: 0 });
+      observer.observe(logoSec);
+    } else {
+      // Fallback: always run
+      startRAF();
+    }
+
+    return () => {
+      stopRAF();
+      if (observer) observer.disconnect();
+    };
+  }, []); // NEVER restart
 
   // ---- Register / unregister LightReceivers ----
   const register = useCallback(
