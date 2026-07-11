@@ -66,10 +66,41 @@ function buildSectorGradientSoft(targetHue: number): string {
   return `conic-gradient(transparent 0deg, ${stops.join(", ")}, transparent ${SPAN * 2}deg)`;
 }
 
+// Canvas-based cone for Apple: renders at 256×256, GPU upscales (100x fewer pixels)
+var CANVAS_SIZE = 256;
+function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
+  var cx = CANVAS_SIZE / 2, cy = CANVAS_SIZE / 2, r = CANVAS_SIZE / 2;
+  var spanRad = SPAN * Math.PI / 180;
+  var centerAngle = targetHue * Math.PI / 180;
+  var startAngle = centerAngle - spanRad;
+  var endAngle = centerAngle + spanRad;
+
+  ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+  // Draw 40 thin wedges for smooth hue sweep
+  var wedges = 40;
+  for (var i = 0; i < wedges; i++) {
+    var t = i / (wedges - 1);
+    var a = startAngle + (endAngle - startAngle) * t;
+    var aNext = startAngle + (endAngle - startAngle) * (t + 1 / (wedges - 1));
+    var localHue = ((targetHue + (t - 0.5) * SPAN * 2) % 360 + 360) % 360;
+    var distFromCenter = Math.abs(t - 0.5) * 2;
+    var alpha = 0.75 * Math.exp(-distFromCenter * distFromCenter * 3.5) + 0.05;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, -a - Math.PI / 2, -aNext - Math.PI / 2);
+    ctx.closePath();
+    ctx.fillStyle = "hsla(" + localHue + ", " + SATURATION + "%, " + LIGHTNESS + "%, " + alpha.toFixed(3) + ")";
+    ctx.fill();
+  }
+}
+
 // Pick gradient + cone style based on platform
 var buildSectorGradient = isAppleTL ? buildSectorGradientSoft : buildSectorGradientSharp;
 var CONE_SIZE = isAppleTL ? "120vmax" : "300vmax";
 var CONE_FILTER = isAppleTL ? "none" : "blur(6px)";
+var USE_CANVAS = isAppleTL;
 
 // ---------------------------------------------------------------------------
 // Component (no per-frame React renders — uses shared RAF via context)
@@ -83,12 +114,30 @@ export function SectorLight() {
   const ambientRef = useRef<HTMLDivElement>(null);
   const coneWrapperRef = useRef<HTMLDivElement>(null);
   const coneRef = useRef<HTMLDivElement>(null);
+  const coneCanvasRef = useRef<HTMLCanvasElement>(null);  // Apple: low-res canvas
   const blackBgRef = useRef<HTMLDivElement>(null);
   const animRotateRef = useRef(hue - SPAN + ROTATION_OFFSET);
+  // Offscreen canvas for Apple cone rendering
+  const offscreenRef = useRef<HTMLCanvasElement | null>(null);
 
   // Keep latest hue in ref (avoids re-registering the RAF callback on every change)
   const hueRef = useRef(hue);
   useEffect(() => { hueRef.current = hue; }, [hue]);
+
+  // Init offscreen canvas for Apple cone rendering
+  useEffect(() => {
+    if (!USE_CANVAS) return;
+    var c = document.createElement("canvas");
+    c.width = CANVAS_SIZE;
+    c.height = CANVAS_SIZE;
+    offscreenRef.current = c;
+    // Draw initial frame
+    drawConeCanvas(c.getContext("2d")!, hue);
+    if (coneCanvasRef.current) {
+      var vc = coneCanvasRef.current.getContext("2d")!;
+      vc.drawImage(c, 0, 0);
+    }
+  }, []);
 
   // Register with the shared RAF loop — registered ONCE
   useEffect(() => {
@@ -147,7 +196,15 @@ export function SectorLight() {
           }
 
           if (currentHue !== prevHue) {
-            coneRef.current.style.background = buildSectorGradient(currentHue);
+            if (USE_CANVAS && offscreenRef.current && coneCanvasRef.current) {
+              drawConeCanvas(offscreenRef.current.getContext("2d")!, currentHue);
+              // Copy offscreen → visible canvas
+              var vc = coneCanvasRef.current.getContext("2d")!;
+              vc.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+              vc.drawImage(offscreenRef.current, 0, 0);
+            } else if (!USE_CANVAS) {
+              coneRef.current.style.background = buildSectorGradient(currentHue);
+            }
           }
         }
 
@@ -217,8 +274,22 @@ export function SectorLight() {
             filter: CONE_FILTER,
             opacity: 0,
             transform: "translateZ(0)",
+            overflow: "hidden",
           }}
-        />
+        >
+          {USE_CANVAS && (
+            <canvas
+              ref={coneCanvasRef}
+              width={CANVAS_SIZE}
+              height={CANVAS_SIZE}
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "block",
+              }}
+            />
+          )}
+        </div>
       </div>
     </>
   );
