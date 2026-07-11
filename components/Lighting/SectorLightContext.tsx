@@ -126,20 +126,29 @@ export function SectorLightProvider({
   });
   const rafRef = useRef(0);
 
-  // ---- Single shared RAF loop ----
+  // Keep refs in sync without restarting the RAF
+  const hueRef = useRef(hue);
+  const hasPickedRef = useRef(hasPicked);
+  useEffect(() => { hueRef.current = hue; }, [hue]);
+  useEffect(() => { hasPickedRef.current = hasPicked; }, [hasPicked]);
+
+  // ---- Single shared RAF loop (created ONCE, never restarted) ----
   useEffect(() => {
     const tick = () => {
+      const currentHue = hueRef.current;
+      const currentHasPicked = hasPickedRef.current;
+
       // ── Read DOM ONCE ──
       const logo = getLogoCenter();
       const scrollVis = calcScrollVisibility();
-      const globalVis = hasPicked ? scrollVis : 0;
+      const globalVis = currentHasPicked ? scrollVis : 0;
 
       const s = stateRef.current;
       s.originX = logo.x;
       s.originY = logo.y;
-      s.angle = hue;
-      s.hue = hue;
-      s.hasPicked = hasPicked;
+      s.angle = currentHue;
+      s.hue = currentHue;
+      s.hasPicked = currentHasPicked;
 
       const vpCx = window.innerWidth / 2;
       const vpCy = window.innerHeight / 2;
@@ -151,11 +160,11 @@ export function SectorLightProvider({
       for (const updater of coneUpdatersRef.current) {
         updater({
           opacity: globalVis,
-          rotate: hue - SPAN,
+          rotate: currentHue - SPAN,
           offsetX,
           offsetY,
-          ambientOpacity: isAppleTL ? 0 : ambientOpacity, // Apple: skip ambient glow
-          hue,
+          ambientOpacity: isAppleTL ? 0 : ambientOpacity,
+          hue: currentHue,
         });
       }
 
@@ -198,7 +207,7 @@ export function SectorLightProvider({
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [hue, hasPicked]);
+  }, []); // NEVER restart — reads latest values from refs
 
   // ---- Register / unregister LightReceivers ----
   const register = useCallback(

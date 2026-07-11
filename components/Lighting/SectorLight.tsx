@@ -56,31 +56,24 @@ export function SectorLight() {
 
   // Refs for direct DOM writes (no React state at 60fps)
   const ambientRef = useRef<HTMLDivElement>(null);
-  const coneWrapperRef = useRef<HTMLDivElement>(null);  // outer: translate (parallax)
-  const coneRef = useRef<HTMLDivElement>(null);          // inner: rotate + gradient
+  const coneWrapperRef = useRef<HTMLDivElement>(null);
+  const coneRef = useRef<HTMLDivElement>(null);
   const blackBgRef = useRef<HTMLDivElement>(null);
   const animRotateRef = useRef(hue - SPAN);
 
-  // Keep animRotateRef in sync (shortest rotation path)
-  useEffect(() => {
-    const target = hue - SPAN;
-    let diff = target - animRotateRef.current;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-    animRotateRef.current += diff;
-  }, [hue]);
+  // Keep latest hue in ref (avoids re-registering the RAF callback on every change)
+  const hueRef = useRef(hue);
+  useEffect(() => { hueRef.current = hue; }, [hue]);
 
-  // Register with the shared RAF loop
+  // Register with the shared RAF loop — registered ONCE
   useEffect(() => {
-    var prevHue = -1;       // force first gradient write
-    var prevAmbient = -1;   // force first opacity write
+    var prevHue = -1;
+    var prevAmbient = -1;
 
     const unreg = registerLightCone(
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
-        // Write directly to DOM elements — zero React overhead
+        const currentHue = hueRef.current; // read latest from ref
         const transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
-
-        // Black background always visible — avoids jarring white→black flash
 
         // Ambient glow (skipped on Apple)
         if (ambientRef.current) {
@@ -90,37 +83,33 @@ export function SectorLight() {
             ambientRef.current.style.opacity = String(ambOp);
           }
           ambientRef.current.style.transform = transform;
-          // Only regenerate radial-gradient when hue changes
-          if (hue !== prevHue) {
-            ambientRef.current.style.background = `radial-gradient(circle, hsla(${hue}, ${SATURATION}%, 5%, 0.6) 0%, transparent 70%)`;
+          if (currentHue !== prevHue) {
+            ambientRef.current.style.background = `radial-gradient(circle, hsla(${currentHue}, ${SATURATION}%, 5%, 0.6) 0%, transparent 70%)`;
           }
         }
 
         // Light cone
         if (coneRef.current) {
           coneRef.current.style.opacity = String(opacity);
-          // Smoothly interpolate rotation toward target
           const target = rotate;
           let diff = target - animRotateRef.current;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
-          animRotateRef.current += diff * 0.25; // lerp, no GSAP needed
+          animRotateRef.current += diff * 0.25;
           coneRef.current.style.transform = `rotate(${animRotateRef.current}deg)`;
-          // Only regenerate conic-gradient when hue changes (heavy on Safari)
-          if (hue !== prevHue) {
-            coneRef.current.style.background = buildSectorGradient(hue);
+          if (currentHue !== prevHue) {
+            coneRef.current.style.background = buildSectorGradient(currentHue);
           }
         }
-        // Outer wrapper: translate for parallax positioning
         if (coneWrapperRef.current) {
           coneWrapperRef.current.style.transform = transform;
         }
 
-        prevHue = hue;
+        prevHue = currentHue;
       }
     );
     return () => unreg();
-  }, [hue, registerLightCone]);
+  }, []); // registered ONCE — reads latest hue from hueRef
 
   const coneBlur = isAppleTL ? "2px" : "6px";
   const ambientBlur = isAppleTL ? "20px" : "40px";
