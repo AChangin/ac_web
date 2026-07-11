@@ -13,8 +13,11 @@ interface UseLogoInteractionParams {
 
 export interface UseLogoInteractionResult {
   isActive: boolean;
+  /** 用户是否进行过改色操作（首次改色后永久为 true） */
   hasPicked: boolean;
+  /** Picker 中心在 Logo 容器内的 left（px） */
   pickerLeft: number;
+  /** Picker 中心在 Logo 容器内的 top（px） */
   pickerTop: number;
 }
 
@@ -39,13 +42,7 @@ const isAppleTL = (function () {
   );
 })();
 
-// Touch device detection (mobile only — iOS + Android)
-const isTouchDevice = (function () {
-  if (typeof navigator === "undefined") return false;
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-})();
-
-// Throttle getBoundingClientRect on Apple
+// Throttle getBoundingClientRect: Apple devices refresh every 3 mousemove events
 const RECT_INTERVAL = isAppleTL ? 3 : 1;
 
 // ---------------------------------------------------------------------------
@@ -72,7 +69,7 @@ function calcHueFromPoint(
 }
 
 // ---------------------------------------------------------------------------
-// Hook — mouse-driven (desktop) + touch-driven (mobile)
+// Hook — event-driven (no RAF!)
 // ---------------------------------------------------------------------------
 
 export function useLogoInteraction({
@@ -93,60 +90,31 @@ export function useLogoInteraction({
   });
   const moveCountRef = useRef(0);
   const cachedRectRef = useRef<DOMRect | null>(null);
-  const touchIdRef = useRef<number | null>(null);
-  const touchJustEndedRef = useRef(0); // suppress synthetic mouse events after touch
 
   useEffect(() => { hueRef.current = hue; }, [hue]);
   useEffect(() => { onHueChangeRef.current = onHueChange; }, [onHueChange]);
   useEffect(() => { stateRef.current.isActive = isActive; }, [isActive]);
 
-  // ---- Shared: process pointer position for hue tracking ----
-  function trackHue(clientX: number, clientY: number, rect: DOMRect) {
-    const wheelPageCx = rect.left + WHEEL_CX;
-    const wheelPageCy = rect.top + WHEEL_CY;
-    const newHue = calcHueFromPoint(clientX, clientY, wheelPageCx, wheelPageCy);
-
-    let diff = newHue - hueRef.current;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-    if (Math.abs(diff) > 2) {
-      const adjusted = hueRef.current + diff;
-      onHueChangeRef.current(adjusted);
-      setHasPicked(true);
-    }
-  }
-
-  // ---- Shared: get (possibly cached) container rect ----
-  function getRect(el: HTMLElement): DOMRect {
-    moveCountRef.current++;
-    if (moveCountRef.current % RECT_INTERVAL === 0 || !cachedRectRef.current) {
-      cachedRectRef.current = el.getBoundingClientRect();
-    }
-    return cachedRectRef.current!;
-  }
-
-  // ---- Shared: check if pointer is within activation radius ----
-  function isInRange(clientX: number, clientY: number, rect: DOMRect): boolean {
-    const logoCx = rect.left + rect.width / 2;
-    const logoCy = rect.top + rect.height / 2;
-    const dxLogo = clientX - logoCx;
-    const dyLogo = clientY - logoCy;
-    return Math.sqrt(dxLogo * dxLogo + dyLogo * dyLogo) < ACTIVATION_RADIUS;
-  }
-
-  // ════════════════════════════════════════════════════════════
-  //  DESKTOP: mousemove → proximity activation (200ms debounce)
-  // ════════════════════════════════════════════════════════════
+  // ---- Event-driven: mousemove handler replaces RAF ----
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Suppress synthetic mouse events after touch (iOS fires these ~300ms later)
-      if (isTouchDevice && performance.now() - touchJustEndedRef.current < 500) return;
-
       const el = containerRef.current;
       if (!el) return;
 
-      const rect = getRect(el);
-      const shouldBeActive = isInRange(e.clientX, e.clientY, rect);
+      // Throttle getBoundingClientRect
+      moveCountRef.current++;
+      if (moveCountRef.current % RECT_INTERVAL === 0 || !cachedRectRef.current) {
+        cachedRectRef.current = el.getBoundingClientRect();
+      }
+      const rect = cachedRectRef.current!;
+      const logoCx = rect.left + rect.width / 2;
+      const logoCy = rect.top + rect.height / 2;
+
+      // ---- Distance detection ----
+      const dxLogo = e.clientX - logoCx;
+      const dyLogo = e.clientY - logoCy;
+      const distance = Math.sqrt(dxLogo * dxLogo + dyLogo * dyLogo);
+      const shouldBeActive = distance < ACTIVATION_RADIUS;
       const current = stateRef.current;
 
       // 200ms debounce for activation state changes
@@ -165,9 +133,21 @@ export function useLogoInteraction({
         }
       }
 
-      // Active: mouse hover → real-time hue tracking
+      // ---- Active: mouse hover → hue tracking ----
       if (current.isActive) {
-        trackHue(e.clientX, e.clientY, rect);
+        const wheelPageCx = rect.left + WHEEL_CX;
+        const wheelPageCy = rect.top + WHEEL_CY;
+        const newHue = calcHueFromPoint(e.clientX, e.clientY, wheelPageCx, wheelPageCy);
+
+        // Dead zone 2°: filter micro-tremors
+        let diff = newHue - hueRef.current;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        if (Math.abs(diff) > 2) {
+          const adjusted = hueRef.current + diff;
+          onHueChangeRef.current(adjusted);
+          setHasPicked(true);
+        }
       }
     };
 
@@ -177,77 +157,6 @@ export function useLogoInteraction({
       document.removeEventListener("mousemove", handleMouseMove);
       if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
       stateRef.current.pendingActive = null;
-    };
-  }, [containerRef]);
-
-  // ════════════════════════════════════════════════════════════
-  //  MOBILE: touch-hold → activate, drag → change, release → done
-  //  (touchmove/touchend only active during drag — don't block scroll)
-  // ════════════════════════════════════════════════════════════
-  useEffect(() => {
-    if (!isTouchDevice) return;
-
-    var activeTouchMove: ((e: TouchEvent) => void) | null = null;
-    var activeTouchEnd: ((e: TouchEvent) => void) | null = null;
-
-    function cleanupDrag() {
-      if (activeTouchMove) { document.removeEventListener("touchmove", activeTouchMove); activeTouchMove = null; }
-      if (activeTouchEnd)   { document.removeEventListener("touchend", activeTouchEnd);   activeTouchEnd = null; }
-      document.removeEventListener("touchcancel", handleTouchCancel);
-      touchIdRef.current = null;
-      stateRef.current.isActive = false;
-      setIsActive(false);
-      touchJustEndedRef.current = performance.now();
-    }
-
-    function handleTouchCancel(e: TouchEvent) {
-      for (var i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchIdRef.current) { cleanupDrag(); return; }
-      }
-    }
-
-    var handleTouchStart = function(e: TouchEvent) {
-      var el = containerRef.current;
-      if (!el) return;
-
-      var touch = e.changedTouches[0];
-      if (!touch) return;
-
-      var rect = getRect(el);
-      if (!isInRange(touch.clientX, touch.clientY, rect)) return;
-
-      // Immediately activate — touch is intentional
-      touchIdRef.current = touch.identifier;
-      stateRef.current.isActive = true;
-      setIsActive(true);
-      trackHue(touch.clientX, touch.clientY, rect);
-
-      // ── Attach drag listeners (only while tracking) ──
-      activeTouchMove = function(e2: TouchEvent) {
-        var t: Touch | null = null;
-        for (var i = 0; i < e2.changedTouches.length; i++) {
-          if (e2.changedTouches[i].identifier === touchIdRef.current) { t = e2.changedTouches[i]; break; }
-        }
-        if (!t) return;
-        e2.preventDefault(); // block scroll only during active color dragging
-        var r = getRect(el!);
-        trackHue(t.clientX, t.clientY, r);
-      };
-      activeTouchEnd = function(e2: TouchEvent) {
-        for (var i = 0; i < e2.changedTouches.length; i++) {
-          if (e2.changedTouches[i].identifier === touchIdRef.current) { cleanupDrag(); return; }
-        }
-      };
-      document.addEventListener("touchmove", activeTouchMove, { passive: false });
-      document.addEventListener("touchend", activeTouchEnd, { passive: true });
-      document.addEventListener("touchcancel", handleTouchCancel, { passive: true });
-    };
-
-    document.addEventListener("touchstart", handleTouchStart, { passive: true });
-
-    return () => {
-      document.removeEventListener("touchstart", handleTouchStart);
-      cleanupDrag();
     };
   }, [containerRef]);
 
