@@ -157,15 +157,9 @@ export function SectorLight() {
     var ROTATE_INTERVAL = isAppleTL ? 2 : 1;
 
     const unreg = registerLightCone(
-      ({ opacity, rotate, offsetX, offsetY, ambientOpacity, bgOpacity }) => {
+      ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
         const currentHue = hueRef.current;
         const wrapperTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
-
-        // ── Black background (body level, below cone): only visible near logo section ──
-        if (blackBgRef.current) {
-          var bgOp = (typeof bgOpacity === 'number') ? bgOpacity : 1;
-          blackBgRef.current.style.opacity = String(Math.max(0, Math.min(1, bgOp)));
-        }
 
         // ── Ambient glow (skipped on Apple) ──
         if (ambientRef.current) {
@@ -244,16 +238,15 @@ export function SectorLight() {
 
   const content = (
     <>
-      {/* ── 纯黑底 z:0, below cone z:1, opacity follows scroll ── */}
+      {/* ── 纯黑底 z:0, below cone z:1, scoped to logo section ── */}
       <div
         ref={blackBgRef}
         style={{
-          position: "fixed",
+          position: "absolute",
           inset: 0,
           background: "#000",
           pointerEvents: "none",
           zIndex: 0,
-          opacity: 0,
         }}
       />
 
@@ -315,5 +308,7 @@ export function SectorLight() {
     </>
   );
 
-  return createPortal(content, document.body);
+  // Portal into logo-section so blackBg and cone share stacking context
+  var portalTarget = document.querySelector('.logo-section') || document.body;
+  return createPortal(content, portalTarget);
 }
