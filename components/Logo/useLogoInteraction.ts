@@ -106,8 +106,18 @@ export function useLogoInteraction({
     let frameCount = 0;
     // Cache rect across frames to avoid repeated getBoundingClientRect
     let cachedRect: DOMRect | null = null;
+    // Lightweight FPS counter
+    var fpsFrames = 0, fpsLastTime = 0;
 
     const tick = () => {
+      fpsFrames++;
+      var now = performance.now();
+      if (now - fpsLastTime > 2000) {
+        var fps = Math.round(fpsFrames / ((now - fpsLastTime) / 1000));
+        if (fps < 55) console.log("[useLogoInteraction] FPS:", fps);
+        fpsFrames = 0;
+        fpsLastTime = now;
+      }
       const el = containerRef.current;
       if (!el) {
         rafRef.current = requestAnimationFrame(tick);
