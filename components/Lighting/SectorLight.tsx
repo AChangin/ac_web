@@ -25,16 +25,37 @@ const isAppleTL = (function () {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildSectorGradient(targetHue: number): string {
-  // Many stops with smooth alpha ramp → soft edges without CSS blur
+/** Original sharp gradient (Windows/Chrome) — paired with CSS blur(6px) */
+function buildSectorGradientSharp(targetHue: number): string {
+  const steps = 14;
+  const stops: string[] = ["transparent 0deg"];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const localAngle = -SPAN + t * SPAN * 2;
+    const colorHue = ((targetHue + localAngle) % 360 + 360) % 360;
+    const alpha =
+      i === 0 || i === steps
+        ? 0.2
+        : i <= 2 || i >= steps - 2
+          ? 0.55
+          : 0.8;
+    stops.push(
+      `hsla(${colorHue}, ${SATURATION}%, ${LIGHTNESS}%, ${alpha}) ${t * SPAN * 2}deg`
+    );
+  }
+  stops.push(`transparent ${SPAN * 2}deg`);
+  return `conic-gradient(${stops.join(", ")})`;
+}
+
+/** Soft gradient (Apple/Safari) — built-in alpha falloff, no CSS blur needed */
+function buildSectorGradientSoft(targetHue: number): string {
   const STEPS = 20;
   const stops: string[] = [];
   for (let i = 0; i <= STEPS; i++) {
-    const t = i / STEPS; // 0..1 across the sector span
+    const t = i / STEPS;
     const angle = -SPAN + t * SPAN * 2;
     const colorHue = ((targetHue + angle) % 360 + 360) % 360;
-    // Bell-shaped alpha: peak at center, smooth falloff to edges
-    const distFromCenter = Math.abs(t - 0.5) * 2; // 0=center, 1=edge
+    const distFromCenter = Math.abs(t - 0.5) * 2;
     const alpha = 0.75 * Math.exp(-distFromCenter * distFromCenter * 3.5) + 0.05;
     stops.push(
       `hsla(${colorHue}, ${SATURATION}%, ${LIGHTNESS}%, ${alpha.toFixed(3)}) ${t * SPAN * 2}deg`
@@ -42,6 +63,11 @@ function buildSectorGradient(targetHue: number): string {
   }
   return `conic-gradient(from ${-SPAN}deg, transparent 0deg, ${stops.join(", ")}, transparent ${SPAN * 2}deg)`;
 }
+
+// Pick gradient + cone style based on platform
+var buildSectorGradient = isAppleTL ? buildSectorGradientSoft : buildSectorGradientSharp;
+var CONE_SIZE = isAppleTL ? "200vmax" : "300vmax";
+var CONE_FILTER = isAppleTL ? "none" : "blur(6px)";
 
 // ---------------------------------------------------------------------------
 // Component (no per-frame React renders — uses shared RAF via context)
@@ -183,11 +209,12 @@ export function SectorLight() {
         <div
           ref={coneRef}
           style={{
-            width: "200vmax",
-            height: "200vmax",
+            width: CONE_SIZE,
+            height: CONE_SIZE,
             borderRadius: "50%",
+            filter: CONE_FILTER,
             opacity: 0,
-            transform: "translateZ(0)",  // GPU layer
+            transform: "translateZ(0)",
           }}
         />
       </div>
