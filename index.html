@@ -1684,105 +1684,19 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }, 250);
   });
 
-  // ========== MOBILE HORIZONTAL SWIPE (drives scroll position, GSAP follows) ==========
+  // ========== MOBILE: native vertical scroll → GSAP maps to horizontal ==========
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if(isMobile){
     document.body.classList.add('is-mobile');
-    // Lock vertical scroll — horizontal swipe is the only navigation
-    document.body.style.overflow = 'hidden';
-    document.body.style.height = window.innerHeight + 'px';
-    document.documentElement.style.overflow = 'hidden';
-
-    (function(){
-      var touchStartX = 0;
-      var touchStartTranslate = 0;
-      var touching = false;
-      var currentTranslate = 0;
-      var lastX = 0;
-      var lastTime = 0;
-      var inertiaTween = null;
-
-      function getMaxTranslate(){
-        return -(scrollContainer.scrollWidth - window.innerWidth);
-      }
-
-      function clamp(v){
-        var mn = getMaxTranslate();
-        return Math.max(mn, Math.min(0, v));
-      }
-
-      function getCurrentTranslate(){
-        var m = new DOMMatrixReadOnly(getComputedStyle(scrollContainer).transform);
-        return m.m41;
-      }
-
-      function setTranslate(x){
-        currentTranslate = x;
-        scrollContainer.style.transform = 'translateX(' + x + 'px)';
-        // Drive parallax from translateX
-        var totalDist = scrollContainer.scrollWidth - window.innerWidth;
-        var progress = totalDist > 0 ? -x / totalDist : 0;
-        applyParallax(progress);
-      }
-
-      function killInertia(){ if(inertiaTween){ inertiaTween.kill(); inertiaTween = null; } }
-
-      scrollContainer.addEventListener('touchstart', function(e){
-        if(e.touches.length !== 1) return;
-        // Don't scroll if touch is on the logo (color picker handles it)
-        var logoMount = document.getElementById('logo-mount');
-        if(logoMount){
-          var lr = logoMount.getBoundingClientRect();
-          var tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-          var lcx = lr.left + lr.width/2, lcy = lr.top + lr.height/2;
-          var dist = Math.sqrt((tx-lcx)*(tx-lcx) + (ty-lcy)*(ty-lcy));
-          if(dist < 200) return; // within color picker range
-        }
-        killInertia();
-        touchStartX = e.touches[0].clientX;
-        touchStartTranslate = getCurrentTranslate();
-        lastX = touchStartX;
-        lastTime = performance.now();
-        touching = true;
-      }, { passive: true });
-
-      scrollContainer.addEventListener('touchmove', function(e){
-        if(!touching) return;
-        var x = e.touches[0].clientX;
-        var dx = x - touchStartX;
-        setTranslate(clamp(touchStartTranslate + dx));
-        lastX = x;
-        lastTime = performance.now();
-      }, { passive: true });
-
-      scrollContainer.addEventListener('touchend', function(e){
-        if(!touching) return;
-        touching = false;
-        // Light inertia: gentle deceleration
-        var dt = performance.now() - lastTime;
-        var vx = dt > 0 ? (lastX - touchStartX) / dt : 0;
-        if(Math.abs(vx) < 0.1) return;
-        var target = clamp(currentTranslate + vx * 80); // short projection
-        killInertia();
-        var startX = currentTranslate;
-        var changeX = target - startX;
-        var startTime = performance.now();
-        var duration = 350; // ms
-        function inertiaStep(){
-          var elapsed = performance.now() - startTime;
-          var t = Math.min(elapsed / duration, 1);
-          var eased = 1 - Math.pow(1 - t, 3);
-          var x = startX + changeX * eased;
-          setTranslate(clamp(x));
-          if(t < 1){
-            inertiaTween = requestAnimationFrame(inertiaStep);
-          } else {
-            inertiaTween = null;
-          }
-        }
-        inertiaTween = requestAnimationFrame(inertiaStep);
-      }, { passive: true });
-    })();
+    // Prevent native scroll on logo area while color picking
+    var logoMount = document.getElementById('logo-mount');
+    if(logoMount) logoMount.style.touchAction = 'none';
+    // Ensure enough body height for native scroll to reach all sections
+    // (recalculated on load/resize; initial rough value here)
+    setTimeout(function(){
+      var dist = scrollContainer.scrollWidth - window.innerWidth;
+      document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
+    }, 300);
   }
 
   // ========== START ==========
