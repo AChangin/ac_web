@@ -1448,9 +1448,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     };
 
     // Set body height to allow scrolling the full horizontal distance
+    // Mobile: 5× taller body = 5× more scroll needed = 80% sensitivity reduction
+    var scrollSensitivity = isMobile ? 5 : 1;
     const setBodyHeight = () => {
       const dist = totalScrollDist();
-      document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
+      document.body.style.height = Math.max(dist * scrollSensitivity + window.innerHeight, window.innerHeight) + 'px';
     };
     setBodyHeight();
 
@@ -1691,12 +1693,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     // Prevent native scroll on logo area while color picking
     var logoMount = document.getElementById('logo-mount');
     if(logoMount) logoMount.style.touchAction = 'none';
-    // Ensure enough body height for native scroll to reach all sections
-    // (recalculated on load/resize; initial rough value here)
-    setTimeout(function(){
-      var dist = scrollContainer.scrollWidth - window.innerWidth;
-      document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
-    }, 300);
   }
 
   // ========== START ==========
