@@ -66,8 +66,9 @@ function buildSectorGradientSoft(targetHue: number): string {
   return `conic-gradient(transparent 0deg, ${stops.join(", ")}, transparent ${SPAN * 2}deg)`;
 }
 
-// Canvas-based cone for Apple: renders at 256×256, GPU upscales (100x fewer pixels)
-var CANVAS_SIZE = 256;
+// Canvas-based cone for Apple: renders at 384×384, GPU upscales (~70x fewer pixels)
+var CANVAS_SIZE = 384;
+// Draw sector centered at targetHue; CSS rotation NOT applied on Apple
 function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
   var cx = CANVAS_SIZE / 2, cy = CANVAS_SIZE / 2, r = CANVAS_SIZE / 2;
   var spanRad = SPAN * Math.PI / 180;
@@ -78,7 +79,6 @@ function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   ctx.imageSmoothingEnabled = true;
 
-  // Draw 40 thin wedges for smooth hue sweep
   var wedges = 40;
   for (var i = 0; i < wedges; i++) {
     var t = i / (wedges - 1);
@@ -99,7 +99,7 @@ function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
 
 // Pick gradient + cone style based on platform
 var buildSectorGradient = isAppleTL ? buildSectorGradientSoft : buildSectorGradientSharp;
-var CONE_SIZE = isAppleTL ? "120vmax" : "300vmax";
+var CONE_SIZE = isAppleTL ? "180vmax" : "300vmax";
 var CONE_FILTER = isAppleTL ? "none" : "blur(6px)";
 var USE_CANVAS = isAppleTL;
 
@@ -179,20 +179,22 @@ export function SectorLight() {
             coneRef.current.style.opacity = String(opacity);
           }
 
-          // Throttle rotation DOM writes (lerp runs every frame, write less often)
-          const target = rotate + ROTATION_OFFSET;
-          let diff = target - animRotateRef.current;
-          if (diff > 180) diff -= 360;
-          if (diff < -180) diff += 360;
-          animRotateRef.current += diff * 0.25;
+          // CSS rotation: only on non-canvas (canvas draws at correct angle)
+          if (!USE_CANVAS) {
+            const target = rotate + ROTATION_OFFSET;
+            let diff = target - animRotateRef.current;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            animRotateRef.current += diff * 0.25;
 
-          frameSkip++;
-          if (frameSkip >= ROTATE_INTERVAL) {
-            frameSkip = 0;
-            const rotateStr = `rotate(${animRotateRef.current.toFixed(1)}deg)`;
-            if (rotateStr !== prevRotateStr) {
-              prevRotateStr = rotateStr;
-              coneRef.current.style.transform = rotateStr;
+            frameSkip++;
+            if (frameSkip >= ROTATE_INTERVAL) {
+              frameSkip = 0;
+              const rotateStr = `rotate(${animRotateRef.current.toFixed(1)}deg)`;
+              if (rotateStr !== prevRotateStr) {
+                prevRotateStr = rotateStr;
+                coneRef.current.style.transform = rotateStr;
+              }
             }
           }
 
