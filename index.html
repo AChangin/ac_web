@@ -1191,6 +1191,138 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 (function(){
   'use strict';
 
+  // ========== APPLE DEVICE — Safari: HEVC alpha compositing ==========
+  var isApple = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+                (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent));
+  if(isApple){
+    var pcVid = document.getElementById('pc-alpha-video');
+    var bgVid = document.getElementById('bg-alpha-video');
+    // BG: simple swap to HEVC (no alpha needed)
+    if(bgVid) bgVid.src = 'public/bg_alpha_desktop_hevc.mov';
+
+    // PC: WebGL alpha compositing (RGB video + alpha mask → canvas)
+    if(pcVid) setupPCAlphaCompositing(pcVid);
+  }
+
+  function setupPCAlphaCompositing(videoEl) {
+    var layer = document.getElementById('pc-alpha-layer');
+    if(!layer) return;
+
+    // Switch original video to RGB-only HEVC source (hidden, still drives playback)
+    videoEl.src = 'public/pc_rgb_hevc.mp4';
+    videoEl.style.display = 'none';
+    videoEl.removeAttribute('loop'); // we control via ended event
+
+    // Create hidden alpha-mask video, synced with the main video
+    var maskVid = document.createElement('video');
+    maskVid.id = 'pc-alpha-mask-video';
+    maskVid.src = 'public/pc_alpha_mask_hevc.mp4';
+    maskVid.muted = true;
+    maskVid.playsInline = true;
+    maskVid.preload = 'metadata';
+    maskVid.setAttribute('autoplay','');
+    maskVid.style.display = 'none';
+    document.body.appendChild(maskVid);
+
+    // Create canvas to display composited result
+    var canvas = document.createElement('canvas');
+    canvas.id = 'pc-alpha-canvas';
+    canvas.width  = 3840;
+    canvas.height = 2400;
+    // Mirror CSS of .pc-alpha-layer video (index.html line 858-867)
+    canvas.style.cssText =
+      'position:absolute;inset:0;width:100%;height:100%;' +
+      'transform:translateZ(0);will-change:transform;' +
+      'pointer-events:none;user-select:none';
+    canvas.style.objectFit = 'cover';
+    canvas.style.objectPosition = 'center top';
+    layer.appendChild(canvas);
+
+    // ---------- WebGL ----------
+    var gl = canvas.getContext('webgl', { premultipliedAlpha:false, alpha:true });
+    if(!gl){
+      // Fallback on very old Safari: show RGB video without alpha
+      videoEl.style.display = '';
+      return;
+    }
+
+    var vsSrc = 'attribute vec2 a_pos;varying vec2 v_uv;' +
+      'void main(){gl_Position=vec4(a_pos,0.0,1.0);v_uv=(a_pos+1.0)/2.0;}';
+    var fsSrc = 'precision mediump float;varying vec2 v_uv;' +
+      'uniform sampler2D u_rgb,u_mask;' +
+      'void main(){vec4 c=texture2D(u_rgb,v_uv);' +
+      'float a=texture2D(u_mask,v_uv).r;' +  // mask HEVC is grayscale → R=G=B
+      'gl_FragColor=vec4(c.rgb,a);}';
+
+    function compile(type,src){
+      var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
+      if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.warn(gl.getShaderInfoLog(s));
+      return s;
+    }
+    var prog=gl.createProgram();
+    gl.attachShader(prog,compile(gl.VERTEX_SHADER,vsSrc));
+    gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,fsSrc));
+    gl.linkProgram(prog);gl.useProgram(prog);
+
+    var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    var aPos=gl.getAttribLocation(prog,'a_pos');
+    gl.enableVertexAttribArray(aPos);gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
+
+    function makeTex(){
+      var t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+      return t;
+    }
+    var rgbTex=makeTex(), maskTex=makeTex();
+    var uRgb=gl.getUniformLocation(prog,'u_rgb'), uMask=gl.getUniformLocation(prog,'u_mask');
+
+    // Sync mask video playback to main video
+    ['play','pause','ended'].forEach(function(evt){
+      videoEl.addEventListener(evt,function(){
+        if(evt==='play') maskVid.play().catch(function(){});
+        else if(evt==='pause') maskVid.pause();
+        else if(evt==='ended') maskVid.pause();
+      });
+    });
+    // Also sync seeking
+    videoEl.addEventListener('seeked',function(){ maskVid.currentTime=videoEl.currentTime; });
+
+    var started=false;
+    function render(){
+      requestAnimationFrame(render);
+      if(videoEl.readyState<2||maskVid.readyState<2) return;
+
+      // Fine-grain time sync (drift correction)
+      if(Math.abs(videoEl.currentTime-maskVid.currentTime)>0.04){
+        maskVid.currentTime=videoEl.currentTime;
+      }
+
+      gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,rgbTex);
+      try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,videoEl);}catch(e){}
+      gl.uniform1i(uRgb,0);
+
+      gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,maskTex);
+      try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,maskVid);}catch(e){}
+      gl.uniform1i(uMask,1);
+
+      gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    }
+
+    // Kick off when both videos have data
+    var ready=0;
+    function onReady(){
+      ready++;if(ready>=2&&!started){started=true;render();}
+    }
+    videoEl.addEventListener('loadeddata',onReady);
+    maskVid.addEventListener('loadeddata',onReady);
+    // Also trigger render on play
+    videoEl.addEventListener('play',function(){if(!started){started=true;render();}});
+  }
+
   // ========== DOM REFS ==========
   const scrollContainer = document.getElementById('scroll-container');
   const progressBar = document.getElementById('progress-bar');
