@@ -42,8 +42,8 @@ const isAppleTL = (function () {
   );
 })();
 
-// Throttle getBoundingClientRect: Apple devices refresh every 3 frames, others every frame
-const RECT_INTERVAL = isAppleTL ? 3 : 1;
+// Throttle getBoundingClientRect: Apple devices every 2 frames, others every frame
+const RECT_INTERVAL = isAppleTL ? 2 : 1;
 
 // ---------------------------------------------------------------------------
 // Math helpers

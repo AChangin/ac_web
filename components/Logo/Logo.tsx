@@ -128,6 +128,7 @@ export default function Logo({ hue, onHueChange }: LogoProps) {
           height: DOT_SIZE,
           zIndex: 10,
           borderRadius: "50%",
+          willChange: "left, top",  // GPU-composite position changes
           background: hueColor(hue),
           border: "2.5px solid #fff",
           boxShadow: "0 1px 6px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.1)",
