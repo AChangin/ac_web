@@ -164,7 +164,8 @@ export function SectorLightProvider({
       cachedIntensities = [];
     }
 
-    // ── Lightweight FPS counter (no array, no performance.now per frame) ──
+    // ── Timing diagnostic (logs slow operations to console) ──
+    var slowLogTimer = 0;
     var fpsFrames = 0;
     var fpsLastTime = 0;
 
@@ -174,10 +175,14 @@ export function SectorLightProvider({
       var now = performance.now();
       if (now - fpsLastTime > 2000) {
         var fps = Math.round(fpsFrames / ((now - fpsLastTime) / 1000));
-        if (fps < 55) console.log("[SectorLight] FPS:", fps);
+        console.log("[SectorLight] FPS:", fps);
         fpsFrames = 0;
         fpsLastTime = now;
       }
+      // Detailed timing every 2s
+      var doProfile = now - slowLogTimer > 2000;
+      if (doProfile) { slowLogTimer = now; }
+      var t0 = doProfile ? performance.now() : 0;
 
       const currentHue = hueRef.current;
       const currentHasPicked = hasPickedRef.current;
@@ -187,6 +192,8 @@ export function SectorLightProvider({
         cachedLogo = getLogoCenter();
         cachedScrollVis = calcScrollVisibility();
       }
+      if (doProfile) { var t1 = performance.now(); console.log("  getCenter+scroll:", (t1 - t0).toFixed(2), "ms"); t0 = t1; }
+
       const logo = cachedLogo!;
       const scrollVis = cachedScrollVis;
       const globalVis = currentHasPicked ? scrollVis : 0;
@@ -215,6 +222,7 @@ export function SectorLightProvider({
           hue: currentHue,
         });
       }
+      if (doProfile) { var t_c = performance.now(); console.log("  cone updater:", (t_c - t0).toFixed(2), "ms"); t0 = t_c; }
 
       // ── Update LightReceivers ──
       if (globalVis < 0.001) {
@@ -259,6 +267,7 @@ export function SectorLightProvider({
           registryRef.current[ci].callback(cachedIntensities[ci] || 0);
         }
       }
+      if (doProfile) { var t_r = performance.now(); console.log("  receivers:", (t_r - t0).toFixed(2), "ms"); t0 = t_r; }
 
       rafRef.current = requestAnimationFrame(tick);
     };
