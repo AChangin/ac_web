@@ -826,8 +826,9 @@ body{
   width:28px;            /* ← 改这里调笔的大小（等比缩放，高≈宽×4） */
   height:auto;
   display:block;
-  transform:scaleY(-1);  /* 垂直翻转 */
+  transform:scaleY(-1) translateZ(0);  /* 垂直翻转 + GPU 层 */
   image-rendering:auto;
+  -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
 }
@@ -1016,6 +1017,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 }
 .is-ios .scroll-container{
   will-change:auto;
+}
+/* Orbit pen: tiny GPU layer for crisp transforms + 2× render size on Apple */
+.is-apple .orbit-pen{
+  will-change:transform;
+}
+.is-apple .orbit-pen img{
+  width:56px;  /* 2× supersampling — JS scale() auto-compensates, visual size unchanged */
 }
 /* LightReceiver: restore blur for pre-lit text softness on Apple */
 .is-apple [style*="--li"]{
