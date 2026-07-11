@@ -1448,11 +1448,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     };
 
     // Set body height to allow scrolling the full horizontal distance
-    // Mobile: 5× taller body = 5× more scroll needed = 80% sensitivity reduction
-    var scrollSensitivity = isMobile ? 5 : 1;
     const setBodyHeight = () => {
       const dist = totalScrollDist();
-      document.body.style.height = Math.max(dist * scrollSensitivity + window.innerHeight, window.innerHeight) + 'px';
+      document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
     };
     setBodyHeight();
 
@@ -1686,13 +1684,71 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }, 250);
   });
 
-  // ========== MOBILE: native vertical scroll → GSAP maps to horizontal ==========
+  // ========== MOBILE HORIZONTAL SWIPE (velocity-based, native-feel) ==========
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if(isMobile){
     document.body.classList.add('is-mobile');
-    // Prevent native scroll on logo area while color picking
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     var logoMount = document.getElementById('logo-mount');
     if(logoMount) logoMount.style.touchAction = 'none';
+
+    (function(){
+      var tx = 0, vx = 0, touching = false, lastX = 0, lastTime = 0, inertiaRaf = 0;
+
+      function getDist(){ return scrollContainer.scrollWidth - window.innerWidth; }
+      function clamp(v){ var m = -getDist(); return Math.max(m, Math.min(0, v)); }
+      function stopInertia(){ if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; } }
+
+      function setTx(x){
+        tx = x;
+        scrollContainer.style.transform = 'translateX(' + x + 'px)';
+        var d = getDist();
+        applyParallax(d > 0 ? -x / d : 0);
+      }
+
+      document.addEventListener('touchstart', function(e){
+        if(e.touches.length !== 1) return;
+        var lm = document.getElementById('logo-mount');
+        if(lm){
+          var r = lm.getBoundingClientRect();
+          var cx = r.left + r.width/2, cy = r.top + r.height/2;
+          if(Math.hypot(e.touches[0].clientX - cx, e.touches[0].clientY - cy) < 200) return;
+        }
+        stopInertia();
+        lastX = e.touches[0].clientX;
+        lastTime = performance.now();
+        vx = 0;
+        var m = new DOMMatrixReadOnly(getComputedStyle(scrollContainer).transform);
+        tx = m.m41;
+        touching = true;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e){
+        if(!touching) return;
+        var x = e.touches[0].clientX;
+        var dx = x - lastX;
+        var dt = performance.now() - lastTime;
+        vx = dt > 0 ? dx / dt : 0;
+        setTx(clamp(tx + dx));
+        lastX = x;
+        lastTime = performance.now();
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(){
+        if(!touching) return;
+        touching = false;
+        if(Math.abs(vx) > 0.1){
+          stopInertia();
+          (function step(){
+            if(Math.abs(vx) < 0.03){ inertiaRaf = 0; return; }
+            vx *= 0.95;
+            setTx(clamp(tx + vx * 16));
+            inertiaRaf = requestAnimationFrame(step);
+          })();
+        }
+      }, { passive: true });
+    })();
   }
 
   // ========== START ==========
