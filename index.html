@@ -1697,12 +1697,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     (function(){
       var touchStartX = 0;
       var touchStartTranslate = 0;
-      var touchStartTime = 0;
       var touching = false;
       var currentTranslate = 0;
-      var animTween = null;
-
-      function killAnim(){ if(animTween){ animTween.kill(); animTween = null; } }
 
       function getMaxTranslate(){
         return -(scrollContainer.scrollWidth - window.innerWidth);
@@ -1720,11 +1716,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
       scrollContainer.addEventListener('touchstart', function(e){
         if(e.touches.length !== 1) return;
-        killAnim();
+        if(window.__logoInteracting) return; // don't scroll while color picking
         touchStartX = e.touches[0].clientX;
         touchStartTranslate = getCurrentTranslate();
         currentTranslate = touchStartTranslate;
-        touchStartTime = performance.now();
         touching = true;
       }, { passive: true });
 
@@ -1738,24 +1733,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       scrollContainer.addEventListener('touchend', function(e){
         if(!touching) return;
         touching = false;
-        var dt = performance.now() - touchStartTime;
-        var dx = currentTranslate - touchStartTranslate;
-        var vx = dt > 0 ? dx / dt : 0;
-        var vw = window.innerWidth;
-        var projected = currentTranslate + vx * 80;
-        projected = clamp(projected);
-        var sectionIdx = Math.round(-projected / vw);
-        sectionIdx = Math.max(0, Math.min(totalSections - 1, sectionIdx));
-        var targetX = -(sectionIdx * vw);
-        targetX = clamp(targetX);
-        killAnim();
-        animTween = gsap.to(scrollContainer, {
-          x: targetX,
-          duration: 0.35,
-          ease: 'power2.out',
-          overwrite: 'auto',
-          onComplete: function(){ animTween = null; }
-        });
+        // Free-scroll: no snap, just leave it where the user stopped
       }, { passive: true });
     })();
   }

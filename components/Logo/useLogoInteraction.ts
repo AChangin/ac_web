@@ -178,6 +178,7 @@ export function useLogoInteraction({
       trackingId = null;
       stateRef.current.isActive = false;
       setIsActive(false);
+      (window as any).__logoInteracting = false;
     }
 
     function getRect(el: HTMLElement): DOMRect {
@@ -224,6 +225,7 @@ export function useLogoInteraction({
       trackingId = touch.identifier;
       stateRef.current.isActive = true;
       setIsActive(true);
+      (window as any).__logoInteracting = true;
       trackFromTouch(touch, rect);
 
       // Attach drag handlers only while tracking
