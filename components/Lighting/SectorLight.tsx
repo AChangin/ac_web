@@ -238,17 +238,6 @@ export function SectorLight() {
 
   const content = (
     <>
-      {/* ── 纯黑底 z:0, always visible — hero's white bg covers it for section 0 ── */}
-      <div
-        ref={blackBgRef}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "#000",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
 
       {/* ══════ Layer 2: Ambient Glow (hidden on Apple devices) ══════ */}
       <motion.div
@@ -262,7 +251,7 @@ export function SectorLight() {
           borderRadius: "50%",
           filter: `blur(${ambientBlur})`,
           pointerEvents: "none",
-          zIndex: 1,
+          zIndex: 3,
           opacity: 0,
         }}
       />
@@ -275,7 +264,7 @@ export function SectorLight() {
           top: "50%",
           left: "50%",
           pointerEvents: "none",
-          zIndex: 1,
+          zIndex: 3,
         }}
       >
         <div

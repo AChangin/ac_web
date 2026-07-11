@@ -52,8 +52,8 @@ body{
 .bg-fallback{
   position:fixed;
   inset:0;
-  z-index:-3;
-  background:linear-gradient(to right, #ededed, #f3f3f3);
+  z-index:-1;
+  background:#fff;
   pointer-events:none;
 }
 
@@ -73,12 +73,12 @@ body{
 }
 
 /* Each section = 100vw × 100vh */
+.hero{ z-index:2; }
 .section{
   width:100vw;
   height:100vh;
   flex-shrink:0;
   position:relative;
-  z-index:2;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -88,7 +88,7 @@ body{
 /* Logo section 允许色盘溢出 */
 .section.logo-section{
   overflow:visible;
-  z-index:3;
+  z-index:2;
   isolation:isolate;
 }
 /* Timeline — overflow hidden prevents parallax bleed into adjacent sections */
@@ -250,7 +250,7 @@ body{
    HERO SECTION
    ============================================================ */
 .hero{
-  background:#fff;
+  background:transparent;
   padding:5.6rem 0 0 0;
 }
 .hero-inner{
@@ -1110,6 +1110,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     ></video>
   </div>
 
+  <!-- ===== HERO WHITE BG (below bg-alpha, above blackBg) ===== -->
+  <div style="position:absolute;left:0;top:0;width:100vw;height:100vh;background:#fff;z-index:0;pointer-events:none"></div>
+
   <!-- ===== HERO (Section 0) ===== -->
   <section class="section hero" data-index="0">
     <div class="hero-inner">
@@ -1154,6 +1157,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
   <!-- ===== LOGO INTERACTION (Section 1) ===== -->
   <section class="section logo-section" data-index="1">
+    <div style="position:absolute;inset:0;background:#000;z-index:0;pointer-events:none"></div>
     <div id="logo-mount" data-hue="60" style="
       display: flex;
       align-items: center;
