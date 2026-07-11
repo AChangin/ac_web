@@ -1010,6 +1010,27 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   filter:drop-shadow(2px 2px 16px rgba(0,0,0,0.12));
 }
 
+/* ── Apple GPU compositing optimizations ── */
+/* Lighter backdrop-filter: 16px blur → 4px (dramatically fewer GPU samples) */
+.is-apple .nav{
+  -webkit-backdrop-filter:blur(4px);
+  backdrop-filter:blur(4px);
+  background:rgba(255,255,255,0.88);
+}
+/* Lighter cursor card blur */
+.is-apple .tl-cursor-card-info{
+  -webkit-backdrop-filter:blur(4px);
+  backdrop-filter:blur(4px);
+}
+/* Pre-rasterize scroll container as single GPU layer (avoids per-element compositing) */
+.is-apple .scroll-container{
+  will-change:transform;
+}
+/* Simplify LightReceiver filters on Apple: drop blur+drop-shadow from chain */
+.is-apple [style*="--li"]{
+  filter:brightness(var(--lb,0.15)) contrast(var(--lc,0.8)) saturate(var(--ls,0.4)) !important;
+}
+
 /* iOS: extra simplifications */
 .is-ios .tag-cube{
   transform-style:flat; /* preserve-3d is buggy on iOS Safari */
