@@ -38,19 +38,24 @@ export function useLightIntensity(active: boolean = true) {
     el.style.setProperty("--lblur", "4px");
     el.style.setProperty("--lglow", "0px");
 
+    // Cache last-written values — skip redundant setProperty (Safari style invalidation)
+    var last: Record<string, string> = {
+      li: "0", lo: "0", lb: "0.15", lc: "0.8", ls: "0.4", lblur: "4px", lglow: "0px",
+    };
+
     const unregister = register(el, (intensity: number) => {
       const smooth = prevRef.current + (intensity - prevRef.current) * 0.15;
       prevRef.current = smooth;
-
       const i = smooth;
 
-      el.style.setProperty("--li", i.toFixed(3));
-      el.style.setProperty("--lo", i.toFixed(3));                       // opacity 0 → 1
-      el.style.setProperty("--lb", (0.15 + i * 1.1).toFixed(3));
-      el.style.setProperty("--lc", (0.8 + i * 0.25).toFixed(3));
-      el.style.setProperty("--ls", (0.4 + i * 0.6).toFixed(3));
-      el.style.setProperty("--lblur", ((1 - i) * 4).toFixed(2) + "px");
-      el.style.setProperty("--lglow", (i * 10).toFixed(1) + "px");
+      var v: string;
+      v = i.toFixed(3);         if (v !== last.li)    { last.li = v;    el.style.setProperty("--li", v); }
+      v = i.toFixed(3);         if (v !== last.lo)    { last.lo = v;    el.style.setProperty("--lo", v); }
+      v = (0.15 + i * 1.1).toFixed(3); if (v !== last.lb) { last.lb = v; el.style.setProperty("--lb", v); }
+      v = (0.8 + i * 0.25).toFixed(3); if (v !== last.lc) { last.lc = v; el.style.setProperty("--lc", v); }
+      v = (0.4 + i * 0.6).toFixed(3);  if (v !== last.ls) { last.ls = v; el.style.setProperty("--ls", v); }
+      v = ((1 - i) * 4).toFixed(2) + "px"; if (v !== last.lblur) { last.lblur = v; el.style.setProperty("--lblur", v); }
+      v = (i * 10).toFixed(1) + "px";      if (v !== last.lglow) { last.lglow = v; el.style.setProperty("--lglow", v); }
     });
 
     return () => {

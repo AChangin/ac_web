@@ -164,8 +164,23 @@ export function SectorLightProvider({
       cachedIntensities = [];
     }
 
+    // ── FPS diagnostic (logs every 2s to console) ──
+    var tickTimes: number[] = [];
+    var lastFpsLog = 0;
+
     const tick = () => {
       frameCount++;
+      // Collect frame timestamps for FPS measurement
+      tickTimes.push(performance.now());
+      while (tickTimes.length > 0 && tickTimes[0] < performance.now() - 2000) {
+        tickTimes.shift();
+      }
+      if (performance.now() - lastFpsLog > 2000) {
+        lastFpsLog = performance.now();
+        var fps = tickTimes.length / 2; // frames in 2 seconds / 2
+        if (fps < 55) console.log("[SectorLight] FPS:", fps.toFixed(0));
+      }
+
       const currentHue = hueRef.current;
       const currentHasPicked = hasPickedRef.current;
 
