@@ -153,8 +153,8 @@ export function SectorLight() {
     var ROTATE_INTERVAL = isAppleTL ? 2 : 1;
 
     const unreg = registerLightCone(
-      ({ opacity, rotate, offsetX, offsetY, ambientOpacity, hue: rafHue }) => {
-        const currentHue = rafHue; // includes oscillation from context RAF
+      ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
+        const currentHue = hueRef.current;
         const wrapperTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
 
         // ── Ambient glow (skipped on Apple) ──

@@ -179,18 +179,11 @@ export function SectorLightProvider({
       const scrollVis = cachedScrollVis;
       const globalVis = currentHasPicked ? scrollVis : 0;
 
-      // ── Idle oscillation: ±10° slow sway when not interacting ──
-      var interacting = !!(window as any).__logoInteracting;
-      var displayHue = currentHue;
-      if (currentHasPicked && !interacting && isAppleTL) {
-        displayHue = currentHue + Math.sin(performance.now() * 0.0015) * 10;
-      }
-
       const s = stateRef.current;
       s.originX = logo.x;
       s.originY = logo.y;
-      s.angle = displayHue;
-      s.hue = displayHue;
+      s.angle = currentHue;
+      s.hue = currentHue;
       s.hasPicked = currentHasPicked;
 
       const vpCx = window.innerWidth / 2;
@@ -203,7 +196,7 @@ export function SectorLightProvider({
       for (const updater of coneUpdatersRef.current) {
         updater({
           opacity: globalVis,
-          rotate: displayHue - SPAN,
+          rotate: currentHue - SPAN,
           offsetX,
           offsetY,
           ambientOpacity: isAppleTL ? 0 : ambientOpacity,
