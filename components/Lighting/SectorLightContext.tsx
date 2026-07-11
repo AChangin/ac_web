@@ -42,7 +42,6 @@ type LightConeUpdater = (data: {
 // Constants
 // ---------------------------------------------------------------------------
 
-const SPAN = 45;
 const MAX_DISTANCE = 1600;
 const FADE_DISTANCE_VW = 80;
 const PARALLAX_FACTOR = 0.95;
@@ -55,6 +54,8 @@ const isAppleTL = (function () {
     (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))
   );
 })();
+
+const SPAN = isAppleTL ? 65 : 45; // 扇形半角（°），Apple 端更大
 
 // ---------------------------------------------------------------------------
 // Helpers

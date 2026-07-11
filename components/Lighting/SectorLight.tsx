@@ -8,8 +8,7 @@ import { useSectorLight } from "./SectorLightContext";
 // Constants
 // ---------------------------------------------------------------------------
 
-const SPAN = 45;
-const ROTATION_OFFSET = 0; // ← 改这里！顺时针偏移度数（正值=顺时针）
+const ROTATION_OFFSET = 15; // ← 改这里！顺时针偏移度数（正值=顺时针）
 const SATURATION = 55;
 const LIGHTNESS = 25;
 
@@ -21,6 +20,8 @@ const isAppleTL = (function () {
     (/Mac/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))
   );
 })();
+
+const SPAN = isAppleTL ? 65 : 45; // 扇形半角（°），Apple 端更大
 
 // ---------------------------------------------------------------------------
 // Helpers
