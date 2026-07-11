@@ -201,6 +201,7 @@ export function SectorLightProvider({
           offsetY,
           ambientOpacity: isAppleTL ? 0 : ambientOpacity,
           hue: currentHue,
+          bgOpacity: scrollVis,  // blackBg fades with scroll (ungated by hasPicked)
         });
       }
 
