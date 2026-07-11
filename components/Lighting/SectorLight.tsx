@@ -222,10 +222,10 @@ export function SectorLight() {
           }
         }
 
-        // ── Wrapper translate ──
-        if (coneWrapperRef.current && wrapperTransform !== prevWrapperTransform) {
-          prevWrapperTransform = wrapperTransform;
-          coneWrapperRef.current.style.transform = wrapperTransform;
+        // ── Wrapper: always centered (no parallax needed when absolute inside section) ──
+        if (coneWrapperRef.current && "translate(-50%,-50%)" !== prevWrapperTransform) {
+          prevWrapperTransform = "translate(-50%,-50%)";
+          coneWrapperRef.current.style.transform = "translate(-50%,-50%)";
         }
 
         prevHue = currentHue;
@@ -243,7 +243,7 @@ export function SectorLight() {
       <motion.div
         ref={ambientRef}
         style={{
-          position: "fixed",
+          position: "absolute",
           top: "50%",
           left: "50%",
           width: "200vw",
@@ -251,7 +251,7 @@ export function SectorLight() {
           borderRadius: "50%",
           filter: `blur(${ambientBlur})`,
           pointerEvents: "none",
-          zIndex: 3,
+          zIndex: 1,
           opacity: 0,
         }}
       />
@@ -260,11 +260,11 @@ export function SectorLight() {
       <div
         ref={coneWrapperRef}
         style={{
-          position: "fixed",
+          position: "absolute",
           top: "50%",
           left: "50%",
           pointerEvents: "none",
-          zIndex: 3,
+          zIndex: 1,
         }}
       >
         <div
@@ -297,5 +297,6 @@ export function SectorLight() {
     </>
   );
 
-  return createPortal(content, document.body);
+  var portalTarget = document.querySelector('.logo-section') || document.body;
+  return createPortal(content, portalTarget);
 }
