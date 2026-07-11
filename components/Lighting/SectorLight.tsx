@@ -26,24 +26,21 @@ const isAppleTL = (function () {
 // ---------------------------------------------------------------------------
 
 function buildSectorGradient(targetHue: number): string {
-  const steps = 14;
-  const stops: string[] = ["transparent 0deg"];
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const localAngle = -SPAN + t * SPAN * 2;
-    const colorHue = ((targetHue + localAngle) % 360 + 360) % 360;
-    const alpha =
-      i === 0 || i === steps
-        ? 0.2
-        : i <= 2 || i >= steps - 2
-          ? 0.55
-          : 0.8;
+  // Many stops with smooth alpha ramp → soft edges without CSS blur
+  const STEPS = 20;
+  const stops: string[] = [];
+  for (let i = 0; i <= STEPS; i++) {
+    const t = i / STEPS; // 0..1 across the sector span
+    const angle = -SPAN + t * SPAN * 2;
+    const colorHue = ((targetHue + angle) % 360 + 360) % 360;
+    // Bell-shaped alpha: peak at center, smooth falloff to edges
+    const distFromCenter = Math.abs(t - 0.5) * 2; // 0=center, 1=edge
+    const alpha = 0.75 * Math.exp(-distFromCenter * distFromCenter * 3.5) + 0.05;
     stops.push(
-      `hsla(${colorHue}, ${SATURATION}%, ${LIGHTNESS}%, ${alpha}) ${t * SPAN * 2}deg`
+      `hsla(${colorHue}, ${SATURATION}%, ${LIGHTNESS}%, ${alpha.toFixed(3)}) ${t * SPAN * 2}deg`
     );
   }
-  stops.push(`transparent ${SPAN * 2}deg`);
-  return `conic-gradient(${stops.join(", ")})`;
+  return `conic-gradient(from ${-SPAN}deg, transparent 0deg, ${stops.join(", ")}, transparent ${SPAN * 2}deg)`;
 }
 
 // ---------------------------------------------------------------------------
@@ -138,7 +135,6 @@ export function SectorLight() {
     return () => unreg();
   }, []);
 
-  const coneBlur = isAppleTL ? "1px" : "6px";
   const ambientBlur = isAppleTL ? "10px" : "40px";
 
   const content = (
@@ -187,12 +183,11 @@ export function SectorLight() {
         <div
           ref={coneRef}
           style={{
-            width: "300vmax",
-            height: "300vmax",
+            width: "200vmax",
+            height: "200vmax",
             borderRadius: "50%",
-            filter: `blur(${coneBlur})`,
             opacity: 0,
-            transform: "translateZ(0)",  // GPU layer promotion
+            transform: "translateZ(0)",  // GPU layer
           }}
         />
       </div>
