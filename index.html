@@ -1014,9 +1014,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 .is-apple .scroll-container{
   will-change:transform;
 }
-/* Simplify LightReceiver filters on Apple: drop blur+drop-shadow from chain */
+/* LightReceiver: restore blur for pre-lit text softness on Apple */
 .is-apple [style*="--li"]{
-  filter:brightness(var(--lb,0.15)) contrast(var(--lc,0.8)) saturate(var(--ls,0.4)) !important;
+  filter:brightness(var(--lb,0.15)) contrast(var(--lc,0.8)) saturate(var(--ls,0.4)) blur(var(--lblur,4px)) !important;
 }
 
 /* iOS: extra simplifications */
