@@ -9,6 +9,7 @@ import { useSectorLight } from "./SectorLightContext";
 // ---------------------------------------------------------------------------
 
 const SPAN = 45;
+const ROTATION_OFFSET = 0; // ← 改这里！顺时针偏移度数（正值=顺时针）
 const SATURATION = 55;
 const LIGHTNESS = 25;
 
@@ -82,7 +83,7 @@ export function SectorLight() {
   const coneWrapperRef = useRef<HTMLDivElement>(null);
   const coneRef = useRef<HTMLDivElement>(null);
   const blackBgRef = useRef<HTMLDivElement>(null);
-  const animRotateRef = useRef(hue - SPAN);
+  const animRotateRef = useRef(hue - SPAN + ROTATION_OFFSET);
 
   // Keep latest hue in ref (avoids re-registering the RAF callback on every change)
   const hueRef = useRef(hue);
@@ -128,7 +129,7 @@ export function SectorLight() {
           }
 
           // Throttle rotation DOM writes (lerp runs every frame, write less often)
-          const target = rotate;
+          const target = rotate + ROTATION_OFFSET;
           let diff = target - animRotateRef.current;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
