@@ -1004,17 +1004,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 /* ============================================================
    SAFARI PERFORMANCE OVERRIDES (body.is-apple / body.is-ios)
    ============================================================ */
-/* Backdrop-filter kills Safari scroll perf — replace with solid bg */
-.is-apple .nav{
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
-  background:rgba(255,255,255,0.92);
-}
-.is-apple .tl-cursor-card-info{
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
-  background:rgba(255,255,255,0.95);
-}
 /* Triple drop-shadow is extremely heavy on Safari — reduce to single */
 .is-apple .orbit-nav-text,
 .is-apple .orbit-nav-arrow{
