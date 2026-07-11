@@ -153,8 +153,8 @@ export function SectorLight() {
     var ROTATE_INTERVAL = isAppleTL ? 2 : 1;
 
     const unreg = registerLightCone(
-      ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
-        const currentHue = hueRef.current;
+      ({ opacity, rotate, offsetX, offsetY, ambientOpacity, hue: rafHue }) => {
+        const currentHue = rafHue; // includes oscillation from context RAF
         const wrapperTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
 
         // ── Ambient glow (skipped on Apple) ──
@@ -201,7 +201,7 @@ export function SectorLight() {
 
           if (currentHue !== prevHue || USE_CANVAS) {
             if (USE_CANVAS && offscreenRef.current && coneCanvasRef.current) {
-              // Lerp display hue toward target for smooth rotation transition
+              // Lerp display hue toward target (includes oscillation) for smooth transition
               var dh = displayHueRef.current;
               var diffH = currentHue - dh;
               if (diffH > 180) diffH -= 360;

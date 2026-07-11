@@ -183,7 +183,7 @@ export function SectorLightProvider({
       var interacting = !!(window as any).__logoInteracting;
       var displayHue = currentHue;
       if (currentHasPicked && !interacting && isAppleTL) {
-        displayHue = currentHue + Math.sin(performance.now() * 0.0008) * 10;
+        displayHue = currentHue + Math.sin(performance.now() * 0.0015) * 10;
       }
 
       const s = stateRef.current;
