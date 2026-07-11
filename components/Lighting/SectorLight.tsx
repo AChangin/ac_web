@@ -68,7 +68,7 @@ function buildSectorGradientSoft(targetHue: number): string {
 
 // Pick gradient + cone style based on platform
 var buildSectorGradient = isAppleTL ? buildSectorGradientSoft : buildSectorGradientSharp;
-var CONE_SIZE = isAppleTL ? "160vmax" : "300vmax";
+var CONE_SIZE = isAppleTL ? "120vmax" : "300vmax";
 var CONE_FILTER = isAppleTL ? "none" : "blur(6px)";
 
 // ---------------------------------------------------------------------------

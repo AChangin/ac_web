@@ -1011,16 +1011,17 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 }
 
 /* ── Apple GPU compositing optimizations ── */
-/* Lighter backdrop-filter: 16px blur → 4px (dramatically fewer GPU samples) */
+/* Heavy blur replaced with subtle blur + opaque bg (huge GPU savings) */
 .is-apple .nav{
-  -webkit-backdrop-filter:blur(4px);
-  backdrop-filter:blur(4px);
-  background:rgba(255,255,255,0.88);
+  -webkit-backdrop-filter:blur(2px);
+  backdrop-filter:blur(2px);
+  background:rgba(255,255,255,0.92);
 }
 /* Lighter cursor card blur */
 .is-apple .tl-cursor-card-info{
-  -webkit-backdrop-filter:blur(4px);
-  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(2px);
+  backdrop-filter:blur(2px);
+  background:rgba(255,255,255,0.92);
 }
 /* Pre-rasterize scroll container as single GPU layer (avoids per-element compositing) */
 .is-apple .scroll-container{

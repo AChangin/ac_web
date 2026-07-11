@@ -164,32 +164,8 @@ export function SectorLightProvider({
       cachedIntensities = [];
     }
 
-    // ── Diagnostic: measure real RAF interval (gap between frames) ──
-    var lastTickTime = 0;
-    var gapSum = 0, gapCount = 0;
-    var fpsFrames = 0, fpsLastTime = 0;
-
     const tick = () => {
       frameCount++;
-      fpsFrames++;
-      var now = performance.now();
-      // Measure gap since last tick
-      if (lastTickTime > 0) {
-        gapSum += now - lastTickTime;
-        gapCount++;
-      }
-      lastTickTime = now;
-
-      if (now - fpsLastTime > 2000) {
-        var fps = Math.round(fpsFrames / ((now - fpsLastTime) / 1000));
-        var avgGap = gapCount > 0 ? (gapSum / gapCount).toFixed(1) : "?";
-        console.log("[SectorLight] FPS:", fps, "| avg frame gap:", avgGap, "ms (ideal: 16.7ms)");
-        fpsFrames = 0;
-        fpsLastTime = now;
-        gapSum = 0;
-        gapCount = 0;
-      }
-
       const currentHue = hueRef.current;
       const currentHasPicked = hasPickedRef.current;
 
