@@ -76,6 +76,7 @@ function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
   var endAngle = centerAngle + spanRad;
 
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  ctx.imageSmoothingEnabled = true;
 
   // Draw 40 thin wedges for smooth hue sweep
   var wedges = 40;
@@ -89,7 +90,7 @@ function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
 
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, -a - Math.PI / 2, -aNext - Math.PI / 2);
+    ctx.arc(cx, cy, r, a - Math.PI / 2, aNext - Math.PI / 2, false);
     ctx.closePath();
     ctx.fillStyle = "hsla(" + localHue + ", " + SATURATION + "%, " + LIGHTNESS + "%, " + alpha.toFixed(3) + ")";
     ctx.fill();
@@ -262,7 +263,6 @@ export function SectorLight() {
           left: "50%",
           pointerEvents: "none",
           zIndex: 1,
-          transform: "translateZ(0)",  // GPU layer promotion
         }}
       >
         <div
@@ -273,8 +273,8 @@ export function SectorLight() {
             borderRadius: "50%",
             filter: CONE_FILTER,
             opacity: 0,
-            transform: "translateZ(0)",
             overflow: "hidden",
+            willChange: "opacity",
           }}
         >
           {USE_CANVAS && (
