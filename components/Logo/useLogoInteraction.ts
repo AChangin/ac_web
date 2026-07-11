@@ -160,6 +160,101 @@ export function useLogoInteraction({
     };
   }, [containerRef]);
 
+  // ════════════════════════════════════════════════════════════
+  //  MOBILE: touch-hold near center → activate, drag → pick
+  // ════════════════════════════════════════════════════════════
+  useEffect(() => {
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return;
+
+    var trackingId: number | null = null;
+    var activeDragMove: ((e: TouchEvent) => void) | null = null;
+    var activeDragEnd: ((e: TouchEvent) => void) | null = null;
+
+    function cleanup() {
+      if (activeDragMove) { document.removeEventListener("touchmove", activeDragMove); activeDragMove = null; }
+      if (activeDragEnd)   { document.removeEventListener("touchend", activeDragEnd); activeDragEnd = null; }
+      document.removeEventListener("touchcancel", handleCancel);
+      trackingId = null;
+      stateRef.current.isActive = false;
+      setIsActive(false);
+    }
+
+    function getRect(el: HTMLElement): DOMRect {
+      if (!cachedRectRef.current) cachedRectRef.current = el.getBoundingClientRect();
+      return cachedRectRef.current;
+    }
+
+    function isInRange(clientX: number, clientY: number, rect: DOMRect): boolean {
+      var logoCx = rect.left + rect.width / 2;
+      var logoCy = rect.top + rect.height / 2;
+      var dx = clientX - logoCx;
+      var dy = clientY - logoCy;
+      return Math.sqrt(dx * dx + dy * dy) < ACTIVATION_RADIUS;
+    }
+
+    function trackFromTouch(touch: Touch, rect: DOMRect) {
+      var wheelPageCx = rect.left + WHEEL_CX;
+      var wheelPageCy = rect.top + WHEEL_CY;
+      var newHue = calcHueFromPoint(touch.clientX, touch.clientY, wheelPageCx, wheelPageCy);
+      var diff = newHue - hueRef.current;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      if (Math.abs(diff) > 2) {
+        hueRef.current = hueRef.current + diff;
+        onHueChangeRef.current(hueRef.current);
+        setHasPicked(true);
+      }
+    }
+
+    function handleCancel(e: TouchEvent) {
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === trackingId) { cleanup(); return; }
+      }
+    }
+
+    var handleTouchStart = function(e: TouchEvent) {
+      var el = containerRef.current;
+      if (!el || trackingId !== null) return;
+      var touch = e.changedTouches[0];
+      if (!touch) return;
+      var rect = getRect(el);
+      if (!isInRange(touch.clientX, touch.clientY, rect)) return;
+
+      trackingId = touch.identifier;
+      stateRef.current.isActive = true;
+      setIsActive(true);
+      trackFromTouch(touch, rect);
+
+      // Attach drag handlers only while tracking
+      activeDragMove = function(e2: TouchEvent) {
+        var t: Touch | null = null;
+        for (var i = 0; i < e2.changedTouches.length; i++) {
+          if (e2.changedTouches[i].identifier === trackingId) { t = e2.changedTouches[i]; break; }
+        }
+        if (!t) return;
+        e2.preventDefault();
+        var r = getRect(el!);
+        trackFromTouch(t, r);
+      };
+      activeDragEnd = function(e2: TouchEvent) {
+        for (var i = 0; i < e2.changedTouches.length; i++) {
+          if (e2.changedTouches[i].identifier === trackingId) { cleanup(); return; }
+        }
+      };
+      document.addEventListener("touchmove", activeDragMove, { passive: false });
+      document.addEventListener("touchend", activeDragEnd, { passive: true });
+      document.addEventListener("touchcancel", handleCancel, { passive: true });
+    };
+
+    document.addEventListener("touchstart", handleTouchStart, { passive: true });
+
+    return () => {
+      document.removeEventListener("touchstart", handleTouchStart);
+      cleanup();
+    };
+  }, [containerRef]);
+
   // ---- Picker 位置 ----
   const pos = calcPickerPos(hue);
 
