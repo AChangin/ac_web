@@ -1148,8 +1148,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       src="public/bg_alpha_desktop.webm"
       muted
       playsinline
-      preload="metadata"
-      autoplay
+      preload="auto"
     ></video>
   </div>
 
@@ -1421,7 +1420,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     // Ensure playback; fallback on user interaction if autoplay blocked
     function play(){
       if(master.paused && !master.ended){
-        master.play().catch(function(){});
+        master.play().then(function(){
+          // Start slave synced to master
+          if(slave && slave.paused && !slave.ended){
+            slave.currentTime = master.currentTime;
+            slave.play().catch(function(){});
+            startSync();
+          }
+        }).catch(function(){});
       }
     }
     if(master.paused && !master.ended) play();
