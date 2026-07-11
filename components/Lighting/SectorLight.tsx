@@ -295,6 +295,8 @@ export function SectorLight() {
                 width: "100%",
                 height: "100%",
                 display: "block",
+                filter: "blur(0.6px)",  // anti-moiré on upscale, near-zero GPU cost at 384px
+                imageRendering: "auto",
               }}
             />
           )}
