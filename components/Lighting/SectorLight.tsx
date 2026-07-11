@@ -77,9 +77,8 @@ export function SectorLight() {
         // Write directly to DOM elements — zero React overhead
         const transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
 
-        if (blackBgRef.current) {
-          blackBgRef.current.style.display = opacity > 0.005 ? "" : "none";
-        }
+        // Black background always visible — avoids jarring white→black flash
+        // Only the cone + ambient glow are gated by hasPicked
 
         // Ambient glow (skipped on Apple)
         if (ambientRef.current) {

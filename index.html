@@ -518,7 +518,7 @@ body{
   overflow:hidden;
   opacity:0;
   pointer-events:none;
-  clip-path:circle(4px at 50% 50%);
+  clip-path:circle(280px at 50% 50%);  /* static — not animated, GPU-friendly */
   transform:translate(-50%,-50%) scale(0.4);
 }
 .tl-cursor-card-image{
@@ -1948,16 +1948,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
   function cursorEnter(proj, dist){
     if(cardTween){ cardTween.kill(); }
-    var t = 1 - Math.min(dist / HOVER_RADIUS, 1);  // 0 (far) → 1 (close)
+    var t = 1 - Math.min(dist / HOVER_RADIUS, 1);
 
     cardTween = gsap.timeline();
     cardTween.to(cursorDot, {
       scale: 0.2, opacity: 0,
       duration: 0.22, ease: 'power2.out'
     }, 0);
+    // No clipPath — GPU-accelerated opacity+scale (critical for Safari)
     cardTween.to(cursorCard, {
       opacity: 1,
-      clipPath: 'circle(280px at 50% 50%)',
       scale: 0.72 + t * 0.28,
       duration: 0.35, ease: 'power2.out'
     }, 0.04);
@@ -1968,7 +1968,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     cardTween = gsap.timeline();
     cardTween.to(cursorCard, {
       opacity: 0,
-      clipPath: 'circle(4px at 50% 50%)',
       scale: 0.4,
       duration: 0.28, ease: 'power2.in'
     }, 0);
