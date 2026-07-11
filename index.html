@@ -518,9 +518,8 @@ body{
   overflow:hidden;
   opacity:0;
   pointer-events:none;
-  clip-path:circle(280px at 50% 50%);  /* static circular shape, not animated */
+  clip-path:circle(4px at 50% 50%);
   transform:translate(-50%,-50%) scale(0.4);
-  will-change:opacity,transform;       /* GPU-accelerate card only */
 }
 .tl-cursor-card-image{
   position:absolute;
@@ -1797,6 +1796,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   var isInGrid = false;
   var isInSection = false;   // true when mouse is inside the timeline section
   var nodeTargets = [];
+  var nodeUpdateTicker = 0;
   var rafId = null;
 
   // ============================================================
@@ -1926,9 +1926,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   function checkInGrid(mx, my){
-    if(!gridBounds) return false;
-    return mx >= gridBounds.left && mx <= gridBounds.right &&
-           my >= gridBounds.top  && my <= gridBounds.bottom;
+    var r = gridOuter.getBoundingClientRect();
+    return mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom;
   }
 
   // ============================================================
@@ -1943,37 +1942,35 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ============================================================
-  //  CURSOR ANIMATIONS — GPU-accelerated (opacity + scale, no clipPath)
+  //  CURSOR ANIMATIONS — all via GSAP
   // ============================================================
   var cardTween = null;
-  var isAppleTL = document.body.classList.contains('is-apple');
 
   function cursorEnter(proj, dist){
     if(cardTween){ cardTween.kill(); }
-    var t = 1 - Math.min(dist / HOVER_RADIUS, 1);
-    var targetScale = 0.72 + t * 0.28;
+    var t = 1 - Math.min(dist / HOVER_RADIUS, 1);  // 0 (far) → 1 (close)
 
     cardTween = gsap.timeline();
     cardTween.to(cursorDot, {
       scale: 0.2, opacity: 0,
       duration: 0.22, ease: 'power2.out'
     }, 0);
-    // No clipPath — use opacity+scale (GPU-accelerated on Safari)
     cardTween.to(cursorCard, {
       opacity: 1,
-      scale: targetScale,
-      duration: isAppleTL ? 0.18 : 0.35, ease: 'power2.out'
+      clipPath: 'circle(280px at 50% 50%)',
+      scale: 0.72 + t * 0.28,
+      duration: 0.35, ease: 'power2.out'
     }, 0.04);
   }
 
   function cursorLeave(){
     if(cardTween){ cardTween.kill(); }
     cardTween = gsap.timeline();
-    // No clipPath — use opacity+scale (GPU-accelerated on Safari)
     cardTween.to(cursorCard, {
       opacity: 0,
+      clipPath: 'circle(4px at 50% 50%)',
       scale: 0.4,
-      duration: isAppleTL ? 0.15 : 0.28, ease: 'power2.in'
+      duration: 0.28, ease: 'power2.in'
     }, 0);
     cardTween.to(cursorDot, {
       scale: 1, opacity: 1,
@@ -1991,52 +1988,30 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ============================================================
-  //  CACHED BOUNDS — avoid getBoundingClientRect per frame
-  // ============================================================
-  var sectionBounds = null;
-  var gridBounds = null;
-  var boundsFrame = 0;
-
-  function refreshBounds(){
-    sectionBounds = timelineSec.getBoundingClientRect();
-    gridBounds = gridOuter.getBoundingClientRect();
-    updateNodeTargets();
-  }
-
-  // ============================================================
   //  CROSSHAIR — thin rules across the grid
   // ============================================================
   function updateCrosshair(mx, my){
-    if(!gridBounds) return;
-    crosshairH.style.top  = (my - gridBounds.top)  + 'px';
-    crosshairV.style.left = (mx - gridBounds.left) + 'px';
+    var r = gridOuter.getBoundingClientRect();
+    crosshairH.style.top  = (my - r.top)  + 'px';
+    crosshairV.style.left = (mx - r.left) + 'px';
   }
 
   // ============================================================
   //  SECTION BOUNDARY — is mouse inside the timeline section?
   // ============================================================
   function checkInSection(mx, my){
-    // Lazy-init bounds on first call (init may not have run yet)
-    if(!sectionBounds){
-      sectionBounds = timelineSec.getBoundingClientRect();
-      if(!sectionBounds) return false;
-    }
-    return mx >= sectionBounds.left && mx <= sectionBounds.right &&
-           my >= sectionBounds.top  && my <= sectionBounds.bottom;
+    var r = timelineSec.getBoundingClientRect();
+    return mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom;
   }
 
   // ============================================================
   //  MAIN LOOP — requestAnimationFrame @ 60fps (section-aware)
   // ============================================================
   var tlLoopRunning = false;
-  // Refresh rates (frames): Apple devices update less often
-  var BOUNDS_INTERVAL = isAppleTL ? 30 : 15;
-  var NODES_INTERVAL   = isAppleTL ? 60 : 30;
 
   function startTlLoop(){
     if(tlLoopRunning) return;
     tlLoopRunning = true;
-    refreshBounds();  // fresh bounds on entry
     rafId = requestAnimationFrame(loop);
   }
 
@@ -2077,15 +2052,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       gsap.to(cursorEl, { opacity: 1, duration: 0.12, overwrite: 'auto' });
     }
 
-    // ---- Refresh cached bounds + nodes periodically ----
-    boundsFrame++;
-    if(boundsFrame % BOUNDS_INTERVAL === 0){
-      sectionBounds = timelineSec.getBoundingClientRect();
-      gridBounds = gridOuter.getBoundingClientRect();
-    }
-    if(boundsFrame % NODES_INTERVAL === 0){
-      updateNodeTargets();
-    }
+    // ---- Inside section: grid interaction ----
+    // Refresh node positions periodically (handles horizontal scroll)
+    nodeUpdateTicker = (nodeUpdateTicker + 1) % 8;
+    if(nodeUpdateTicker === 0){ updateNodeTargets(); }
 
     isInGrid = checkInGrid(mouseX, mouseY);
 
@@ -2148,22 +2118,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   function init(){
     buildGrid();
     placeNodes();
-    refreshBounds();
+    updateNodeTargets();
 
     // Cursor hidden until user enters timeline section
     cursorEl.style.opacity = '0';
     cursorEl.style.transform = 'translate3d(' + cursorX + 'px,' + cursorY + 'px,0)';
 
-    // Preload project images (avoids flicker on first hover)
-    projects.forEach(function(p){
-      var img = new Image();
-      img.src = p.coverImage;
-    });
-
     document.addEventListener('mousemove', onMouseMove, { passive: true });
 
     window.addEventListener('resize', function(){
-      refreshBounds();
+      updateNodeTargets();
     });
 
     // RAF starts on demand (when mouse enters timeline section)
