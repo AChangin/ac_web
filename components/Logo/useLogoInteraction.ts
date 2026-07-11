@@ -93,7 +93,10 @@ export function useLogoInteraction({
 
   useEffect(() => { hueRef.current = hue; }, [hue]);
   useEffect(() => { onHueChangeRef.current = onHueChange; }, [onHueChange]);
-  useEffect(() => { stateRef.current.isActive = isActive; }, [isActive]);
+  useEffect(() => {
+    stateRef.current.isActive = isActive;
+    (window as any).__logoInteracting = isActive;
+  }, [isActive]);
 
   // ---- Event-driven: mousemove handler replaces RAF ----
   useEffect(() => {
