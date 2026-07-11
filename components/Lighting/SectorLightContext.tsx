@@ -164,25 +164,31 @@ export function SectorLightProvider({
       cachedIntensities = [];
     }
 
-    // ── Timing diagnostic (logs slow operations to console) ──
-    var slowLogTimer = 0;
-    var fpsFrames = 0;
-    var fpsLastTime = 0;
+    // ── Diagnostic: measure real RAF interval (gap between frames) ──
+    var lastTickTime = 0;
+    var gapSum = 0, gapCount = 0;
+    var fpsFrames = 0, fpsLastTime = 0;
 
     const tick = () => {
       frameCount++;
       fpsFrames++;
       var now = performance.now();
+      // Measure gap since last tick
+      if (lastTickTime > 0) {
+        gapSum += now - lastTickTime;
+        gapCount++;
+      }
+      lastTickTime = now;
+
       if (now - fpsLastTime > 2000) {
         var fps = Math.round(fpsFrames / ((now - fpsLastTime) / 1000));
-        console.log("[SectorLight] FPS:", fps);
+        var avgGap = gapCount > 0 ? (gapSum / gapCount).toFixed(1) : "?";
+        console.log("[SectorLight] FPS:", fps, "| avg frame gap:", avgGap, "ms (ideal: 16.7ms)");
         fpsFrames = 0;
         fpsLastTime = now;
+        gapSum = 0;
+        gapCount = 0;
       }
-      // Detailed timing every 2s
-      var doProfile = now - slowLogTimer > 2000;
-      if (doProfile) { slowLogTimer = now; }
-      var t0 = doProfile ? performance.now() : 0;
 
       const currentHue = hueRef.current;
       const currentHasPicked = hasPickedRef.current;
@@ -192,7 +198,6 @@ export function SectorLightProvider({
         cachedLogo = getLogoCenter();
         cachedScrollVis = calcScrollVisibility();
       }
-      if (doProfile) { var t1 = performance.now(); console.log("  getCenter+scroll:", (t1 - t0).toFixed(2), "ms"); t0 = t1; }
 
       const logo = cachedLogo!;
       const scrollVis = cachedScrollVis;
@@ -222,7 +227,6 @@ export function SectorLightProvider({
           hue: currentHue,
         });
       }
-      if (doProfile) { var t_c = performance.now(); console.log("  cone updater:", (t_c - t0).toFixed(2), "ms"); t0 = t_c; }
 
       // ── Update LightReceivers ──
       if (globalVis < 0.001) {
@@ -267,8 +271,6 @@ export function SectorLightProvider({
           registryRef.current[ci].callback(cachedIntensities[ci] || 0);
         }
       }
-      if (doProfile) { var t_r = performance.now(); console.log("  receivers:", (t_r - t0).toFixed(2), "ms"); t0 = t_r; }
-
       rafRef.current = requestAnimationFrame(tick);
     };
 
