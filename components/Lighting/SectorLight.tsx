@@ -56,7 +56,8 @@ export function SectorLight() {
 
   // Refs for direct DOM writes (no React state at 60fps)
   const ambientRef = useRef<HTMLDivElement>(null);
-  const coneRef = useRef<HTMLDivElement>(null);
+  const coneWrapperRef = useRef<HTMLDivElement>(null);  // outer: translate (parallax)
+  const coneRef = useRef<HTMLDivElement>(null);          // inner: rotate + gradient
   const blackBgRef = useRef<HTMLDivElement>(null);
   const animRotateRef = useRef(hue - SPAN);
 
@@ -91,15 +92,18 @@ export function SectorLight() {
         // Light cone
         if (coneRef.current) {
           coneRef.current.style.opacity = String(opacity);
-          coneRef.current.style.transform = transform;
           // Smoothly interpolate rotation toward target
           const target = rotate;
           let diff = target - animRotateRef.current;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
           animRotateRef.current += diff * 0.25; // lerp, no GSAP needed
-          coneRef.current.style.rotate = animRotateRef.current + "deg";
+          coneRef.current.style.transform = `rotate(${animRotateRef.current}deg)`;
           coneRef.current.style.background = buildSectorGradient(hue);
+        }
+        // Outer wrapper: translate for parallax positioning
+        if (coneWrapperRef.current) {
+          coneWrapperRef.current.style.transform = transform;
         }
       }
     );
@@ -142,6 +146,7 @@ export function SectorLight() {
 
       {/* ══════ Layer 1: Light Cone ══════ */}
       <div
+        ref={coneWrapperRef}
         style={{
           position: "fixed",
           top: "50%",
