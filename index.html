@@ -2140,13 +2140,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     );
   }
 
-  // Guard: skip on iOS (touch device, no cursor)
-  if(!document.body.classList.contains('is-ios')){
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 
 })();
@@ -2504,13 +2501,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       'font-weight:600;','color:#666;','color:#999;');
   }
 
-  // Skip on iOS (touch device, no mouse orbit)
-  if(!document.body.classList.contains('is-ios')){
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 
 })();
