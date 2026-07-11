@@ -120,7 +120,6 @@ export function SectorLight() {
   const coneWrapperRef = useRef<HTMLDivElement>(null);
   const coneRef = useRef<HTMLDivElement>(null);
   const coneCanvasRef = useRef<HTMLCanvasElement>(null);  // Apple: low-res canvas
-  const blackBgRef = useRef<HTMLDivElement>(null);
   const animRotateRef = useRef(hue - SPAN + ROTATION_OFFSET);
   const displayHueRef = useRef(hue); // lerped hue for canvas (Apple)
   // Offscreen canvas for Apple cone rendering
@@ -160,12 +159,6 @@ export function SectorLight() {
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity, bgOpacity }) => {
         const currentHue = hueRef.current;
         const wrapperTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
-
-        // ── Black background: fade with scroll position ──
-        if (blackBgRef.current) {
-          var bgOp = (typeof bgOpacity === 'number') ? bgOpacity : 1;
-          blackBgRef.current.style.opacity = String(Math.max(0, Math.min(1, bgOp)));
-        }
 
         // ── Ambient glow (skipped on Apple) ──
         if (ambientRef.current) {
@@ -244,17 +237,6 @@ export function SectorLight() {
 
   const content = (
     <>
-      {/* ── 纯黑底 ── */}
-      <div
-        ref={blackBgRef}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "#000",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
 
       {/* ══════ Layer 2: Ambient Glow (hidden on Apple devices) ══════ */}
       <motion.div
