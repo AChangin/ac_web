@@ -42,8 +42,8 @@ const isAppleTL = (function () {
   );
 })();
 
-// Throttle getBoundingClientRect: Apple devices every 2 frames, others every frame
-const RECT_INTERVAL = isAppleTL ? 2 : 1;
+// Throttle getBoundingClientRect: Apple devices refresh every 3 mousemove events
+const RECT_INTERVAL = isAppleTL ? 3 : 1;
 
 // ---------------------------------------------------------------------------
 // Math helpers
@@ -69,7 +69,7 @@ function calcHueFromPoint(
 }
 
 // ---------------------------------------------------------------------------
-// Hook
+// Hook — event-driven (no RAF!)
 // ---------------------------------------------------------------------------
 
 export function useLogoInteraction({
@@ -81,66 +81,43 @@ export function useLogoInteraction({
   const [hasPicked, setHasPicked] = useState(false);
 
   // ---- Refs ----
-  const mouseRef = useRef({ x: -9999, y: -9999 });
-  const rafRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hueRef = useRef(hue);
   const onHueChangeRef = useRef(onHueChange);
-
   const stateRef = useRef({
     isActive: false,
     pendingActive: null as boolean | null,
   });
+  const moveCountRef = useRef(0);
+  const cachedRectRef = useRef<DOMRect | null>(null);
 
   useEffect(() => { hueRef.current = hue; }, [hue]);
   useEffect(() => { onHueChangeRef.current = onHueChange; }, [onHueChange]);
   useEffect(() => { stateRef.current.isActive = isActive; }, [isActive]);
 
-  // ---- 核心 RAF：距离检测 → active 切换 + 实时 hue 跟踪 ----
+  // ---- Event-driven: mousemove handler replaces RAF ----
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
-    };
-
-    let frameCount = 0;
-    // Cache rect across frames to avoid repeated getBoundingClientRect
-    let cachedRect: DOMRect | null = null;
-    // Lightweight FPS counter
-    var fpsFrames = 0, fpsLastTime = 0;
-
-    const tick = () => {
-      fpsFrames++;
-      var now = performance.now();
-      if (now - fpsLastTime > 2000) {
-        var fps = Math.round(fpsFrames / ((now - fpsLastTime) / 1000));
-        if (fps < 55) console.log("[useLogoInteraction] FPS:", fps);
-        fpsFrames = 0;
-        fpsLastTime = now;
-      }
       const el = containerRef.current;
-      if (!el) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
+      if (!el) return;
 
-      // Throttle getBoundingClientRect on Apple devices
-      frameCount++;
-      if (frameCount % RECT_INTERVAL === 0 || !cachedRect) {
-        cachedRect = el.getBoundingClientRect();
+      // Throttle getBoundingClientRect
+      moveCountRef.current++;
+      if (moveCountRef.current % RECT_INTERVAL === 0 || !cachedRectRef.current) {
+        cachedRectRef.current = el.getBoundingClientRect();
       }
-      const rect = cachedRect!;
+      const rect = cachedRectRef.current!;
       const logoCx = rect.left + rect.width / 2;
       const logoCy = rect.top + rect.height / 2;
 
-      // ---- 距离检测 ----
-      const dxLogo = mouseRef.current.x - logoCx;
-      const dyLogo = mouseRef.current.y - logoCy;
+      // ---- Distance detection ----
+      const dxLogo = e.clientX - logoCx;
+      const dyLogo = e.clientY - logoCy;
       const distance = Math.sqrt(dxLogo * dxLogo + dyLogo * dyLogo);
       const shouldBeActive = distance < ACTIVATION_RADIUS;
       const current = stateRef.current;
 
-      // 200ms debounce
+      // 200ms debounce for activation state changes
       if (current.pendingActive !== shouldBeActive) {
         current.pendingActive = shouldBeActive;
         if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
@@ -156,15 +133,13 @@ export function useLogoInteraction({
         }
       }
 
-      // ---- 激活时：鼠标悬停即跟随，无需拖拽 ----
+      // ---- Active: mouse hover → hue tracking ----
       if (current.isActive) {
         const wheelPageCx = rect.left + WHEEL_CX;
         const wheelPageCy = rect.top + WHEEL_CY;
-        const newHue = calcHueFromPoint(
-          mouseRef.current.x, mouseRef.current.y,
-          wheelPageCx, wheelPageCy
-        );
-        // 死区 2°：过滤手部微颤，同时处理 0/360 环绕
+        const newHue = calcHueFromPoint(e.clientX, e.clientY, wheelPageCx, wheelPageCy);
+
+        // Dead zone 2°: filter micro-tremors
         let diff = newHue - hueRef.current;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
@@ -174,16 +149,12 @@ export function useLogoInteraction({
           setHasPicked(true);
         }
       }
-
-      rafRef.current = requestAnimationFrame(tick);
     };
 
     document.addEventListener("mousemove", handleMouseMove, { passive: true });
-    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(rafRef.current);
       if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
       stateRef.current.pendingActive = null;
     };
