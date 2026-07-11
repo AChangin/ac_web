@@ -39,13 +39,10 @@ const isAppleTL = (function () {
   );
 })();
 
-// Touch device detection (iOS + Android)
+// Touch device detection (mobile only — iOS + Android)
 const isTouchDevice = (function () {
   if (typeof navigator === "undefined") return false;
-  return (
-    "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0
-  );
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 })();
 
 // Throttle getBoundingClientRect on Apple
@@ -185,18 +182,38 @@ export function useLogoInteraction({
 
   // ════════════════════════════════════════════════════════════
   //  MOBILE: touch-hold → activate, drag → change, release → done
+  //  (touchmove/touchend only active during drag — don't block scroll)
   // ════════════════════════════════════════════════════════════
   useEffect(() => {
     if (!isTouchDevice) return;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      const el = containerRef.current;
+    var activeTouchMove: ((e: TouchEvent) => void) | null = null;
+    var activeTouchEnd: ((e: TouchEvent) => void) | null = null;
+
+    function cleanupDrag() {
+      if (activeTouchMove) { document.removeEventListener("touchmove", activeTouchMove); activeTouchMove = null; }
+      if (activeTouchEnd)   { document.removeEventListener("touchend", activeTouchEnd);   activeTouchEnd = null; }
+      document.removeEventListener("touchcancel", handleTouchCancel);
+      touchIdRef.current = null;
+      stateRef.current.isActive = false;
+      setIsActive(false);
+      touchJustEndedRef.current = performance.now();
+    }
+
+    function handleTouchCancel(e: TouchEvent) {
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === touchIdRef.current) { cleanupDrag(); return; }
+      }
+    }
+
+    var handleTouchStart = function(e: TouchEvent) {
+      var el = containerRef.current;
       if (!el) return;
 
-      const touch = e.changedTouches[0];
+      var touch = e.changedTouches[0];
       if (!touch) return;
 
-      const rect = getRect(el);
+      var rect = getRect(el);
       if (!isInRange(touch.clientX, touch.clientY, rect)) return;
 
       // Immediately activate — touch is intentional
@@ -204,58 +221,33 @@ export function useLogoInteraction({
       stateRef.current.isActive = true;
       setIsActive(true);
       trackHue(touch.clientX, touch.clientY, rect);
-    };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (touchIdRef.current === null) return;
-
-      // Find our tracked touch
-      let touch: Touch | null = null;
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchIdRef.current) {
-          touch = e.changedTouches[i];
-          break;
+      // ── Attach drag listeners (only while tracking) ──
+      activeTouchMove = function(e2: TouchEvent) {
+        var t: Touch | null = null;
+        for (var i = 0; i < e2.changedTouches.length; i++) {
+          if (e2.changedTouches[i].identifier === touchIdRef.current) { t = e2.changedTouches[i]; break; }
         }
-      }
-      if (!touch) return;
-
-      const el = containerRef.current;
-      if (!el) return;
-
-      // Prevent page scroll while dragging the color wheel
-      e.preventDefault();
-
-      const rect = getRect(el);
-      trackHue(touch.clientX, touch.clientY, rect);
-    };
-
-    const handleTouchEndOrCancel = (e: TouchEvent) => {
-      let found = false;
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchIdRef.current) {
-          found = true;
-          break;
+        if (!t) return;
+        e2.preventDefault(); // block scroll only during active color dragging
+        var r = getRect(el!);
+        trackHue(t.clientX, t.clientY, r);
+      };
+      activeTouchEnd = function(e2: TouchEvent) {
+        for (var i = 0; i < e2.changedTouches.length; i++) {
+          if (e2.changedTouches[i].identifier === touchIdRef.current) { cleanupDrag(); return; }
         }
-      }
-      if (!found) return;
-
-      touchIdRef.current = null;
-      stateRef.current.isActive = false;
-      setIsActive(false);
-      touchJustEndedRef.current = performance.now(); // suppress synthetic mouse events
+      };
+      document.addEventListener("touchmove", activeTouchMove, { passive: false });
+      document.addEventListener("touchend", activeTouchEnd, { passive: true });
+      document.addEventListener("touchcancel", handleTouchCancel, { passive: true });
     };
 
     document.addEventListener("touchstart", handleTouchStart, { passive: true });
-    document.addEventListener("touchmove", handleTouchMove, { passive: false }); // need preventDefault
-    document.addEventListener("touchend", handleTouchEndOrCancel, { passive: true });
-    document.addEventListener("touchcancel", handleTouchEndOrCancel, { passive: true });
 
     return () => {
       document.removeEventListener("touchstart", handleTouchStart);
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEndOrCancel);
-      document.removeEventListener("touchcancel", handleTouchEndOrCancel);
-      touchIdRef.current = null;
+      cleanupDrag();
     };
   }, [containerRef]);
 
