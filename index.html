@@ -1220,8 +1220,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     document.body.classList.add('is-apple');
     var pcVid = document.getElementById('pc-alpha-video');
     var bgVid = document.getElementById('bg-alpha-video');
-    if(pcVid) pcVid.src = 'public/pc_alpha_desktop_hevc.mov';
-    if(bgVid) bgVid.src = 'public/bg_alpha_desktop_hevc.mov';
+    // iOS: lower-res HEVC (easier on mobile decoder)
+    // macOS Safari: full-res HEVC with native alpha
+    if(isIOS){
+      if(pcVid) pcVid.src = 'public/pc_alpha_desktop_ios.mov';
+      if(bgVid) bgVid.src = 'public/bg_alpha_desktop_ios.mov';
+    } else {
+      if(pcVid) pcVid.src = 'public/pc_alpha_desktop_hevc.mov';
+      if(bgVid) bgVid.src = 'public/bg_alpha_desktop_hevc.mov';
+    }
   }
   if(isIOS){
     document.body.classList.add('is-ios');
