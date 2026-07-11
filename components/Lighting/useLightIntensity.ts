@@ -54,7 +54,8 @@ export function useLightIntensity(active: boolean = true) {
       v = (0.15 + i * 1.1).toFixed(3); if (v !== last.lb) { last.lb = v; el.style.setProperty("--lb", v); }
       v = (0.8 + i * 0.25).toFixed(3); if (v !== last.lc) { last.lc = v; el.style.setProperty("--lc", v); }
       v = (0.4 + i * 0.6).toFixed(3);  if (v !== last.ls) { last.ls = v; el.style.setProperty("--ls", v); }
-      v = ((1 - i) * 4).toFixed(2) + "px"; if (v !== last.lblur) { last.lblur = v; el.style.setProperty("--lblur", v); }
+      var blurVal = (1 - i) * 4;
+      v = blurVal < 0.06 ? "0px" : blurVal.toFixed(2) + "px"; if (v !== last.lblur) { last.lblur = v; el.style.setProperty("--lblur", v); }
       v = (i * 10).toFixed(1) + "px";      if (v !== last.lglow) { last.lglow = v; el.style.setProperty("--lglow", v); }
     });
 
