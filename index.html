@@ -1729,7 +1729,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
       scrollContainer.addEventListener('touchstart', function(e){
         if(e.touches.length !== 1) return;
-        if(window.__logoInteracting) return;
+        // Don't scroll if touch is on the logo (color picker handles it)
+        var logoMount = document.getElementById('logo-mount');
+        if(logoMount){
+          var lr = logoMount.getBoundingClientRect();
+          var tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+          var lcx = lr.left + lr.width/2, lcy = lr.top + lr.height/2;
+          var dist = Math.sqrt((tx-lcx)*(tx-lcx) + (ty-lcy)*(ty-lcy));
+          if(dist < 200) return; // within color picker range
+        }
         killInertia();
         touchStartX = e.touches[0].clientX;
         touchStartTranslate = getCurrentTranslate();
@@ -1750,20 +1758,19 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       scrollContainer.addEventListener('touchend', function(e){
         if(!touching) return;
         touching = false;
-        // Inertia: continue moving with deceleration
+        // Light inertia: gentle deceleration
         var dt = performance.now() - lastTime;
-        var vx = dt > 0 ? (lastX - touchStartX) / dt : 0; // px/ms at end of gesture
-        if(Math.abs(vx) < 0.05) return; // too slow, no inertia needed
-        var target = clamp(currentTranslate + vx * 300); // project 300ms ahead
+        var vx = dt > 0 ? (lastX - touchStartX) / dt : 0;
+        if(Math.abs(vx) < 0.1) return;
+        var target = clamp(currentTranslate + vx * 80); // short projection
         killInertia();
         var startX = currentTranslate;
         var changeX = target - startX;
         var startTime = performance.now();
-        var duration = 600; // ms
+        var duration = 350; // ms
         function inertiaStep(){
           var elapsed = performance.now() - startTime;
           var t = Math.min(elapsed / duration, 1);
-          // ease-out exponential
           var eased = 1 - Math.pow(1 - t, 3);
           var x = startX + changeX * eased;
           setTranslate(clamp(x));
