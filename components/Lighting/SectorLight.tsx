@@ -118,6 +118,7 @@ export function SectorLight() {
   const coneCanvasRef = useRef<HTMLCanvasElement>(null);  // Apple: low-res canvas
   const blackBgRef = useRef<HTMLDivElement>(null);
   const animRotateRef = useRef(hue - SPAN + ROTATION_OFFSET);
+  const displayHueRef = useRef(hue); // lerped hue for canvas (Apple)
   // Offscreen canvas for Apple cone rendering
   const offscreenRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -198,14 +199,20 @@ export function SectorLight() {
             }
           }
 
-          if (currentHue !== prevHue) {
+          if (currentHue !== prevHue || USE_CANVAS) {
             if (USE_CANVAS && offscreenRef.current && coneCanvasRef.current) {
-              drawConeCanvas(offscreenRef.current.getContext("2d")!, currentHue);
+              // Lerp display hue toward target for smooth rotation transition
+              var dh = displayHueRef.current;
+              var diffH = currentHue - dh;
+              if (diffH > 180) diffH -= 360;
+              if (diffH < -180) diffH += 360;
+              displayHueRef.current = dh + diffH * 0.25;
+              drawConeCanvas(offscreenRef.current.getContext("2d")!, displayHueRef.current);
               // Copy offscreen → visible canvas
               var vc = coneCanvasRef.current.getContext("2d")!;
               vc.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
               vc.drawImage(offscreenRef.current, 0, 0);
-            } else if (!USE_CANVAS) {
+            } else if (!USE_CANVAS && currentHue !== prevHue) {
               coneRef.current.style.background = buildSectorGradient(currentHue);
             }
           }
