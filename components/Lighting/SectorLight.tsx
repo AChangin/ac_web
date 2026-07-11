@@ -69,50 +69,77 @@ export function SectorLight() {
   useEffect(() => {
     var prevHue = -1;
     var prevAmbient = -1;
+    var prevOpacity = -1;
+    var prevRotateStr = "";
+    var prevWrapperTransform = "";
+    var frameSkip = 0;
+    // Throttle DOM writes on Apple: only every Nth frame for rotation
+    var ROTATE_INTERVAL = isAppleTL ? 2 : 1;
 
     const unreg = registerLightCone(
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
-        const currentHue = hueRef.current; // read latest from ref
-        const transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+        const currentHue = hueRef.current;
+        const wrapperTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
 
-        // Ambient glow (skipped on Apple)
+        // ── Ambient glow (skipped on Apple) ──
         if (ambientRef.current) {
           const ambOp = isAppleTL ? 0 : ambientOpacity;
           if (ambOp !== prevAmbient) {
             prevAmbient = ambOp;
             ambientRef.current.style.opacity = String(ambOp);
           }
-          ambientRef.current.style.transform = transform;
+          if (wrapperTransform !== prevWrapperTransform) {
+            ambientRef.current.style.transform = wrapperTransform;
+          }
           if (currentHue !== prevHue) {
             ambientRef.current.style.background = `radial-gradient(circle, hsla(${currentHue}, ${SATURATION}%, 5%, 0.6) 0%, transparent 70%)`;
           }
         }
 
-        // Light cone
+        // ── Light cone ──
         if (coneRef.current) {
-          coneRef.current.style.opacity = String(opacity);
+          // Only write opacity when it changed
+          if (opacity !== prevOpacity) {
+            prevOpacity = opacity;
+            coneRef.current.style.opacity = String(opacity);
+          }
+
+          // Throttle rotation DOM writes (lerp runs every frame, write less often)
           const target = rotate;
           let diff = target - animRotateRef.current;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
           animRotateRef.current += diff * 0.25;
-          coneRef.current.style.transform = `rotate(${animRotateRef.current}deg)`;
+
+          frameSkip++;
+          if (frameSkip >= ROTATE_INTERVAL) {
+            frameSkip = 0;
+            const rotateStr = `rotate(${animRotateRef.current.toFixed(1)}deg)`;
+            if (rotateStr !== prevRotateStr) {
+              prevRotateStr = rotateStr;
+              coneRef.current.style.transform = rotateStr;
+            }
+          }
+
           if (currentHue !== prevHue) {
             coneRef.current.style.background = buildSectorGradient(currentHue);
           }
         }
-        if (coneWrapperRef.current) {
-          coneWrapperRef.current.style.transform = transform;
+
+        // ── Wrapper translate ──
+        if (coneWrapperRef.current && wrapperTransform !== prevWrapperTransform) {
+          prevWrapperTransform = wrapperTransform;
+          coneWrapperRef.current.style.transform = wrapperTransform;
         }
 
         prevHue = currentHue;
       }
     );
     return () => unreg();
-  }, []); // registered ONCE — reads latest hue from hueRef
+  }, []);
 
-  const coneBlur = isAppleTL ? "2px" : "6px";
-  const ambientBlur = isAppleTL ? "20px" : "40px";
+  const coneBlur = isAppleTL ? "1px" : "6px";
+  const ambientBlur = isAppleTL ? "10px" : "40px";
 
   const content = (
     <>
@@ -154,6 +181,7 @@ export function SectorLight() {
           left: "50%",
           pointerEvents: "none",
           zIndex: 1,
+          transform: "translateZ(0)",  // GPU layer promotion
         }}
       >
         <div
@@ -164,6 +192,7 @@ export function SectorLight() {
             borderRadius: "50%",
             filter: `blur(${coneBlur})`,
             opacity: 0,
+            transform: "translateZ(0)",  // GPU layer promotion
           }}
         />
       </div>
