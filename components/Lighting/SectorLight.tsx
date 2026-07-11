@@ -157,9 +157,15 @@ export function SectorLight() {
     var ROTATE_INTERVAL = isAppleTL ? 2 : 1;
 
     const unreg = registerLightCone(
-      ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
+      ({ opacity, rotate, offsetX, offsetY, ambientOpacity, bgOpacity }) => {
         const currentHue = hueRef.current;
         const wrapperTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+
+        // ── Black background: fade with scroll position ──
+        if (blackBgRef.current) {
+          var bgOp = (typeof bgOpacity === 'number') ? bgOpacity : 1;
+          blackBgRef.current.style.opacity = String(Math.max(0, Math.min(1, bgOp)));
+        }
 
         // ── Ambient glow (skipped on Apple) ──
         if (ambientRef.current) {
