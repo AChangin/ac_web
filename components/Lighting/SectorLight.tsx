@@ -72,20 +72,28 @@ export function SectorLight() {
 
   // Register with the shared RAF loop
   useEffect(() => {
+    var prevHue = hue;
+    var prevAmbient = -1; // force first write
+
     const unreg = registerLightCone(
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
         // Write directly to DOM elements — zero React overhead
         const transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
 
         // Black background always visible — avoids jarring white→black flash
-        // Only the cone + ambient glow are gated by hasPicked
 
         // Ambient glow (skipped on Apple)
         if (ambientRef.current) {
           const ambOp = isAppleTL ? 0 : ambientOpacity;
-          ambientRef.current.style.opacity = String(ambOp);
+          if (ambOp !== prevAmbient) {
+            prevAmbient = ambOp;
+            ambientRef.current.style.opacity = String(ambOp);
+          }
           ambientRef.current.style.transform = transform;
-          ambientRef.current.style.background = `radial-gradient(circle, hsla(${hue}, ${SATURATION}%, 5%, 0.6) 0%, transparent 70%)`;
+          // Only regenerate radial-gradient when hue changes
+          if (hue !== prevHue) {
+            ambientRef.current.style.background = `radial-gradient(circle, hsla(${hue}, ${SATURATION}%, 5%, 0.6) 0%, transparent 70%)`;
+          }
         }
 
         // Light cone
@@ -98,12 +106,17 @@ export function SectorLight() {
           if (diff < -180) diff += 360;
           animRotateRef.current += diff * 0.25; // lerp, no GSAP needed
           coneRef.current.style.transform = `rotate(${animRotateRef.current}deg)`;
-          coneRef.current.style.background = buildSectorGradient(hue);
+          // Only regenerate conic-gradient when hue changes (heavy on Safari)
+          if (hue !== prevHue) {
+            coneRef.current.style.background = buildSectorGradient(hue);
+          }
         }
         // Outer wrapper: translate for parallax positioning
         if (coneWrapperRef.current) {
           coneWrapperRef.current.style.transform = transform;
         }
+
+        prevHue = hue;
       }
     );
     return () => unreg();
