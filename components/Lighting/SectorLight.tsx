@@ -67,7 +67,7 @@ function buildSectorGradientSoft(targetHue: number): string {
 }
 
 // Canvas-based cone for Apple: renders at 384×384, GPU upscales (~70x fewer pixels)
-var CANVAS_SIZE = 512;
+var CANVAS_SIZE = 768;
 // Draw sector centered at targetHue; CSS rotation NOT applied on Apple
 function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
   var cx = CANVAS_SIZE / 2, cy = CANVAS_SIZE / 2, r = CANVAS_SIZE / 2;
@@ -78,8 +78,11 @@ function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
 
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  // Subtle offscreen blur softens wedge edges before GPU upscale
+  ctx.filter = "blur(0.8px)";
 
-  var wedges = 40;
+  var wedges = 64;
   for (var i = 0; i < wedges; i++) {
     var t = i / (wedges - 1);
     var a = startAngle + (endAngle - startAngle) * t;
@@ -95,6 +98,7 @@ function drawConeCanvas(ctx: CanvasRenderingContext2D, targetHue: number) {
     ctx.fillStyle = "hsla(" + localHue + ", " + SATURATION + "%, " + LIGHTNESS + "%, " + alpha.toFixed(3) + ")";
     ctx.fill();
   }
+  ctx.filter = "none";
 }
 
 // Pick gradient + cone style based on platform
