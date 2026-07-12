@@ -2863,21 +2863,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var mDate = document.getElementById('mobile-card-date');
     var mDesc = document.getElementById('mobile-card-desc');
     if(!mCard || !mImg) { setTimeout(initMobileCard, 200); return; }
-    // TEST: flash card to confirm code runs
-    mCard.style.display = 'flex';
-    mCard.style.opacity = '1';
-    mCard.style.border = '3px solid red';
-    mCard.style.left = '50%';
-    mCard.style.bottom = '5vh';
-    mCard.style.top = 'auto';
-    mCard.style.transform = 'translateX(-50%)';
-    mImg.src = 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop';
-    mCat.textContent = 'TEST CATEGORY';
-    mTitle.textContent = 'Test Title — Code Is Running';
-    mDate.textContent = '2024 · Jan';
-    mDesc.textContent = 'If you see this, the mobile card code is executing correctly.';
-    setTimeout(function(){ mCard.style.border = 'none'; mCard.style.display = 'none'; }, 5000);
-
     var mActiveProj = null;
 
     // Access timeline data from global scope
