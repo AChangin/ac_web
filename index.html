@@ -1502,7 +1502,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ========== PARALLAX — standalone so mobile swipe can drive it too ==========
-  var mobileAutoPicked = false;
+  var mobileAutoPicked = sessionStorage.getItem('ac_autopick') === '1';
   function applyParallax(progress){
     scrollProgress = progress;
 
@@ -1774,6 +1774,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           var prog = d > 0 ? -tx / d : 0;
           if(prog > 0.15){
             mobileAutoPicked = true;
+            sessionStorage.setItem('ac_autopick', '1');
             if(window.__autoPickHue) window.__autoPickHue(240);
             var hint = document.getElementById('mobile-hint');
             if(hint){
