@@ -1043,6 +1043,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
 /* ── Mobile project card (timeline section) ── */
 .mobile-project-card{
+  display:none;
   position:fixed;
   bottom:5vh;
   left:50%;
@@ -3057,17 +3058,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 <!-- ════════════════════════════════════════════════════════════
      MOBILE PROJECT CARD — outside scroll-container, fixed to viewport
      ════════════════════════════════════════════════════════════ -->
+<div class="mobile-project-card" id="mobile-project-card">
+  <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
+  <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
+  <div class="mobile-card-body">
+    <span class="mobile-card-cat" id="mobile-card-cat"></span>
+    <h3 class="mobile-card-title" id="mobile-card-title"></h3>
+    <span class="mobile-card-date" id="mobile-card-date"></span>
+    <p class="mobile-card-desc" id="mobile-card-desc"></p>
+  </div>
+</div>
 
-<script>
-document.write('<div id="mobile-project-card" class="mobile-project-card" style="display:flex;opacity:1;position:fixed;left:50%;bottom:5vh;transform:translateX(-50%);z-index:10001;width:88vw;max-width:400px;background:#111;border-radius:16px;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5);">'+
-'<button id="mobile-card-close" class="mobile-card-close" style="position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:1.2rem;z-index:2;">×</button>'+
-'<div class="mobile-card-image" style="width:100%;height:170px;overflow:hidden;background:#1a1a1a;flex-shrink:0;"><img id="mobile-card-img" src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'+
-'<div class="mobile-card-body" style="padding:0.9rem 1.1rem;">'+
-'<span id="mobile-card-cat" class="mobile-card-cat" style="font-family:Inter,sans-serif;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.45);">Brand Identity</span>'+
-'<h3 id="mobile-card-title" class="mobile-card-title" style="font-family:Playfair Display,Georgia,serif;font-size:1.1rem;font-weight:600;color:#fff;margin:0.15rem 0 0.25rem;">DOCUMENT.WRITE CARD</h3>'+
-'<span id="mobile-card-date" class="mobile-card-date" style="font-family:Inter,sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.35);">2021·Feb</span>'+
-'<p id="mobile-card-desc" class="mobile-card-desc" style="font-family:Inter,sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.55);line-height:1.4;margin-top:0.3rem;">Created via document.write — guaranteed to render.</p>'+
-'</div></div>');
-</script>
 </body>
 </html>
