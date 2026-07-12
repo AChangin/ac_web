@@ -1269,18 +1269,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     </div>
   </section>
 
-  <!-- ===== MOBILE PROJECT CARD (visible only on mobile inside timeline) ===== -->
-  <div class="mobile-project-card" id="mobile-project-card">
-    <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
-    <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
-    <div class="mobile-card-body">
-      <span class="mobile-card-cat" id="mobile-card-cat"></span>
-      <h3 class="mobile-card-title" id="mobile-card-title"></h3>
-      <span class="mobile-card-date" id="mobile-card-date"></span>
-      <p class="mobile-card-desc" id="mobile-card-desc"></p>
-    </div>
-  </div>
-
   <!-- ===== ORBIT (Section 3) — Mechanical Pen Orbit System ===== -->
   <section class="section orbit-section" data-index="3" id="orbit-section">
     <div class="orbit-stage" id="orbit-stage">
@@ -2975,6 +2963,20 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   setTimeout(initMobileCard, 500);
 })();
 </script>
+
+<!-- ════════════════════════════════════════════════════════════
+     MOBILE PROJECT CARD — outside scroll-container, fixed to viewport
+     ════════════════════════════════════════════════════════════ -->
+<div class="mobile-project-card" id="mobile-project-card">
+  <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
+  <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
+  <div class="mobile-card-body">
+    <span class="mobile-card-cat" id="mobile-card-cat"></span>
+    <h3 class="mobile-card-title" id="mobile-card-title"></h3>
+    <span class="mobile-card-date" id="mobile-card-date"></span>
+    <p class="mobile-card-desc" id="mobile-card-desc"></p>
+  </div>
+</div>
 
 </body>
 </html>
