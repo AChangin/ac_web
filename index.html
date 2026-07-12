@@ -1480,6 +1480,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     };
     setBodyHeight();
 
+    // Mobile: no GSAP scroll — swipe handler controls translateX directly
+    if(isMobile) return { setBodyHeight };
+
     // Create the scroll-driven horizontal animation
     // The container has position:fixed so it's already pinned to viewport.
     // We just animate its translateX based on scroll position.
