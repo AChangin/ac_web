@@ -116,7 +116,7 @@ body{
   justify-content:space-between;
   padding:2rem 0;
   z-index:50;
-  background:rgba(245,225,220,0.7);
+  background:rgba(139,0,0,0.8);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
   pointer-events:all;
@@ -131,19 +131,20 @@ body{
   align-items:center;
   justify-content:center;
   text-decoration:none;
-  color:#000;
+  color:#fff;
 }
 .nav-logo img{
   display:block;
   width:2.5rem;
   height:2.5rem;
+  filter:brightness(0) invert(1);
 }
 .nav-brand{
   font-family:'Inter',sans-serif;
   font-size:1.3rem;
   font-weight:400;
   letter-spacing:0.02em;
-  color:#000;
+  color:#fff;
   text-decoration:none;
 }
 
@@ -164,17 +165,17 @@ body{
   font-size:1.1rem;
   font-weight:400;
   letter-spacing:0.02em;
-  color:#333;
+  color:rgba(255,255,255,0.85);
   text-decoration:none;
   transition:color 0.3s ease;
   cursor:pointer;
 }
-.nav-link:hover{color:#000}
-.nav-link.active{color:#000}
+.nav-link:hover{color:#fff}
+.nav-link.active{color:#fff}
 .nav-parent{font-weight:600;font-size:1.3rem;letter-spacing:0.01em;}
-.nav-child{font-size:0.95rem;color:#666;padding-left:0.4rem;}
-.nav-child:hover{color:#000}
-.nav-child.active{color:#000}
+.nav-child{font-size:0.95rem;color:rgba(255,255,255,0.65);padding-left:0.4rem;}
+.nav-child:hover{color:#fff}
+.nav-child.active{color:#fff}
 
 .nav-right{
   display:flex;
@@ -202,7 +203,7 @@ body{
   display:block;
   width:20px;
   height:1.5px;
-  background:#000;
+  background:#fff;
   transition:transform 0.3s ease, opacity 0.3s ease;
   transform-origin:center;
 }
@@ -218,7 +219,7 @@ body{
   position:fixed;
   inset:0;
   z-index:49;
-  background:#fff;
+  background:#8b0000;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -241,7 +242,7 @@ body{
   font-size:3rem;
   font-weight:600;
   letter-spacing:-0.02em;
-  color:#000;
+  color:#fff;
   text-decoration:none;
   cursor:pointer;
   transition:opacity 0.2s ease;
