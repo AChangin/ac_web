@@ -3220,7 +3220,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         if(!isPin){
           setTimeout(function(){
             if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
-            mCard.style.transform = 'scale(1)';
+            var r2 = mCard.getBoundingClientRect();
+            var cx2 = r2.left + r2.width/2;
+            var cy2 = r2.top + r2.height/2;
+            mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+            mCard.style.transform = 'translate('+(cx2 - mCard.offsetWidth/2)+'px,'+(cy2 - mCard.offsetHeight/2)+'px) scale(1)';
           }, 400);
         }
         return;
@@ -3229,16 +3233,17 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(isPin){
         setPos(curLeft - 22, curTop - 22, 1);
       } else if(hasDragged){
-        var t = mCard.style.transform;
-        var mx = t.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
-        if(mx){
-          mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-          mCard.style.transform = 'translate('+mx[1]+'px,'+mx[2]+'px) scale(1)';
-        } else {
-          mCard.style.transform = 'scale(1)';
-        }
+        var r2 = mCard.getBoundingClientRect();
+        var cx2 = r2.left + r2.width/2;
+        var cy2 = r2.top + r2.height/2;
+        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+        mCard.style.transform = 'translate('+(cx2 - mCard.offsetWidth/2)+'px,'+(cy2 - mCard.offsetHeight/2)+'px) scale(1)';
       } else {
-        mCard.style.transform = 'scale(1)';
+        var r3 = mCard.getBoundingClientRect();
+        var cx3 = r3.left + r3.width/2;
+        var cy3 = r3.top + r3.height/2;
+        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+        mCard.style.transform = 'translate('+(cx3 - mCard.offsetWidth/2)+'px,'+(cy3 - mCard.offsetHeight/2)+'px) scale(1)';
       }
     });
   }
