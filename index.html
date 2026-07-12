@@ -2387,121 +2387,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     init();
   }
 
-  // ════════════════════════════════════════════════════════════
-  //  MOBILE: tap node → show card, drag card → move between nodes
-  // ════════════════════════════════════════════════════════════
-  var isMobileTL = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(isMobileTL){
-    var mCard = document.getElementById('mobile-project-card');
-    var mImg = document.getElementById('mobile-card-img');
-    var mCat = document.getElementById('mobile-card-cat');
-    var mTitle = document.getElementById('mobile-card-title');
-    var mDate = document.getElementById('mobile-card-date');
-    var mDesc = document.getElementById('mobile-card-desc');
-    var mActiveProj = null;
-
-    function showMobileCard(proj){
-      mActiveProj = proj;
-      mImg.src = proj.coverImage;
-      mCat.textContent = proj.category;
-      mTitle.textContent = proj.title;
-      mDate.textContent = proj.year + ' · ' + CONFIG.months[proj.month - 1];
-      mDesc.textContent = proj.description;
-      mCard.style.display = 'flex';
-      mCard.style.opacity = '1';
-      mCard.style.left = '50%';
-      mCard.style.transform = 'translateX(-50%)';
-      mCard.style.bottom = '5vh';
-      mCard.style.top = 'auto';
-    }
-
-    function hideMobileCard(){
-      mCard.style.opacity = '0';
-      setTimeout(function(){ mCard.style.display = 'none'; mActiveProj = null; }, 250);
-    }
-
-    // Tap project node → show card
-    var gridOuterEl = document.getElementById('tl-grid-outer');
-    if(gridOuterEl){
-      gridOuterEl.addEventListener('touchstart', function(e){
-        var node = e.target.closest('.tl-node');
-        if(!node){ hideMobileCard(); return; }
-        var id = parseInt(node.getAttribute('data-id'));
-        var proj = projects.find(function(p){ return p.id === id; });
-        if(proj) showMobileCard(proj);
-      }, { passive: true });
-    }
-
-    // Drag card — free movement, block page scroll while dragging
-    var dragStartX = 0, dragStartY = 0, dragCardL = 0, dragCardT = 0, draggingCard = false, hasDragged = false;
-
-    // Close button
-    document.getElementById('mobile-card-close').addEventListener('touchstart', function(e){
-      hideMobileCard();
-      e.stopPropagation();
-      e.preventDefault();
-    });
-
-    mCard.addEventListener('touchstart', function(e){
-      if(e.target.closest('.mobile-card-close')) return; // let close button handle it
-      e.preventDefault(); // claim the touch before browser starts scrolling
-      dragStartX = e.touches[0].clientX;
-      dragStartY = e.touches[0].clientY;
-      var rect = mCard.getBoundingClientRect();
-      dragCardL = rect.left;
-      dragCardT = rect.top;
-      draggingCard = true;
-      hasDragged = false;
-      e.stopPropagation();
-    }, { passive: false });
-
-    mCard.addEventListener('touchmove', function(e){
-      if(!draggingCard) return;
-      e.preventDefault(); // block page scroll while dragging card
-      var dx = e.touches[0].clientX - dragStartX;
-      var dy = e.touches[0].clientY - dragStartY;
-      if(Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
-      var vw = window.innerWidth;
-      var vh = window.innerHeight;
-      // Free X/Y movement with edge constraints
-      var newLeft = Math.max(0, Math.min(vw - mCard.offsetWidth, dragCardL + dx));
-      var newTop = Math.max(0, Math.min(vh - mCard.offsetHeight, dragCardT + dy));
-      mCard.style.left = newLeft + 'px';
-      mCard.style.top = newTop + 'px';
-      mCard.style.transform = 'none';
-      mCard.style.bottom = 'auto';
-
-      // Adaptive layout: card on right side → text aligns left; left side → text aligns right
-      var onRight = newLeft > vw * 0.5;
-      mCard.classList.toggle('card-on-right', onRight);
-
-      // Find nearest project node
-      var cx = newLeft + mCard.offsetWidth/2;
-      var nearest = null, minDist = Infinity;
-      for(var i = 0; i < nodeTargets.length; i++){
-        var t = nodeTargets[i];
-        var d = Math.abs(cx - t.cx);
-        if(d < minDist){ minDist = d; nearest = t; }
-      }
-      if(nearest && nearest.project !== mActiveProj && minDist < 120){
-        showMobileCard(nearest.project);
-      }
-    }, { passive: false });
-
-    mCard.addEventListener('touchend', function(e){
-      draggingCard = false;
-      if(!hasDragged) return; // was a tap, keep card at center-bottom
-      // Keep card where user left it
-    }, { passive: true });
-
-    // Tap outside card → dismiss
-    document.addEventListener('touchstart', function(e){
-      if(!mCard.contains(e.target) && !e.target.closest('.tl-node')){
-        hideMobileCard();
-      }
-    }, { passive: true });
-  }
-
 })();
 </script>
 
@@ -2925,13 +2810,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mCard.querySelector('.mobile-card-image').style.display = 'none';
     }
 
-    // Close button → minimize to floating dot
+    // Close button hidden — card never closes
     var closeBtn = document.getElementById('mobile-card-close');
-    if(closeBtn){
-      closeBtn.addEventListener('touchstart', function(e){
-        minimizeCard(); e.stopPropagation(); e.preventDefault();
-      });
-    }
+    if(closeBtn){ closeBtn.style.display = 'none'; }
 
     // Tap mini dot → reopen full card
     mCard.addEventListener('touchstart', function(e){
@@ -2941,50 +2822,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }
     }, { passive: false });
 
-    // Tap grid → show card
-    var gridEl = document.getElementById('tl-grid-outer');
-    function onGridTap(e){
-      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      var proj = null;
-      var node = e.target.closest('.tl-node');
-      if(node){
-        proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
-      } else if(nodeTargets.length > 0){
-        var nearest = null, minDist = 60;
-        for(var i=0; i<nodeTargets.length; i++){
-          var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
-          if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
-        }
-        if(nearest) proj = nearest.project;
-      }
-      if(proj) showCard(proj); else minimizeCard();
-    }
-    if(gridEl){
-      gridEl.addEventListener('touchstart', function(e){
-        // Don't change card position when full card is open
-        if(mCard.style.display === 'flex' && !isMinimized) return;
-        // Force refresh node positions for current scroll position
-        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
-        if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
-        var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
-        var proj = null;
-        var node = e.target.closest('.tl-node');
-        if(node){
-          proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
-        } else if(nodeTargets.length > 0){
-          var nearest = null, minDist = 80;
-          for(var i=0; i<nodeTargets.length; i++){
-            var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
-            if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
-          }
-          if(nearest) proj = nearest.project;
-        }
-        if(proj) showCard(proj); else minimizeCard();
-      }, { passive: false });
-      gridEl.addEventListener('click', onGridTap);
-      gridEl.style.pointerEvents = 'auto';
-    }
+    // Grid tap disabled — only drag changes card
 
     // Drag card — shrink on hold, center on finger, expand on release, block scroll
     var SHRINK = 0.35;
