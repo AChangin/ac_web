@@ -2932,13 +2932,17 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Mini dot: tap to reopen, drag to move (handled by existing drag code)
-    // On touchend, if not dragged, reopen
-    var origTouchend = mCard.ontouchend;
+    // Mini dot: tap to reopen (drag uses existing handler)
+    // Track if touch started on card for distinguishing from scroll
+    var touchedCard = false;
+    mCard.addEventListener('touchstart', function(e){
+      touchedCard = true;
+    }, { passive: true });
     mCard.addEventListener('touchend', function(e){
-      if(isMinimized && !hasDragged && mActiveProj){
+      if(isMinimized && touchedCard && !hasDragged && mActiveProj){
         showCard(mActiveProj);
       }
+      touchedCard = false;
     });
 
     // Tap grid → show card
@@ -2962,8 +2966,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }
     if(gridEl){
       gridEl.addEventListener('touchstart', function(e){
-        // Don't change card position when full card is open
-        if(mCard.style.display === 'flex' && !isMinimized) return;
+        // Only allow grid tap when card is completely hidden (not open, not minimized)
+        if(mCard.style.display !== 'none') return;
         // Force refresh node positions for current scroll position
         if(window.__tlRefreshNodes) window.__tlRefreshNodes();
         if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
