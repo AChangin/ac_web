@@ -1534,17 +1534,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }
   }
 
-  // TEST: auto-pick after 3s on mobile (remove after confirming it works)
-  if(isMobile) setTimeout(function(){ if(!mobileAutoPicked) doAutoPick(); }, 3000);
-
   function applyParallax(progress){
     scrollProgress = progress;
-
-    // ── Mobile auto-pick: first time user swipes into logo section ──
-    if(isMobile && !mobileAutoPicked && progress > 0.08){
-      mobileAutoPicked = true;
-      doAutoPick();
-    }
 
     var vw = window.innerWidth;
 
@@ -1779,6 +1770,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         scrollContainer.style.transform = 'translateX(' + x + 'px)';
         var d = getDist();
         applyParallax(d > 0 ? -x / d : 0);
+        // Trigger auto-pick when swiped past ~15% into logo section
+        if(!mobileAutoPicked && -x > window.innerWidth * 0.15){
+          doAutoPick();
+        }
       }
 
       document.addEventListener('touchstart', function(e){
