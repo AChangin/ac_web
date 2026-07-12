@@ -1474,6 +1474,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     // Set body height to allow scrolling the full horizontal distance
     const setBodyHeight = () => {
+      if(isMobile) return; // mobile uses touch swipe, not body scroll
       const dist = totalScrollDist();
       document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
     };
