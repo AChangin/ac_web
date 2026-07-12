@@ -2922,11 +2922,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(proj) showCard(proj); else hideCard();
     }
     if(gridEl){
-      // TEST: flash green on ANY touch in grid
+      // TEST: show first project unconditionally on grid touch
       gridEl.addEventListener('touchstart', function(e){
         document.body.style.background = 'lime';
         setTimeout(function(){ document.body.style.background = ''; }, 500);
-        onGridTap(e);
+        if(projects.length > 0) showCard(projects[0]);
       }, { passive: false });
       gridEl.addEventListener('click', onGridTap);
       gridEl.style.pointerEvents = 'auto';
