@@ -1503,11 +1503,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
   // ========== PARALLAX — standalone so mobile swipe can drive it too ==========
   var mobileAutoPicked = false;
+  var mobileUserScrolled = false;
   function applyParallax(progress){
     scrollProgress = progress;
 
-    // ── Mobile auto-pick: at 60% toward logo section, pick a default hue ──
-    if(isMobile && !mobileAutoPicked && progress > 0.20 && performance.now() > 1500){
+    // ── Mobile auto-pick: only after user actually scrolls + 60% into logo ──
+    if(isMobile && !mobileAutoPicked && mobileUserScrolled && progress > 0.20){
       mobileAutoPicked = true;
       if(window.__autoPickHue) window.__autoPickHue(240); // blue
       var hint = document.getElementById('mobile-hint');
@@ -1772,6 +1773,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
       document.addEventListener('touchmove', function(e){
         if(!touching) return;
+        mobileUserScrolled = true;
         var x = e.touches[0].clientX;
         var dx = x - lastX;
         var dt = performance.now() - lastTime;
