@@ -1282,8 +1282,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
 /* Magnetic snap: Node highlight */
 .tl-node.magnetically-near{
-  transform:scale(1.5);
+  transform:scale(2.5);
   transition:transform 150ms ease-out;
+  background:#e63946 !important;
+  box-shadow:0 0 8px rgba(230,57,70,0.6);
+  z-index:20 !important;
+  position:relative;
 }
 
 </style>
@@ -2947,7 +2951,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var _animState = { snapNode: null };
     var _dragTx = 0, _dragTy = 0; // saved translate values during drag
     var ANIM = {
-      MAGNETIC_RADIUS: 50,
+      MAGNETIC_RADIUS: 80,
       SETTLE_DURATION: 240
     };
 
