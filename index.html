@@ -1719,8 +1719,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     document.documentElement.style.overflow = 'hidden';
     var logoMount = document.getElementById('logo-mount');
     if(logoMount) logoMount.style.touchAction = 'none';
-    // Reset any restored scroll position
+    // Reset any restored scroll position + GSAP transform
     window.scrollTo(0, 0);
+    scrollContainer.style.transform = 'translateX(0px)';
 
     (function(){
       var tx = 0, vx = 0, touching = false, lastX = 0, lastTime = 0, inertiaRaf = 0;
