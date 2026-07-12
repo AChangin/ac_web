@@ -1430,14 +1430,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           }
         }).catch(function(){});
       }
-      // On mobile, start carousels on first interaction even if video hasn't triggered them
-      if(isMobile && !tagsRevealed){
-        carousels.forEach(function(c, i){
-          c.classList.add('revealed');
-        });
-        tagsRevealed = true;
-        startCarousels();
-      }
     }
     if(master.paused && !master.ended) play();
     ['click','wheel','touchstart','keydown'].forEach(function(evt){
