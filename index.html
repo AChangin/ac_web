@@ -1043,11 +1043,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
 /* ── Mobile project card (timeline section) ── */
 .mobile-project-card{
-  display:flex;
+  display:none;
   position:fixed;
-  top:40vh;
-  left:10vw;
-  transform:none;
+  bottom:5vh;
+  left:50%;
+  transform:translateX(-50%);
   width:88vw;
   max-width:400px;
   background:#111;
@@ -2875,30 +2875,75 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var nodeTargets = window.__tlNodeTargets || [];
     var months = window.__tlMonths || [];
 
-    function showCard(proj, tx, ty){
+    function showCard(proj){
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
       mTitle.textContent = proj.title;
       mDate.textContent = proj.year + ' · ' + (months[proj.month-1] || '');
       mDesc.textContent = proj.description;
+      mCard.style.display = 'flex';
       mCard.style.opacity = '1';
-      if(tx && ty){
-        mCard.style.left = '0px'; mCard.style.top = 'auto'; mCard.style.bottom = 'auto';
-        var vw = window.innerWidth, vh = window.innerHeight;
-        var left = Math.max(mCard.offsetWidth/2, Math.min(vw - mCard.offsetWidth/2, tx));
-        var top = Math.max(mCard.offsetHeight/2, Math.min(vh - mCard.offsetHeight/2, ty));
-        mCard.style.transform = 'translate('+(left-mCard.offsetWidth/2)+'px,'+(top-mCard.offsetHeight/2)+'px) scale(1)';
-      }
+      mCard.style.left = '50%';
+      mCard.style.transform = 'translateX(-50%)';
+      mCard.style.bottom = '5vh';
+      mCard.style.top = 'auto';
     }
 
-    // Close button — just hide the card
+    function hideCard(){
+      mCard.style.opacity = '0';
+      setTimeout(function(){ mCard.style.display = 'none'; mActiveProj = null; }, 250);
+    }
+
+    // Close button
     var closeBtn = document.getElementById('mobile-card-close');
     if(closeBtn){
       closeBtn.addEventListener('touchstart', function(e){
-        mCard.style.opacity = '0';
-        e.stopPropagation(); e.preventDefault();
+        hideCard(); e.stopPropagation(); e.preventDefault();
       });
+    }
+
+    // Tap grid → show card
+    var gridEl = document.getElementById('tl-grid-outer');
+    function onGridTap(e){
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var proj = null;
+      var node = e.target.closest('.tl-node');
+      if(node){
+        proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
+      } else if(nodeTargets.length > 0){
+        var nearest = null, minDist = 60;
+        for(var i=0; i<nodeTargets.length; i++){
+          var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
+          if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
+        }
+        if(nearest) proj = nearest.project;
+      }
+      if(proj) showCard(proj); else hideCard();
+    }
+    if(gridEl){
+      gridEl.addEventListener('touchstart', function(e){
+        // Force refresh node positions for current scroll position
+        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+        if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
+        var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
+        var proj = null;
+        var node = e.target.closest('.tl-node');
+        if(node){
+          proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
+        } else if(nodeTargets.length > 0){
+          var nearest = null, minDist = 80;
+          for(var i=0; i<nodeTargets.length; i++){
+            var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
+            if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
+          }
+          if(nearest) proj = nearest.project;
+        }
+        if(proj) showCard(proj); else hideCard();
+      }, { passive: false });
+      gridEl.addEventListener('click', onGridTap);
+      gridEl.style.pointerEvents = 'auto';
     }
 
     // Drag card
@@ -2907,70 +2952,52 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(e.target.closest('.mobile-card-close')) return;
       e.preventDefault();
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
+      var r = mCard.getBoundingClientRect(); dcL = r.left; dcT = r.top;
       dragging = true; hasDragged = false;
-      var hw = mCard.offsetWidth/2, hh = mCard.offsetHeight/2;
-      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(dsX-hw)+'px,'+(dsY-hh)+'px) scale(0.35)';
     }, { passive: false });
 
     mCard.addEventListener('touchmove', function(e){
       if(!dragging) return;
-      e.preventDefault(); e.stopPropagation();
-      var cx = e.touches[0].clientX, cy = e.touches[0].clientY;
-      if(Math.abs(cx-dsX)>3 || Math.abs(cy-dsY)>3) hasDragged = true;
-      if(!hasDragged) return;
-      // Refresh node positions every drag frame (page may have scrolled)
-      if(window.__tlRefreshNodes) window.__tlRefreshNodes();
-      if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
-      var hw = mCard.offsetWidth/2, hh = mCard.offsetHeight/2;
+      e.preventDefault();
+      var dx = e.touches[0].clientX - dsX, dy = e.touches[0].clientY - dsY;
+      if(Math.abs(dx)>3 || Math.abs(dy)>3) hasDragged = true;
       var vw = window.innerWidth, vh = window.innerHeight;
-      var tx = Math.max(hw*0.35, Math.min(vw-hw*0.35, cx));
-      var ty = Math.max(hh*0.35, Math.min(vh-hh*0.35, cy));
-      mCard.style.transform = 'translate('+(tx-hw)+'px,'+(ty-hh)+'px) scale(0.35)';
-      // Match projects by finger screen position (nodes are in screen coords)
-      var nearest=null, minD=Infinity;
+      var nl = Math.max(0, Math.min(vw - mCard.offsetWidth, dcL + dx));
+      var nt = Math.max(0, Math.min(vh - mCard.offsetHeight, dcT + dy));
+      mCard.style.left = nl+'px'; mCard.style.top = nt+'px';
+      mCard.style.transform = 'none'; mCard.style.bottom = 'auto';
+      mCard.classList.toggle('card-on-right', nl > vw*0.5);
+      // Find nearest project
+      var cx = nl + mCard.offsetWidth/2, nearest=null, minD=Infinity;
       for(var i=0; i<nodeTargets.length; i++){
-        var d=Math.abs(cx - nodeTargets[i].cx);
-        if(d<minD){ minD=d; nearest=nodeTargets[i]; }
+        var t=nodeTargets[i], d=Math.abs(cx-t.cx);
+        if(d<minD){ minD=d; nearest=t; }
       }
-      if(nearest && nearest.project!==mActiveProj && minD<90){
-        mActiveProj = nearest.project;
-        mImg.src = nearest.project.coverImage;
-        mCat.textContent = nearest.project.category;
-        mTitle.textContent = nearest.project.title;
-        mDate.textContent = nearest.project.year + ' · ' + (months[nearest.project.month-1] || '');
-        mDesc.textContent = nearest.project.description;
+      if(nearest && nearest.project !== mActiveProj && minD < 120){
+        showCard(nearest.project);
       }
     }, { passive: false });
 
-    mCard.addEventListener('touchend', function(){
-      if(!dragging) return;
-      dragging = false;
-      if(!hasDragged) return;
-      var t = mCard.style.transform;
-      var mx = t.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
-      var curX = mx ? parseFloat(mx[1]) : 0;
-      var curY = mx ? parseFloat(mx[2]) : 0;
-      mCard.style.transform = 'translate('+curX+'px,'+curY+'px) scale(1)';
-    });
-  }
-
+    mCard.addEventListener('touchend', function(){ dragging = false; });
   }
 
   setTimeout(initMobileCard, 500);
-
 })();
 </script>
 
+<!-- ════════════════════════════════════════════════════════════
+     MOBILE PROJECT CARD — outside scroll-container, fixed to viewport
+     ════════════════════════════════════════════════════════════ -->
 <div class="mobile-project-card" id="mobile-project-card">
   <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
-  <div class="mobile-card-image"><img id="mobile-card-img" src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop" alt=""></div>
+  <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
   <div class="mobile-card-body">
-    <span class="mobile-card-cat" id="mobile-card-cat">Default</span>
-    <h3 class="mobile-card-title" id="mobile-card-title">Card Is Visible</h3>
-    <span class="mobile-card-date" id="mobile-card-date">2024</span>
-    <p class="mobile-card-desc" id="mobile-card-desc">Drag me</p>
+    <span class="mobile-card-cat" id="mobile-card-cat"></span>
+    <h3 class="mobile-card-title" id="mobile-card-title"></h3>
+    <span class="mobile-card-date" id="mobile-card-date"></span>
+    <p class="mobile-card-desc" id="mobile-card-desc"></p>
   </div>
 </div>
+
 </body>
 </html>
