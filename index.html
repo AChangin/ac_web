@@ -3278,6 +3278,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       dragging = false;
       mCard.classList.remove('card-lifting','card-dragging');
       _clearMagneticSnap();
+      if(!isPin && hasDragged){
+        mCard.classList.add('card-settling');
+        setTimeout(function(){
+          mCard.classList.remove('card-settling');
+        }, ANIM.SETTLE_DURATION + 30);
+      }
       mCard.style.transition = ''; // restore CSS transitions
       var r = mCard.getBoundingClientRect();
       var curLeft = r.left, curTop = r.top;
