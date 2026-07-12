@@ -3051,34 +3051,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     });
   }
 
-    // Pin card to page position — follow scroll-container transform
-    var pinBaseX = 0;
-    mCard.addEventListener('touchstart', function(e){
-      // Save card's page position when drag starts
-      var sc = document.getElementById('scroll-container');
-      if(sc){
-        var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
-        pinBaseX = parseFloat(mCard.style.left || '50%') === '50%'
-          ? (window.innerWidth - (mCard.offsetWidth || 400)) / 2
-          : parseFloat(mCard.style.left);
-      }
-    }, { passive: true });
-
-    // Sync card position with page scroll
-    setInterval(function(){
-      if(!mCard || mCard.style.display === 'none') return;
-      var sc = document.getElementById('scroll-container');
-      if(!sc) return;
-      var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
-      var sx = m.m41; // current translateX
-      if(mCard.style.left !== '50%'){
-        // Card has a specific position — keep it fixed to the page
-        mCard.style.left = (pinBaseX + sx) + 'px';
-      }
-    }, 100);
-
-  }
-
   setTimeout(initMobileCard, 500);
 })();
 </script>
