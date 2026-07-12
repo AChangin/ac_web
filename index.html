@@ -1510,6 +1510,23 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   function applyParallax(progress){
     scrollProgress = progress;
 
+    // ── Mobile auto-pick: first time user swipes into logo section ──
+    if(isMobile && !mobileAutoPicked && progress > 0.08){
+      mobileAutoPicked = true;
+      sessionStorage.setItem('ac_autopick', '1');
+      if(window.__autoPickHue) window.__autoPickHue(240);
+      var hint = document.getElementById('mobile-hint');
+      if(hint){
+        hint.style.display = '';
+        var hideHint = function(){
+          hint.style.opacity = '0';
+          setTimeout(function(){ hint.style.display = 'none'; }, 400);
+          document.removeEventListener('touchstart', hideHint);
+        };
+        document.addEventListener('touchstart', hideHint, { once: true });
+      }
+    }
+
     var vw = window.innerWidth;
 
     // Hero parallax
@@ -1772,24 +1789,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }, { passive: true });
 
       document.addEventListener('touchend', function(){
-        // ── Auto-pick: check on every touchend, regardless of swipe state ──
-        if(!mobileAutoPicked && scrollProgress > 0.10){
-          console.log('[auto-pick] progress:', scrollProgress.toFixed(3));
-          mobileAutoPicked = true;
-          sessionStorage.setItem('ac_autopick', '1');
-          if(window.__autoPickHue) window.__autoPickHue(240);
-          var hint = document.getElementById('mobile-hint');
-          if(hint){
-            hint.style.display = '';
-            var hideHint = function(){
-              hint.style.opacity = '0';
-              setTimeout(function(){ hint.style.display = 'none'; }, 400);
-              document.removeEventListener('touchstart', hideHint);
-            };
-            document.addEventListener('touchstart', hideHint, { once: true });
-          }
-        }
-
         if(!touching) return;
         touching = false;
 
