@@ -187,7 +187,8 @@ export function useLogoInteraction({
     }
 
     function getRect(el: HTMLElement): DOMRect {
-      if (!cachedRectRef.current) cachedRectRef.current = el.getBoundingClientRect();
+      // Always read fresh — container moves with horizontal scroll
+      cachedRectRef.current = el.getBoundingClientRect();
       return cachedRectRef.current;
     }
 
