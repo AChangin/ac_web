@@ -1138,6 +1138,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   .tl-cursor{display:none!important}
 }
 
+/* ── Safe area for card positioning ── */
+:root {
+  --safe-top: max(16px, env(safe-area-inset-top));
+  --safe-right: max(16px, env(safe-area-inset-right));
+  --safe-bottom: max(24px, env(safe-area-inset-bottom));
+  --safe-left: max(16px, env(safe-area-inset-left));
+}
+
 /* ═══════════════════════════════════════════════════════════════
    iOS-Native Animation System — compositor-only (transform + opacity)
    ═══════════════════════════════════════════════════════════════ */
@@ -2975,10 +2983,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
-      // Reposition to center after transition
+      // Reposition with smart positioning — center on node, clamped to viewport
       setTimeout(function(){
+        var anchor = _findNodeAnchor();
+        var ax = anchor ? anchor.cx : cx;
+        var ay = anchor ? anchor.cy : cy;
+        var finalW = Math.min(window.innerWidth * 0.8, 320);
+        var pos = _smartPosition(ax, ay, finalW, finalW);
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+(cx-mCard.offsetWidth/2)+'px,'+(cy-mCard.offsetHeight/2)+'px) scale(1)';
+        mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
+        _dragTx = pos.tx; _dragTy = pos.ty;
       }, 50);
       _prevActiveProj = proj;
       // Trigger card-expand border-radius animation
@@ -3032,6 +3046,57 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         _animState.snapNode.classList.remove('magnetically-near');
         _animState.snapNode = null;
       }
+    }
+
+    // ── Smart positioning: keep card within viewport safe area ──
+
+    function _findNodeAnchor(){
+      // Find the timeline node closest to the current card center
+      if(!window.__tlNodeTargets || !mActiveProj) return null;
+      var targets = window.__tlNodeTargets;
+      for(var i = 0; i < targets.length; i++){
+        if(targets[i].project.id === mActiveProj.id){
+          return { cx: targets[i].cx, cy: targets[i].cy };
+        }
+      }
+      return null;
+    }
+
+    function _smartPosition(anchorX, anchorY, cardW, cardH){
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+
+      // Read safe area from CSS variables
+      var style = getComputedStyle(document.documentElement);
+      var sTop = parseInt(style.getPropertyValue('--safe-top')) || 16;
+      var sRight = parseInt(style.getPropertyValue('--safe-right')) || 16;
+      var sBottom = parseInt(style.getPropertyValue('--safe-bottom')) || 24;
+      var sLeft = parseInt(style.getPropertyValue('--safe-left')) || 16;
+
+      // Center card on anchor
+      var tx = anchorX - cardW / 2;
+      var ty = anchorY - cardH / 2;
+
+      // Clamp to safe area — minimal adjustment
+      var maxX = vw - sRight - cardW;
+      var maxY = vh - sBottom - cardH;
+      if(tx < sLeft) tx = sLeft;
+      if(ty < sTop) ty = sTop;
+      if(tx > maxX) tx = maxX;
+      if(ty > maxY) ty = maxY;
+
+      // Final safety: if card bigger than safe area, pin to top-left
+      if(tx < sLeft) tx = sLeft;
+      if(ty < sTop) ty = sTop;
+
+      return { tx: tx, ty: ty };
+    }
+
+    function _applySmartPosition(anchorX, anchorY, cardW, cardH){
+      var pos = _smartPosition(anchorX, anchorY, cardW, cardH);
+      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+      mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
+      _dragTx = pos.tx; _dragTy = pos.ty;
     }
 
     // Switch to pin mode — CSS transition handles the animation
@@ -3228,12 +3293,26 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           inertiaRaf = requestAnimationFrame(step);
         }
         inertiaRaf = requestAnimationFrame(step);
-        // Expand card after inertia
+        // Expand card after inertia — snap to smart position
         if(!isPin){
           setTimeout(function(){
             if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
+            var cw = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
+            var ch = mCard.offsetHeight || cw;
+            var anchor = _findNodeAnchor();
+            var pos;
+            if(anchor){
+              pos = _smartPosition(anchor.cx, anchor.cy, cw, ch);
+            } else {
+              // Keep current center but clamp to viewport
+              var r2 = mCard.getBoundingClientRect();
+              var cx2 = r2.left + r2.width/2;
+              var cy2 = r2.top + r2.height/2;
+              pos = _smartPosition(cx2, cy2, cw, ch);
+            }
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-            mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
+            mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
+            _dragTx = pos.tx; _dragTy = pos.ty;
           }, 400);
         }
         return;
@@ -3241,12 +3320,21 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
       if(isPin){
         setPos(curLeft - 22, curTop - 22, 1);
-      } else if(hasDragged){
-        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
       } else {
+        // Snap to smart position around nearest node
+        var cw2 = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
+        var ch2 = mCard.offsetHeight || cw2;
+        var anchor2 = _findNodeAnchor();
+        var pos2;
+        if(anchor2){
+          pos2 = _smartPosition(anchor2.cx, anchor2.cy, cw2, ch2);
+        } else {
+          var r3 = mCard.getBoundingClientRect();
+          pos2 = _smartPosition(r3.left + r3.width/2, r3.top + r3.height/2, cw2, ch2);
+        }
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
+        mCard.style.transform = 'translate('+pos2.tx+'px,'+pos2.ty+'px) scale(1)';
+        _dragTx = pos2.tx; _dragTy = pos2.ty;
       }
     });
   }
