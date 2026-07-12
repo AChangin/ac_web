@@ -1055,10 +1055,25 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   overflow:hidden;
   z-index:10001;
   box-shadow:0 8px 40px rgba(0,0,0,0.5);
-  touch-action:none;
   transition:opacity 0.25s;
-  display:flex;
   flex-direction:column;
+}
+.mobile-card-close{
+  position:absolute;
+  top:8px;right:8px;
+  width:32px;height:32px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  border:none;
+  color:#fff;
+  font-size:1.2rem;
+  line-height:1;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
 .mobile-card-image{
   width:100%;
@@ -1256,6 +1271,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
   <!-- ===== MOBILE PROJECT CARD (visible only on mobile inside timeline) ===== -->
   <div class="mobile-project-card" id="mobile-project-card">
+    <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
     <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
     <div class="mobile-card-body">
       <span class="mobile-card-cat" id="mobile-card-cat"></span>
@@ -2409,7 +2425,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     // Drag card — free movement, block page scroll while dragging
     var dragStartX = 0, dragStartY = 0, dragCardL = 0, dragCardT = 0, draggingCard = false, hasDragged = false;
 
+    // Close button
+    document.getElementById('mobile-card-close').addEventListener('touchstart', function(e){
+      hideMobileCard();
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
     mCard.addEventListener('touchstart', function(e){
+      if(e.target.closest('.mobile-card-close')) return; // let close button handle it
+      e.preventDefault(); // claim the touch before browser starts scrolling
       dragStartX = e.touches[0].clientX;
       dragStartY = e.touches[0].clientY;
       var rect = mCard.getBoundingClientRect();
@@ -2418,7 +2443,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       draggingCard = true;
       hasDragged = false;
       e.stopPropagation();
-    }, { passive: true });
+    }, { passive: false });
 
     mCard.addEventListener('touchmove', function(e){
       if(!draggingCard) return;
