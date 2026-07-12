@@ -1257,7 +1257,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
 /* State 4 */
 .mobile-project-card.card-dragging{
-  transition:none !important;
   opacity:0.7;
 }
 
@@ -2968,7 +2967,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     function toCard(proj){
       wasPin = isPin;
       isPin = false;
-      mCard.classList.remove('card-closing'); // abort any in-progress close animation
+      mCard.classList.remove('card-closing','card-dragging'); // abort close anim, allow morph transitions
+      mCard.style.transition = ''; // enable CSS transitions for pin→card morph
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
@@ -2984,12 +2984,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
-      _prevActiveProj = proj;
-      // Trigger card-expand border-radius animation
-      mCard.classList.add('card-expanding');
-      setTimeout(function(){
-        mCard.classList.remove('card-expanding');
-      }, 300);
       _prevActiveProj = proj;
       // Trigger card-expand border-radius animation
       mCard.classList.add('card-expanding');
@@ -3314,8 +3308,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         if(!isPin){
           setTimeout(function(){
             if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
+            var cw = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
+            var ch = mCard.offsetHeight || cw;
+            var r2 = mCard.getBoundingClientRect();
+            var pos = _smartPosition(r2.left + r2.width/2, r2.top + r2.height/2, cw, ch);
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-            mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
+            mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
+            _dragTx = pos.tx; _dragTy = pos.ty;
           }, 400);
         }
         return;
@@ -3324,8 +3323,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(isPin){
         setPos(curLeft - 22, curTop - 22, 1);
       } else {
+        var cw2 = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
+        var ch2 = mCard.offsetHeight || cw2;
+        var r3 = mCard.getBoundingClientRect();
+        var pos2 = _smartPosition(r3.left + r3.width/2, r3.top + r3.height/2, cw2, ch2);
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
+        mCard.style.transform = 'translate('+pos2.tx+'px,'+pos2.ty+'px) scale(1)';
+        _dragTx = pos2.tx; _dragTy = pos2.ty;
       }
     });
   }
