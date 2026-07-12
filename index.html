@@ -1772,10 +1772,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }, { passive: true });
 
       document.addEventListener('touchend', function(){
-        if(!touching) return;
-        touching = false;
-
-        // ── Auto-pick on first real swipe into logo section ──
+        // ── Auto-pick: check on every touchend, regardless of swipe state ──
         if(!mobileAutoPicked && scrollProgress > 0.10){
           console.log('[auto-pick] progress:', scrollProgress.toFixed(3));
           mobileAutoPicked = true;
@@ -1792,6 +1789,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
             document.addEventListener('touchstart', hideHint, { once: true });
           }
         }
+
+        if(!touching) return;
+        touching = false;
 
         if(Math.abs(vx) > 0.1){
           stopInertia();
