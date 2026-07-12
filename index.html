@@ -2911,12 +2911,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // ULTRA TEST: create a brand new div via JS
-    var testDiv = document.createElement('div');
-    testDiv.textContent = 'CARD TEST ' + (projects.length > 0 ? projects[0].title : 'no projects');
-    testDiv.style.cssText = 'position:fixed;left:10vw;top:40vh;width:80vw;background:red;color:#fff;font-size:20px;padding:20px;z-index:99999;border:4px solid yellow;';
-    document.body.appendChild(testDiv);
-    setTimeout(function(){ testDiv.remove(); }, 8000);
+    // ULTRA TEST v2: no dependencies
+    try {
+      var testDiv = document.createElement('div');
+      testDiv.textContent = 'TEST V2';
+      testDiv.style.cssText = 'position:fixed;inset:10vh 10vw;background:red;color:#fff;font-size:30px;z-index:2147483647;border:6px solid lime;display:flex;align-items:center;justify-content:center;';
+      document.documentElement.appendChild(testDiv);
+      setTimeout(function(){ testDiv.remove(); }, 8000);
+    } catch(err) {
+      // silently fail
+    }
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
