@@ -1164,6 +1164,21 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       position: relative;
       z-index: 5;
     "></div>
+    <div id="mobile-hint" style="
+      display:none;
+      position:absolute;
+      bottom:18vh;
+      left:50%;
+      transform:translateX(-50%);
+      color:rgba(255,255,255,0.7);
+      font-family:'Inter',sans-serif;
+      font-size:0.9rem;
+      letter-spacing:0.04em;
+      white-space:nowrap;
+      z-index:10;
+      pointer-events:none;
+      transition:opacity 0.4s;
+    ">Drag to change color</div>
   </section>
 
   <!-- ===== TIMELINE (Section 2) — Swiss Style Interactive Map ===== -->
@@ -1487,8 +1502,27 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ========== PARALLAX — standalone so mobile swipe can drive it too ==========
+  var mobileAutoPicked = false;
   function applyParallax(progress){
     scrollProgress = progress;
+
+    // ── Mobile auto-pick: at 60% toward logo section, pick a default hue ──
+    if(isMobile && !mobileAutoPicked && progress > 0.20){
+      mobileAutoPicked = true;
+      if(window.__autoPickHue) window.__autoPickHue(200); // blue-ish default
+      var hint = document.getElementById('mobile-hint');
+      if(hint){
+        hint.style.display = '';
+        // Hide hint after user manually changes color (via touch)
+        var hideHint = function(){
+          hint.style.opacity = '0';
+          setTimeout(function(){ hint.style.display = 'none'; }, 400);
+          document.removeEventListener('touchstart', hideHint);
+        };
+        document.addEventListener('touchstart', hideHint, { once: true });
+      }
+    }
+
     var vw = window.innerWidth;
 
     // Hero parallax

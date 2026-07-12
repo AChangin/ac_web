@@ -265,6 +265,19 @@ export function useLogoInteraction({
     };
   }, [containerRef]);
 
+  // ---- Mobile auto-pick: triggered by scroll when user enters logo section ----
+  useEffect(() => {
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return;
+    (window as any).__autoPickHue = function(targetHue: number) {
+      if (hasPickedRef.current) return; // already picked
+      hasPickedRef.current = true;
+      setHasPicked(true);
+      onHueChangeRef.current(((targetHue % 360) + 360) % 360);
+    };
+    return () => { delete (window as any).__autoPickHue; };
+  }, []);
+
   // ---- Picker 位置 ----
   const pos = calcPickerPos(hue);
 
