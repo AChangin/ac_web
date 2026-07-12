@@ -1142,17 +1142,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
    iOS-Native Animation System — compositor-only (transform + opacity)
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Performance: GPU layer promotion ── */
-.mobile-project-card{
-  will-change:transform,opacity;
-}
-.mobile-project-card .mobile-card-body,
-.mobile-project-card .mobile-card-image,
-.mobile-project-card .mobile-card-close,
-.mobile-card-pin-icon{
-  will-change:opacity,transform;
-}
-
 /* ── Transition refinements (add opacity to existing list) ── */
 .mobile-project-card{
   transition:width 0.35s cubic-bezier(0.22,1,0.36,1),
@@ -2964,6 +2953,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     function toCard(proj){
       wasPin = isPin;
       isPin = false;
+      mCard.classList.remove('card-closing'); // abort any in-progress close animation
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
@@ -2985,6 +2975,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         mCard.style.transform = 'translate('+(cx-mCard.offsetWidth/2)+'px,'+(cy-mCard.offsetHeight/2)+'px) scale(1)';
       }, 50);
       _prevActiveProj = proj;
+      // Trigger card-expand border-radius animation
+      mCard.classList.add('card-expanding');
+      setTimeout(function(){
+        mCard.classList.remove('card-expanding');
+      }, 300);
     }
 
     // ── Animation helpers (iOS-feel) ──
@@ -3282,27 +3277,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         }, 140);
       });
     }
-
-    // ================================================================
-    // MutationObserver: cleanup when pin state changes
-    // ================================================================
-    var observer = new MutationObserver(function(mutations){
-      mutations.forEach(function(mutation){
-        if(mutation.type === 'attributes' && mutation.attributeName === 'class'){
-          if(mCard.classList.contains('card-pin')){
-            // Just entered pin mode — ensure animation classes are cleaned
-            mCard.classList.remove('card-lifting','card-dragging','card-settling','card-expanding');
-          } else {
-            // Just entered card mode — trigger expand animation
-            mCard.classList.add('card-expanding');
-            setTimeout(function(){
-              mCard.classList.remove('card-expanding');
-            }, 300);
-          }
-        }
-      });
-    });
-    observer.observe(mCard, { attributes: true, attributeFilter: ['class'] });
 
   }, 600);
 })();
