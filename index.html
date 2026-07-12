@@ -1106,7 +1106,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   </div>
 
   <!-- ===== HERO WHITE BG (below bg-alpha, above blackBg) ===== -->
-  <div style="position:absolute;left:0;top:0;width:100vw;height:100vh;background:#fff;z-index:0;pointer-events:none"></div>
+  <div style="position:absolute;left:0;top:0;width:100vw;height:100vh;background:hsl(0,0%,95%);z-index:0;pointer-events:none"></div>
 
   <!-- ===== HERO (Section 0) ===== -->
   <section class="section hero" data-index="0">
@@ -1423,13 +1423,20 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     function play(){
       if(master.paused && !master.ended){
         master.play().then(function(){
-          // Start slave synced to master
           if(slave && slave.paused && !slave.ended){
             slave.currentTime = master.currentTime;
             slave.play().catch(function(){});
             startSync();
           }
         }).catch(function(){});
+      }
+      // On mobile, start carousels on first interaction even if video hasn't triggered them
+      if(isMobile && !tagsRevealed){
+        carousels.forEach(function(c, i){
+          c.classList.add('revealed');
+        });
+        tagsRevealed = true;
+        startCarousels();
       }
     }
     if(master.paused && !master.ended) play();
