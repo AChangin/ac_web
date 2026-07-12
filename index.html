@@ -1771,7 +1771,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         var d = getDist();
         applyParallax(d > 0 ? -x / d : 0);
         // Trigger auto-pick when swiped past ~15% into logo section
-        if(!mobileAutoPicked && -x > window.innerWidth * 0.15){
+        if(!mobileAutoPicked && -x > window.innerWidth * 0.60){
           doAutoPick();
         }
       }
