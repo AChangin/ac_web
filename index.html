@@ -2911,33 +2911,25 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Long-press anywhere → show card when it's closed (use document level)
-    var longPressTimer = 0;
-    document.addEventListener('touchstart', function(e){
-      if(cardOpen) return;
-      var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
-      longPressTimer = setTimeout(function(){
-        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
-        if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
-        var proj = null;
-        var node = document.elementFromPoint(clientX, clientY);
-        if(node) node = node.closest('.tl-node');
-        if(node){
-          proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
-        } else if(nodeTargets.length > 0){
-          var nearest = null, minDist = 80;
-          for(var i=0; i<nodeTargets.length; i++){
-            var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
-            if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
-          }
-          if(nearest) proj = nearest.project;
+    // Auto-show/hide card based on scroll position (timeline = ~1/3 to ~2/3 of total scroll)
+    var prevSection = -1;
+    setInterval(function(){
+      var sc = document.getElementById('scroll-container');
+      if(!sc) return;
+      var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
+      var vw = window.innerWidth;
+      var section = Math.round(-m.m41 / vw); // 0=hero, 1=logo, 2=timeline, 3=orbit
+      if(section !== prevSection){
+        prevSection = section;
+        if(section === 2 && !cardOpen && projects.length > 0){
+          if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+          if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
+          showCard(projects[0], vw/2, window.innerHeight*0.4);
+        } else if(section !== 2 && cardOpen){
+          hideCard();
         }
-        if(proj) showCard(proj, clientX, clientY);
-      }, 500);
-    }, { passive: true });
-    document.addEventListener('touchmove', function(){ clearTimeout(longPressTimer); }, { passive: true });
-    document.addEventListener('touchend', function(){ clearTimeout(longPressTimer); }, { passive: true });
-    document.addEventListener('touchcancel', function(){ clearTimeout(longPressTimer); }, { passive: true });
+      }
+    }, 500);
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
