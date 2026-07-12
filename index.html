@@ -2971,22 +2971,27 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     });
   }
 
-    // Track page scroll: close card when 50%+ into another section
-    var lastScrollX = 0;
-    setInterval(function(){
-      var m = new DOMMatrixReadOnly(getComputedStyle(document.getElementById('scroll-container')).transform);
-      var sx = m.m41; // current translateX
-      if(Math.abs(sx - lastScrollX) > 30 && mCard.style.display !== 'none'){
-        // Close card if scrolled away from timeline (sections: hero=0, logo=-100vw, timeline=-200vw, orbit=-300vw)
-        var vw = window.innerWidth;
-        if(sx > -140*vw/100 || sx < -260*vw/100) hideCard();
-      }
-      lastScrollX = sx;
-    }, 500);
-
   }
 
   setTimeout(initMobileCard, 500);
+
+  // Track page scroll: close card when 50%+ into another section
+  var lastScrollX = 0;
+  setInterval(function(){
+    var sc = document.getElementById('scroll-container');
+    if(!sc) return;
+    var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
+    var sx = m.m41;
+    var mCard = document.getElementById('mobile-project-card');
+    if(!mCard || mCard.style.display === 'none') { lastScrollX = sx; return; }
+    if(Math.abs(sx - lastScrollX) > 30){
+      var vw = window.innerWidth;
+      // Timeline section is roughly between -140vw and -260vw
+      if(sx > -140*vw/100 || sx < -260*vw/100) mCard.style.opacity = '0';
+      else mCard.style.opacity = '1';
+    }
+    lastScrollX = sx;
+  }, 500);
 })();
 </script>
 
