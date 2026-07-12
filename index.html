@@ -1506,7 +1506,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   // ========== PARALLAX — standalone so mobile swipe can drive it too ==========
-  var mobileAutoPicked = sessionStorage.getItem('ac_autopick') === '1';
+  sessionStorage.removeItem('ac_autopick'); // clear from previous tests
+  var mobileAutoPicked = false;
   function applyParallax(progress){
     scrollProgress = progress;
 
@@ -1514,7 +1515,18 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     if(isMobile && !mobileAutoPicked && progress > 0.08){
       mobileAutoPicked = true;
       sessionStorage.setItem('ac_autopick', '1');
-      if(window.__autoPickHue) window.__autoPickHue(240);
+      function doPick(){
+        if(window.__autoPickHue) { window.__autoPickHue(240); return true; }
+        return false;
+      }
+      if(!doPick()){
+        // React might not be mounted yet — retry on next frame
+        var retries = 0;
+        var retryTimer = setInterval(function(){
+          retries++;
+          if(doPick() || retries > 50){ clearInterval(retryTimer); }
+        }, 100);
+      }
       var hint = document.getElementById('mobile-hint');
       if(hint){
         hint.style.display = '';
