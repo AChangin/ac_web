@@ -2792,8 +2792,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var months = window.__tlMonths || [];
     var isPin = true; // start as pin icon
 
-    // Switch to card mode
+    // Switch to card mode — CSS transition handles the animation
     function toCard(proj){
+      wasPin = isPin;
       isPin = false;
       mActiveProj = proj;
       mImg.src = proj.coverImage;
@@ -2801,21 +2802,39 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mTitle.textContent = proj.title;
       mDate.textContent = proj.year + ' · ' + (months[proj.month-1] || '');
       mDesc.textContent = proj.description;
+      // Let CSS transition animate pin→card
+      var r = mCard.getBoundingClientRect();
+      var cx = r.left + r.width/2, cy = r.top + r.height/2;
+      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+      mCard.style.transform = 'translate('+(cx-24)+'px,'+(cy-24)+'px) scale(1)';
       mCard.classList.remove('card-pin');
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
+      // Reposition to center after transition
+      setTimeout(function(){
+        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+        mCard.style.transform = 'translate('+(cx-mCard.offsetWidth/2)+'px,'+(cy-mCard.offsetHeight/2)+'px) scale(1)';
+      }, 50);
     }
 
-    // Switch to pin mode — pin at card center
+    // Switch to pin mode — CSS transition handles the animation
+    var wasPin = true;
     function toPin(){
       isPin = true;
       var r = mCard.getBoundingClientRect();
       var cx = r.left + r.width/2, cy = r.top + r.height/2;
-      mCard.classList.add('card-pin');
-      document.getElementById('mobile-card-close').style.display = 'none';
+      // Shrink to center first, then add pin class
+      mCard.style.transition = 'none';
       mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(cx-24)+'px,'+(cy-24)+'px) scale(1)';
+      mCard.style.transform = 'translate('+(cx-mCard.offsetWidth/2)+'px,'+(cy-mCard.offsetHeight/2)+'px) scale(1)';
+      var savedX = cx, savedY = cy;
+      // Force reflow then animate
+      mCard.offsetHeight;
+      mCard.style.transition = '';
+      mCard.classList.add('card-pin');
+      mCard.style.transform = 'translate('+(savedX-22)+'px,'+(savedY-22)+'px) scale(1)';
+      document.getElementById('mobile-card-close').style.display = 'none';
     }
 
     // Close button → pin mode
@@ -2841,6 +2860,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
       lastX = dsX; lastY = dsY; lastT = performance.now(); vx = 0; vy = 0;
       if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
+      mCard.style.transition = 'none'; // disable CSS transitions during drag
       var r = mCard.getBoundingClientRect();
       dragStartL = r.left; dragStartT = r.top;
       dragging = true; hasDragged = false;
@@ -2909,6 +2929,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchend', function(){
       if(!dragging) return;
       dragging = false;
+      mCard.style.transition = ''; // restore CSS transitions
       var r = mCard.getBoundingClientRect();
       var curLeft = r.left, curTop = r.top;
       var curScale = isPin ? 1 : (hasDragged ? SHRINK : 1);
