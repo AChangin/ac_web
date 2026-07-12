@@ -1057,15 +1057,21 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   box-shadow:0 8px 40px rgba(0,0,0,0.5);
   touch-action:none;
   transition:opacity 0.25s;
+  display:flex;
+  flex-direction:column;
 }
 .mobile-card-image{
   width:100%;
   height:170px;
   overflow:hidden;
   background:#1a1a1a;
+  flex-shrink:0;
 }
 .mobile-card-image img{width:100%;height:100%;object-fit:cover;display:block}
 .mobile-card-body{padding:0.9rem 1.1rem}
+/* Card on right side → text body aligns left naturally; on left side → text aligns right */
+.card-on-right .mobile-card-body{text-align:left}
+.mobile-card-body{text-align:right}
 .mobile-card-cat{
   font-family:'Inter',sans-serif;
   font-size:0.65rem;
@@ -2400,23 +2406,41 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }, { passive: true });
     }
 
-    // Drag card horizontally to switch projects
-    var dragStartX = 0, dragCardL = 0, draggingCard = false;
+    // Drag card — free movement, block page scroll while dragging
+    var dragStartX = 0, dragStartY = 0, dragCardL = 0, dragCardT = 0, draggingCard = false, hasDragged = false;
+
     mCard.addEventListener('touchstart', function(e){
       dragStartX = e.touches[0].clientX;
-      dragCardL = mCard.getBoundingClientRect().left;
+      dragStartY = e.touches[0].clientY;
+      var rect = mCard.getBoundingClientRect();
+      dragCardL = rect.left;
+      dragCardT = rect.top;
       draggingCard = true;
+      hasDragged = false;
       e.stopPropagation();
     }, { passive: true });
 
     mCard.addEventListener('touchmove', function(e){
       if(!draggingCard) return;
+      e.preventDefault(); // block page scroll while dragging card
       var dx = e.touches[0].clientX - dragStartX;
+      var dy = e.touches[0].clientY - dragStartY;
+      if(Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
       var vw = window.innerWidth;
-      var newLeft = Math.max(6, Math.min(vw - mCard.offsetWidth - 6, dragCardL + dx));
+      var vh = window.innerHeight;
+      // Free X/Y movement with edge constraints
+      var newLeft = Math.max(0, Math.min(vw - mCard.offsetWidth, dragCardL + dx));
+      var newTop = Math.max(0, Math.min(vh - mCard.offsetHeight, dragCardT + dy));
       mCard.style.left = newLeft + 'px';
+      mCard.style.top = newTop + 'px';
       mCard.style.transform = 'none';
-      // Find nearest project
+      mCard.style.bottom = 'auto';
+
+      // Adaptive layout: card on right side → text aligns left; left side → text aligns right
+      var onRight = newLeft > vw * 0.5;
+      mCard.classList.toggle('card-on-right', onRight);
+
+      // Find nearest project node
       var cx = newLeft + mCard.offsetWidth/2;
       var nearest = null, minDist = Infinity;
       for(var i = 0; i < nodeTargets.length; i++){
@@ -2427,13 +2451,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(nearest && nearest.project !== mActiveProj && minDist < 120){
         showMobileCard(nearest.project);
       }
-    }, { passive: true });
+    }, { passive: false });
 
-    mCard.addEventListener('touchend', function(){
+    mCard.addEventListener('touchend', function(e){
       draggingCard = false;
-      // Snap back to center
-      mCard.style.left = '50%';
-      mCard.style.transform = 'translateX(-50%)';
+      if(!hasDragged) return; // was a tap, keep card at center-bottom
+      // Keep card where user left it
     }, { passive: true });
 
     // Tap outside card → dismiss
