@@ -2885,7 +2885,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mCard.style.display = 'flex';
       mCard.style.opacity = '1';
       mCard.style.bottom = 'auto';
-      mCard.style.transform = 'none';
+      mCard.style.top = 'auto';
+      mCard.style.transform = 'scale(1)';
       // Position near touch point, constrained to viewport
       var vw = window.innerWidth, vh = window.innerHeight;
       var left = tx ? tx - mCard.offsetWidth/2 : (vw - mCard.offsetWidth)/2;
@@ -2958,9 +2959,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(e.target.closest('.mobile-card-close')) return;
       e.preventDefault();
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
+      var r = mCard.getBoundingClientRect();
       dragging = true; hasDragged = false;
-      // Shrink card immediately on touch
-      mCard.style.transition = 'transform 0.15s';
+      // Bake current position into left/top, then shrink
+      mCard.style.left = r.left + 'px';
+      mCard.style.top = r.top + 'px';
+      mCard.style.bottom = 'auto';
+      mCard.style.transformOrigin = 'center center';
       mCard.style.transform = 'scale(0.35)';
     }, { passive: false });
 
@@ -2989,11 +2994,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchend', function(){
       if(!dragging) return;
       dragging = false;
-      if(hasDragged){
-        mCard.style.transition = 'transform 0.25s';
-        mCard.style.transform = 'scale(1)';
-        setTimeout(function(){ mCard.style.transition = ''; }, 250);
-      }
+      // Expand back, center horizontally
+      var vw = window.innerWidth;
+      mCard.style.left = '50%';
+      mCard.style.transform = 'translateX(-50%) scale(1)';
+      mCard.style.bottom = '5vh';
+      mCard.style.top = 'auto';
     });
   }
 
