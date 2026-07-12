@@ -1270,9 +1270,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   animation:contentIn 180ms ease-out both;
 }
 
-/* State 6 */
+/* State 6 — use transition, NOT animation (animation overrides transform) */
 .mobile-project-card.card-settling{
-  animation:cardSettle 240ms ease-out forwards;
+  opacity:1;
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
 }
 
 /* State 7 */
