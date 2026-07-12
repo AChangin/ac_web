@@ -2955,18 +2955,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
+    var startTx=0, startTy=0; // card position when drag started
     mCard.addEventListener('touchstart', function(e){
       if(e.target.closest('.mobile-card-close')) return;
       e.preventDefault();
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
       var r = mCard.getBoundingClientRect();
+      startTx = r.left; startTy = r.top;
       dragging = true; hasDragged = false;
-      // Bake current position into left/top, then shrink
-      mCard.style.left = r.left + 'px';
-      mCard.style.top = r.top + 'px';
-      mCard.style.bottom = 'auto';
-      mCard.style.transformOrigin = 'center center';
-      mCard.style.transform = 'scale(0.35)';
+      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+      mCard.style.transform = 'translate('+startTx+'px,'+startTy+'px) scale(0.35)';
     }, { passive: false });
 
     mCard.addEventListener('touchmove', function(e){
@@ -2975,13 +2973,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var dx = e.touches[0].clientX - dsX, dy = e.touches[0].clientY - dsY;
       if(Math.abs(dx)>3 || Math.abs(dy)>3) hasDragged = true;
       if(!hasDragged) return;
-      var cx = dsX + dx, cy = dsY + dy;
-      var hw = mCard.offsetWidth*0.35/2, hh = mCard.offsetHeight*0.35/2;
+      var tx = startTx + dx, ty = startTy + dy;
+      var hw = mCard.offsetWidth*0.35, hh = mCard.offsetHeight*0.35;
       var vw = window.innerWidth, vh = window.innerHeight;
-      mCard.style.left = Math.max(hw, Math.min(vw-hw, cx))+'px';
-      mCard.style.top  = Math.max(hh, Math.min(vh-hh, cy))+'px';
-      // Find nearest project — update content only, don't touch position/scale
-      var nearest=null, minD=Infinity;
+      tx = Math.max(-hw/2, Math.min(vw - hw/2, tx));
+      ty = Math.max(-hh/2, Math.min(vh - hh/2, ty));
+      mCard.style.transform = 'translate('+tx+'px,'+ty+'px) scale(0.35)';
+      // Find nearest project — update content only
+      var cx = tx + hw/2, nearest=null, minD=Infinity;
       for(var i=0; i<nodeTargets.length; i++){
         var d=Math.abs(cx - nodeTargets[i].cx);
         if(d<minD){ minD=d; nearest=nodeTargets[i]; }
@@ -2999,12 +2998,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchend', function(){
       if(!dragging) return;
       dragging = false;
-      // Expand back, center horizontally
-      var vw = window.innerWidth;
-      mCard.style.left = '50%';
-      mCard.style.transform = 'translateX(-50%) scale(1)';
-      mCard.style.bottom = '5vh';
-      mCard.style.top = 'auto';
+      // Read current transform position
+      var t = mCard.style.transform;
+      var mx = t.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
+      var curX = mx ? parseFloat(mx[1]) : startTx;
+      var curY = mx ? parseFloat(mx[2]) : startTy;
+      // Stay at current position, expand
+      mCard.style.transform = 'translate('+curX+'px,'+curY+'px) scale(1)';
     });
   }
 
