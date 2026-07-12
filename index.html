@@ -2858,11 +2858,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
      ════════════════════════════════════════════════════════════ -->
 <script>
 (function(){
-  // ULTIMATE TEST: turn bg red for 3s to prove this script executes
-  var origBg = document.body.style.background;
-  document.body.style.background = 'red';
-  setTimeout(function(){ document.body.style.background = origBg; }, 3000);
-
   // Wait for timeline to initialize
   function initMobileCard(){
     var mCard = document.getElementById('mobile-project-card');
@@ -2907,13 +2902,30 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Tap anywhere on body to test card
-    document.body.addEventListener('touchstart', function(e){
-      // Show first project as test
-      if(projects.length > 0 && mCard.style.display === 'none'){
-        showCard(projects[0]);
+    // Tap grid → show card
+    var gridEl = document.getElementById('tl-grid-outer');
+    function onGridTap(e){
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var proj = null;
+      var node = e.target.closest('.tl-node');
+      if(node){
+        proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
+      } else if(nodeTargets.length > 0){
+        var nearest = null, minDist = 60;
+        for(var i=0; i<nodeTargets.length; i++){
+          var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
+          if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
+        }
+        if(nearest) proj = nearest.project;
       }
-    }, { passive: true });
+      if(proj) showCard(proj); else hideCard();
+    }
+    if(gridEl){
+      gridEl.addEventListener('touchstart', onGridTap, { passive: false });
+      gridEl.addEventListener('click', onGridTap);
+      gridEl.style.pointerEvents = 'auto';
+    }
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
