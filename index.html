@@ -1204,12 +1204,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   100% { opacity:0.75;box-shadow:0 16px 48px rgba(0,0,0,0.6); }
 }
 
-/* State 6: Release settle — shadow/opacity restore (transform via CSS transition) */
-@keyframes cardSettle{
-  0%   { opacity:0.75;box-shadow:0 16px 48px rgba(0,0,0,0.6); }
-  100% { opacity:1;   box-shadow:0 8px 40px rgba(0,0,0,0.5); }
-}
-
 /* Content swap: old content exits upward */
 @keyframes contentOut{
   0%   { opacity:1; transform:translateY(0); }
@@ -2994,20 +2988,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     // ── Animation helpers (iOS-feel) ──
 
-    function _animateContentIn(){
-      var body = mCard.querySelector('.mobile-card-body');
-      var image = mCard.querySelector('.mobile-card-image');
-      var close = document.getElementById('mobile-card-close');
-      if(body){ body.classList.add('content-swapping-in'); }
-      if(image){ image.classList.add('content-swapping-in'); }
-      if(close){ close.classList.add('content-swapping-in'); }
-      setTimeout(function(){
-        if(body) body.classList.remove('content-swapping-in');
-        if(image) image.classList.remove('content-swapping-in');
-        if(close) close.classList.remove('content-swapping-in');
-      }, ANIM.CONTENT_IN_DURATION || 200);
-    }
-
     function _applyMagneticSnap(clientX, clientY){
       if(!window.__tlNodeTargets) return;
       var targets = window.__tlNodeTargets;
@@ -3039,28 +3019,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }
 
     // ── Smart positioning: keep card within viewport safe area ──
-
-    function _findNodeAnchor(){
-      // Use DOM element position directly (more reliable than cached target data)
-      if(!mActiveProj) return null;
-      var nodeEl = document.getElementById('tl-node-' + mActiveProj.id);
-      if(nodeEl){
-        var rect = nodeEl.getBoundingClientRect();
-        if(rect.width > 0 && rect.height > 0){
-          return { cx: rect.left + rect.width/2, cy: rect.top + rect.height/2 };
-        }
-      }
-      // Fallback to window.__tlNodeTargets
-      if(window.__tlNodeTargets){
-        var targets = window.__tlNodeTargets;
-        for(var i = 0; i < targets.length; i++){
-          if(targets[i].project.id === mActiveProj.id){
-            return { cx: targets[i].cx, cy: targets[i].cy };
-          }
-        }
-      }
-      return null;
-    }
 
     function _smartPosition(anchorX, anchorY, cardW, cardH){
       var vw = window.innerWidth;
@@ -3102,13 +3060,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(ty < sTop) ty = sTop;
 
       return { tx: tx, ty: ty };
-    }
-
-    function _applySmartPosition(anchorX, anchorY, cardW, cardH){
-      var pos = _smartPosition(anchorX, anchorY, cardW, cardH);
-      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
-      _dragTx = pos.tx; _dragTy = pos.ty;
     }
 
     // Switch to pin mode — CSS transition handles the animation
