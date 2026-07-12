@@ -2875,7 +2875,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var nodeTargets = window.__tlNodeTargets || [];
     var months = window.__tlMonths || [];
 
-    function showCard(proj){
+    function showCard(proj, tx, ty){
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
@@ -2884,10 +2884,16 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mDesc.textContent = proj.description;
       mCard.style.display = 'flex';
       mCard.style.opacity = '1';
-      mCard.style.left = '50%';
-      mCard.style.transform = 'translateX(-50%)';
-      mCard.style.bottom = '5vh';
-      mCard.style.top = 'auto';
+      mCard.style.bottom = 'auto';
+      mCard.style.transform = 'none';
+      // Position near touch point, constrained to viewport
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var left = tx ? tx - mCard.offsetWidth/2 : (vw - mCard.offsetWidth)/2;
+      var top = ty ? ty - mCard.offsetHeight - 20 : vh*0.35;
+      left = Math.max(0, Math.min(vw - mCard.offsetWidth, left));
+      top = Math.max(0, Math.min(vh - mCard.offsetHeight, top));
+      mCard.style.left = left + 'px';
+      mCard.style.top = top + 'px';
     }
 
     function hideCard(){
@@ -2940,7 +2946,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           }
           if(nearest) proj = nearest.project;
         }
-        if(proj) showCard(proj); else hideCard();
+        if(proj) showCard(proj, clientX, clientY); else hideCard();
       }, { passive: false });
       gridEl.addEventListener('click', onGridTap);
       gridEl.style.pointerEvents = 'auto';
@@ -2959,6 +2965,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchmove', function(e){
       if(!dragging) return;
       e.preventDefault();
+      e.stopPropagation(); // block swipe handler too
       var dx = e.touches[0].clientX - dsX, dy = e.touches[0].clientY - dsY;
       if(Math.abs(dx)>3 || Math.abs(dy)>3) hasDragged = true;
       var vw = window.innerWidth, vh = window.innerHeight;
@@ -2974,7 +2981,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         if(d<minD){ minD=d; nearest=t; }
       }
       if(nearest && nearest.project !== mActiveProj && minD < 120){
-        showCard(nearest.project);
+        showCard(nearest.project, nl + mCard.offsetWidth/2, nt);
       }
     }, { passive: false });
 
