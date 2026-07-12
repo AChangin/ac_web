@@ -1402,7 +1402,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     master.addEventListener('timeupdate', function(){
       if(tagsRevealed || !master.duration) return;
       var pct = master.currentTime / master.duration;
-      var thresholds = [0.74, 0.78, 0.82];
+      var thresholds = [0.80, 0.80, 0.80];
       while(revealIndex < thresholds.length && pct > thresholds[revealIndex]){
         var carousel = carousels[revealIndex];
         if(carousel) carousel.classList.add('revealed');
