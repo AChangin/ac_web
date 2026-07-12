@@ -2028,10 +2028,35 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     (function(){
       var tx = 0, vx = 0, touching = false, lastX = 0, lastTime = 0, inertiaRaf = 0;
+      var snapRaf = 0, snapTimer = 0;
+      var SNAP = { THRESHOLD: 60, MAX_VELOCITY: 0.3, DURATION: 280, IDLE_DELAY: 100 };
 
       function getDist(){ return scrollContainer.scrollWidth - window.innerWidth; }
       function clamp(v){ var m = -getDist(); return Math.max(m, Math.min(0, v)); }
       function stopInertia(){ if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; } }
+      function stopSnap(){ if(snapRaf){ cancelAnimationFrame(snapRaf); snapRaf = 0; } clearTimeout(snapTimer); }
+
+      function tryMagneticSnap(){
+        stopSnap();
+        var vw = window.innerWidth;
+        var absTx = -tx;
+        var nearest = Math.round(absTx / vw);
+        nearest = Math.max(0, Math.min(totalSections - 1, nearest));
+        var targetTx = -(nearest * vw);
+        var distance = Math.abs(tx - targetTx);
+        if(distance > SNAP.THRESHOLD || Math.abs(vx) > SNAP.MAX_VELOCITY) return;
+        if(distance < 1) return;
+        var startTx = tx, startTime = performance.now();
+        function snapStep(now){
+          var elapsed = now - startTime;
+          var progress = Math.min(elapsed / SNAP.DURATION, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          setTx(startTx + (targetTx - startTx) * eased);
+          if(progress < 1){ snapRaf = requestAnimationFrame(snapStep); }
+          else { snapRaf = 0; setTx(targetTx); }
+        }
+        snapRaf = requestAnimationFrame(snapStep);
+      }
 
       function setTx(x){
         tx = x;
@@ -2053,6 +2078,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           if(Math.hypot(e.touches[0].clientX - cx, e.touches[0].clientY - cy) < 200) return;
         }
         stopInertia();
+        stopSnap();
         lastX = e.touches[0].clientX;
         lastTime = performance.now();
         vx = 0;
@@ -2075,15 +2101,18 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       document.addEventListener('touchend', function(){
         if(!touching) return;
         touching = false;
+        stopSnap();
 
         if(Math.abs(vx) > 0.1){
           stopInertia();
           (function step(){
-            if(Math.abs(vx) < 0.03){ inertiaRaf = 0; return; }
+            if(Math.abs(vx) < 0.03){ inertiaRaf = 0; snapTimer = setTimeout(tryMagneticSnap, SNAP.IDLE_DELAY); return; }
             vx *= 0.95;
             setTx(clamp(tx + vx * 16));
             inertiaRaf = requestAnimationFrame(step);
           })();
+        } else {
+          snapTimer = setTimeout(tryMagneticSnap, SNAP.IDLE_DELAY);
         }
       }, { passive: true });
     })();
