@@ -130,6 +130,15 @@ export function SectorLight() {
   const hueRef = useRef(hue);
   useEffect(() => { hueRef.current = hue; }, [hue]);
 
+  // Windows: sync animRotateRef when hue changes (shortest rotation path)
+  useEffect(() => {
+    var target = hue - SPAN + ROTATION_OFFSET;
+    var diff = target - animRotateRef.current;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+    animRotateRef.current += diff;
+  }, [hue]);
+
   // Init offscreen canvas for Apple cone rendering
   useEffect(() => {
     if (!USE_CANVAS) return;
