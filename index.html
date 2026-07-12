@@ -3315,17 +3315,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           inertiaRaf = requestAnimationFrame(step);
         }
         inertiaRaf = requestAnimationFrame(step);
-        // Expand card after inertia — use current center, clamp to viewport
+        // Expand card after inertia
         if(!isPin){
           setTimeout(function(){
             if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
-            var cw = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
-            var ch = mCard.offsetHeight || cw;
-            var r2 = mCard.getBoundingClientRect();
-            var pos = _smartPosition(r2.left + r2.width/2, r2.top + r2.height/2, cw, ch);
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-            mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
-            _dragTx = pos.tx; _dragTy = pos.ty;
+            mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
           }, 400);
         }
         return;
@@ -3334,14 +3329,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(isPin){
         setPos(curLeft - 22, curTop - 22, 1);
       } else {
-        // Use current card center as anchor, clamp to viewport
-        var cw2 = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
-        var ch2 = mCard.offsetHeight || cw2;
-        var r3 = mCard.getBoundingClientRect();
-        var pos2 = _smartPosition(r3.left + r3.width/2, r3.top + r3.height/2, cw2, ch2);
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+pos2.tx+'px,'+pos2.ty+'px) scale(1)';
-        _dragTx = pos2.tx; _dragTy = pos2.ty;
+        mCard.style.transform = 'translate('+_dragTx+'px,'+_dragTy+'px) scale(1)';
       }
     });
   }
