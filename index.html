@@ -1137,6 +1137,166 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 @media(max-width:1024px){
   .tl-cursor{display:none!important}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   iOS-Native Animation System — compositor-only (transform + opacity)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Performance: GPU layer promotion ── */
+.mobile-project-card{
+  will-change:transform,opacity;
+}
+.mobile-project-card .mobile-card-body,
+.mobile-project-card .mobile-card-image,
+.mobile-project-card .mobile-card-close,
+.mobile-card-pin-icon{
+  will-change:opacity,transform;
+}
+
+/* ── Transition refinements (add opacity to existing list) ── */
+.mobile-project-card{
+  transition:width 0.35s cubic-bezier(0.22,1,0.36,1),
+             height 0.35s cubic-bezier(0.22,1,0.36,1),
+             border-radius 0.35s cubic-bezier(0.22,1,0.36,1),
+             transform 0.35s cubic-bezier(0.22,1,0.36,1),
+             background 0.35s ease,
+             box-shadow 0.35s ease,
+             opacity 0.28s ease-out;
+}
+
+/* ── Pin icon fade ── */
+.mobile-card-pin-icon{
+  transition:opacity 0.22s ease-out,transform 0.22s ease-out;
+}
+.mobile-project-card.card-pin .mobile-card-pin-icon{
+  animation:contentIn 250ms ease-out both;
+}
+
+/* ── Close button micro-interactions ── */
+.mobile-card-close{
+  transition:opacity 0.15s ease,background 0.15s ease,transform 0.15s ease;
+}
+.mobile-card-close:hover{
+  opacity:0.8;
+  background:rgba(255,255,255,0.25);
+}
+.mobile-card-close:active{
+  opacity:0.6;
+  transform:scale(0.92);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   @keyframes
+   ═══════════════════════════════════════════════════════════════ */
+
+/* State 1: Pin entry — iOS card-like reveal */
+@keyframes pinEntry{
+  0%   { opacity:0; transform:translateX(-50%) translateY(8px) scale(0.9); }
+  100% { opacity:1; transform:translateX(-50%) translateY(0)   scale(1); }
+}
+
+/* State 2: Pin→Card morph — border-radius expand (transform via CSS transition) */
+@keyframes cardExpand{
+  0%   { border-radius:50%; }
+  100% { border-radius:16px; }
+}
+
+/* State 3: Drag-start lift — shadow deepens, slight opacity drop (transform via inline) */
+@keyframes cardLift{
+  0%   { opacity:1;   box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+  100% { opacity:0.75;box-shadow:0 16px 48px rgba(0,0,0,0.6); }
+}
+
+/* State 6: Release settle — shadow/opacity restore (transform via CSS transition) */
+@keyframes cardSettle{
+  0%   { opacity:0.75;box-shadow:0 16px 48px rgba(0,0,0,0.6); }
+  100% { opacity:1;   box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+}
+
+/* Content swap: old content exits upward */
+@keyframes contentOut{
+  0%   { opacity:1; transform:translateY(0); }
+  100% { opacity:0; transform:translateY(-8px); }
+}
+
+/* Content swap: new content enters from below */
+@keyframes contentIn{
+  0%   { opacity:0; transform:translateY(8px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+
+/* Close button micro-press */
+@keyframes buttonPress{
+  0%   { transform:scale(1); }
+  40%  { transform:scale(0.96); }
+  100% { transform:scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Animation Utility Classes
+   ═══════════════════════════════════════════════════════════════ */
+
+/* State 1 */
+.mobile-project-card.pin-entering{
+  animation:pinEntry 350ms cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+/* State 2 */
+.mobile-project-card.card-expanding{
+  animation:cardExpand 280ms cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.mobile-project-card:not(.card-pin) .mobile-card-body,
+.mobile-project-card:not(.card-pin) .mobile-card-image{
+  animation:contentIn 280ms ease-out both;
+}
+.mobile-project-card:not(.card-pin) .mobile-card-close{
+  animation:contentIn 220ms ease-out 60ms both;
+}
+
+/* State 3 */
+.mobile-project-card.card-lifting{
+  animation:cardLift 120ms ease-out forwards;
+}
+
+/* State 4 */
+.mobile-project-card.card-dragging{
+  transition:none !important;
+  opacity:0.7;
+}
+
+/* State 5 */
+.mobile-project-card .content-swapping-out{
+  animation:contentOut 120ms ease-in forwards;
+  pointer-events:none;
+}
+.mobile-project-card .content-swapping-in{
+  animation:contentIn 180ms ease-out both;
+}
+
+/* State 6 */
+.mobile-project-card.card-settling{
+  animation:cardSettle 240ms ease-out forwards;
+}
+
+/* State 7 */
+.mobile-project-card.card-closing .mobile-card-body,
+.mobile-project-card.card-closing .mobile-card-image,
+.mobile-project-card.card-closing .mobile-card-close{
+  animation:contentOut 150ms ease-in forwards;
+  pointer-events:none;
+}
+
+/* Micro: Button press */
+.mobile-card-close.button-pressing{
+  animation:buttonPress 120ms ease-out;
+}
+
+/* Magnetic snap: Node highlight */
+.tl-node.magnetically-near{
+  transform:scale(1.5);
+  transition:transform 150ms ease-out;
+}
+
 </style>
 </head>
 <body>
@@ -2792,6 +2952,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var months = window.__tlMonths || [];
     var isPin = true; // start as pin icon
 
+    // ── Animation state (iOS-feel additions) ──
+    var _prevActiveProj = null;
+    var _animState = { snapNode: null };
+    var ANIM = {
+      MAGNETIC_RADIUS: 18,
+      SETTLE_DURATION: 240
+    };
+
     // Switch to card mode — CSS transition handles the animation
     function toCard(proj){
       wasPin = isPin;
@@ -2816,25 +2984,78 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
         mCard.style.transform = 'translate('+(cx-mCard.offsetWidth/2)+'px,'+(cy-mCard.offsetHeight/2)+'px) scale(1)';
       }, 50);
+      _prevActiveProj = proj;
+    }
+
+    // ── Animation helpers (iOS-feel) ──
+
+    function _animateContentIn(){
+      var body = mCard.querySelector('.mobile-card-body');
+      var image = mCard.querySelector('.mobile-card-image');
+      var close = document.getElementById('mobile-card-close');
+      if(body){ body.classList.add('content-swapping-in'); }
+      if(image){ image.classList.add('content-swapping-in'); }
+      if(close){ close.classList.add('content-swapping-in'); }
+      setTimeout(function(){
+        if(body) body.classList.remove('content-swapping-in');
+        if(image) image.classList.remove('content-swapping-in');
+        if(close) close.classList.remove('content-swapping-in');
+      }, ANIM.CONTENT_IN_DURATION || 200);
+    }
+
+    function _applyMagneticSnap(clientX){
+      if(!window.__tlNodeTargets) return;
+      var targets = window.__tlNodeTargets;
+      var nearest = null, minD = Infinity;
+      for(var i = 0; i < targets.length; i++){
+        var d = Math.abs(clientX - targets[i].cx);
+        if(d < minD){ minD = d; nearest = targets[i]; }
+      }
+      if(_animState.snapNode){
+        _animState.snapNode.classList.remove('magnetically-near');
+        _animState.snapNode = null;
+      }
+      if(nearest && minD <= ANIM.MAGNETIC_RADIUS){
+        var nodeEl = document.querySelector('.tl-node[data-id="' + nearest.project.id + '"]');
+        if(nodeEl){
+          nodeEl.classList.add('magnetically-near');
+          _animState.snapNode = nodeEl;
+        }
+      }
+    }
+
+    function _clearMagneticSnap(){
+      if(_animState.snapNode){
+        _animState.snapNode.classList.remove('magnetically-near');
+        _animState.snapNode = null;
+      }
     }
 
     // Switch to pin mode — CSS transition handles the animation
     var wasPin = true;
     function toPin(){
       isPin = true;
+      _clearMagneticSnap();
+      // Apply closing animation class — content fades out first
+      mCard.classList.add('card-closing');
+      mCard.classList.remove('card-lifting','card-dragging','card-settling');
       var r = mCard.getBoundingClientRect();
       var cx = r.left + r.width/2, cy = r.top + r.height/2;
-      // Shrink to center first, then add pin class
-      mCard.style.transition = 'none';
-      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(cx-mCard.offsetWidth/2)+'px,'+(cy-mCard.offsetHeight/2)+'px) scale(1)';
       var savedX = cx, savedY = cy;
-      // Force reflow then animate
-      mCard.offsetHeight;
-      mCard.style.transition = '';
-      mCard.classList.add('card-pin');
-      mCard.style.transform = 'translate('+(savedX-22)+'px,'+(savedY-22)+'px) scale(1)';
-      document.getElementById('mobile-card-close').style.display = 'none';
+      // After content fade-out, execute the morph to pin
+      setTimeout(function(){
+        if(!isPin) return; // aborted: card was re-opened during closing animation
+        mCard.classList.remove('card-closing');
+        mCard.style.transition = 'none';
+        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+        mCard.style.transform = 'translate('+(savedX-mCard.offsetWidth/2)+'px,'+(savedY-mCard.offsetHeight/2)+'px) scale(1)';
+        // Force reflow then animate
+        mCard.offsetHeight;
+        mCard.style.transition = '';
+        mCard.classList.add('card-pin');
+        mCard.style.transform = 'translate('+(savedX-22)+'px,'+(savedY-22)+'px) scale(1)';
+        document.getElementById('mobile-card-close').style.display = 'none';
+      }, 180);
     }
 
     // Close button → pin mode
@@ -2872,6 +3093,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       } else {
         setPos(dragStartL - 24, dragStartT - 24, 1);
       }
+      // Press lift animation (card "picked up")
+      mCard.classList.remove('card-settling','card-closing');
+      if(!isPin){
+        mCard.classList.add('card-lifting');
+      }
     }, { passive: false });
 
     mCard.addEventListener('touchmove', function(e){
@@ -2883,6 +3109,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       lastX = cx; lastY = cy; lastT = now;
       if(Math.abs(cx - dsX) > 3 || Math.abs(cy - dsY) > 3) hasDragged = true;
       if(!hasDragged) return;
+      // Transition from press-lift to active-drag state
+      if(mCard.classList.contains('card-lifting')){
+        mCard.classList.remove('card-lifting');
+        mCard.classList.add('card-dragging');
+      }
+      // Magnetic snap highlight
+      _applyMagneticSnap(cx);
       if(window.__tlRefreshNodes) window.__tlRefreshNodes();
       if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
 
@@ -2916,12 +3149,37 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           if(d2 < minD2){ minD2 = d2; nearest2 = nodeTargets[j]; }
         }
         if(nearest2 && nearest2.project !== mActiveProj && minD2 < 100){
+          var prevProj = mActiveProj;
           mActiveProj = nearest2.project;
-          mImg.src = nearest2.project.coverImage;
-          mCat.textContent = nearest2.project.category;
-          mTitle.textContent = nearest2.project.title;
-          mDate.textContent = nearest2.project.year + ' · ' + (months[nearest2.project.month-1] || '');
-          mDesc.textContent = nearest2.project.description;
+          // Content swap animation: old content exits, then new content enters
+          if(prevProj !== null){
+            var body = mCard.querySelector('.mobile-card-body');
+            var image = mCard.querySelector('.mobile-card-image');
+            if(body) body.classList.add('content-swapping-out');
+            if(image) image.classList.add('content-swapping-out');
+            // Update content immediately (visually hidden during swap-out)
+            mImg.src = nearest2.project.coverImage;
+            mCat.textContent = nearest2.project.category;
+            mTitle.textContent = nearest2.project.title;
+            mDate.textContent = nearest2.project.year + ' · ' + (months[nearest2.project.month-1] || '');
+            mDesc.textContent = nearest2.project.description;
+            // After out animation, trigger in animation
+            setTimeout(function(){
+              if(body){ body.classList.remove('content-swapping-out'); body.classList.add('content-swapping-in'); }
+              if(image){ image.classList.remove('content-swapping-out'); image.classList.add('content-swapping-in'); }
+              setTimeout(function(){
+                if(body) body.classList.remove('content-swapping-in');
+                if(image) image.classList.remove('content-swapping-in');
+              }, 200);
+            }, 130);
+          } else {
+            // First project assignment (no animation needed)
+            mImg.src = nearest2.project.coverImage;
+            mCat.textContent = nearest2.project.category;
+            mTitle.textContent = nearest2.project.title;
+            mDate.textContent = nearest2.project.year + ' · ' + (months[nearest2.project.month-1] || '');
+            mDesc.textContent = nearest2.project.description;
+          }
         }
       }
     }, { passive: false });
@@ -2929,6 +3187,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchend', function(){
       if(!dragging) return;
       dragging = false;
+      // Restore visual state on release
+      mCard.classList.remove('card-lifting','card-dragging');
+      _clearMagneticSnap();
+      if(!isPin && hasDragged){
+        mCard.classList.add('card-settling');
+        setTimeout(function(){
+          mCard.classList.remove('card-settling');
+        }, ANIM.SETTLE_DURATION + 30);
+      }
       mCard.style.transition = ''; // restore CSS transitions
       var r = mCard.getBoundingClientRect();
       var curLeft = r.left, curTop = r.top;
@@ -2982,6 +3249,62 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   }
 
   setTimeout(initMobileCard, 500);
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════
+     iOS ANIMATION COORDINATOR — external layer
+     ════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  // Wait for mobile card IIFE to initialize (its timeout is 500ms)
+  setTimeout(function(){
+    var mCard = document.getElementById('mobile-project-card');
+    var mClose = document.getElementById('mobile-card-close');
+    if(!mCard) return;
+
+    // ================================================================
+    // STATE 1: Initial pin entry animation
+    // ================================================================
+    mCard.classList.add('pin-entering');
+    setTimeout(function(){
+      mCard.classList.remove('pin-entering');
+    }, 370);
+
+    // ================================================================
+    // Micro: Close button press animation
+    // ================================================================
+    if(mClose){
+      mClose.addEventListener('pointerdown', function(){
+        mClose.classList.add('button-pressing');
+        setTimeout(function(){
+          mClose.classList.remove('button-pressing');
+        }, 140);
+      });
+    }
+
+    // ================================================================
+    // MutationObserver: cleanup when pin state changes
+    // ================================================================
+    var observer = new MutationObserver(function(mutations){
+      mutations.forEach(function(mutation){
+        if(mutation.type === 'attributes' && mutation.attributeName === 'class'){
+          if(mCard.classList.contains('card-pin')){
+            // Just entered pin mode — ensure animation classes are cleaned
+            mCard.classList.remove('card-lifting','card-dragging','card-settling','card-expanding');
+          } else {
+            // Just entered card mode — trigger expand animation
+            mCard.classList.add('card-expanding');
+            setTimeout(function(){
+              mCard.classList.remove('card-expanding');
+            }, 300);
+          }
+        }
+      });
+    });
+    observer.observe(mCard, { attributes: true, attributeFilter: ['class'] });
+
+  }, 600);
 })();
 </script>
 
