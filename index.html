@@ -2946,7 +2946,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       gridEl.style.pointerEvents = 'auto';
     }
 
-    // Drag card
+    // Drag card — shrink on hold, expand on release
+    var SHRINK = 0.35;
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
     mCard.addEventListener('touchstart', function(e){
       if(e.target.closest('.mobile-card-close')) return;
@@ -2954,19 +2955,23 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
       var r = mCard.getBoundingClientRect(); dcL = r.left; dcT = r.top;
       dragging = true; hasDragged = false;
+      // Shrink
+      mCard.style.transition = 'transform 0.15s';
+      mCard.style.transform = 'scale('+SHRINK+')';
+      mCard.style.transformOrigin = 'center center';
     }, { passive: false });
 
     mCard.addEventListener('touchmove', function(e){
       if(!dragging) return;
-      e.preventDefault();
+      e.preventDefault(); e.stopPropagation();
       var dx = e.touches[0].clientX - dsX, dy = e.touches[0].clientY - dsY;
       if(Math.abs(dx)>3 || Math.abs(dy)>3) hasDragged = true;
+      if(!hasDragged) return;
       var vw = window.innerWidth, vh = window.innerHeight;
       var nl = Math.max(0, Math.min(vw - mCard.offsetWidth, dcL + dx));
       var nt = Math.max(0, Math.min(vh - mCard.offsetHeight, dcT + dy));
       mCard.style.left = nl+'px'; mCard.style.top = nt+'px';
-      mCard.style.transform = 'none'; mCard.style.bottom = 'auto';
-      mCard.classList.toggle('card-on-right', nl > vw*0.5);
+      mCard.style.bottom = 'auto';
       // Find nearest project
       var cx = nl + mCard.offsetWidth/2, nearest=null, minD=Infinity;
       for(var i=0; i<nodeTargets.length; i++){
@@ -2978,7 +2983,18 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }
     }, { passive: false });
 
-    mCard.addEventListener('touchend', function(){ dragging = false; });
+    mCard.addEventListener('touchend', function(){
+      if(!dragging) return;
+      dragging = false;
+      if(hasDragged){
+        // Expand back
+        mCard.style.transition = 'transform 0.25s';
+        mCard.style.transform = 'scale(1)';
+        setTimeout(function(){ mCard.style.transition = ''; }, 250);
+      } else {
+        mCard.style.transform = 'scale(1)';
+      }
+    });
   }
 
   setTimeout(initMobileCard, 500);
