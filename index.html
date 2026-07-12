@@ -1039,8 +1039,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 /* ── Mobile project card (timeline section) ── */
 .mobile-project-card{
   display:flex;
-  width:88vw;
-  max-width:400px;
+  width:min(88vw,400px);
+  aspect-ratio:1/1;
   background:#111;
   border-radius:16px;
   overflow:hidden;
@@ -1049,6 +1049,21 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   transition:opacity 0.25s;
   flex-direction:column;
 }
+/* Pin mode: small icon */
+.mobile-project-card.card-pin{
+  width:48px;
+  aspect-ratio:auto;
+  height:48px;
+  border-radius:50%;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+.mobile-project-card.card-pin .mobile-card-body,
+.mobile-project-card.card-pin .mobile-card-image,
+.mobile-project-card.card-pin .mobile-card-close{ display:none; }
+.mobile-project-card.card-pin .mobile-card-pin-icon{ display:block; }
+.mobile-card-pin-icon{ display:none; width:100%;height:100%; }
 /* Mini floating dot state */
 .card-mini{
   background:#000 !important;
@@ -1272,14 +1287,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       </div>
     </div>
 
-    <div class="mobile-project-card" id="mobile-project-card" style="position:absolute;display:flex;left:50%;bottom:5vh;transform:translateX(-50%);z-index:10;">
+    <div class="mobile-project-card card-pin" id="mobile-project-card" style="position:absolute;left:50%;bottom:5vh;transform:translateX(-50%);z-index:10;">
+      <img class="mobile-card-pin-icon" id="mobile-card-pin-icon" src="icons/pin.svg" alt="">
       <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
-      <div class="mobile-card-image"><img id="mobile-card-img" src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop" alt=""></div>
+      <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
       <div class="mobile-card-body">
-        <span class="mobile-card-cat" id="mobile-card-cat">Brand Identity</span>
-        <h3 class="mobile-card-title" id="mobile-card-title">Neue Corporate Identity</h3>
-        <span class="mobile-card-date" id="mobile-card-date">2021 · Feb</span>
-        <p class="mobile-card-desc" id="mobile-card-desc">A minimalist corporate identity system.</p>
+        <span class="mobile-card-cat" id="mobile-card-cat"></span>
+        <h3 class="mobile-card-title" id="mobile-card-title"></h3>
+        <span class="mobile-card-date" id="mobile-card-date"></span>
+        <p class="mobile-card-desc" id="mobile-card-desc"></p>
       </div>
     </div>
 
@@ -2756,7 +2772,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
      ════════════════════════════════════════════════════════════ -->
 <script>
 (function(){
-  // Wait for timeline to initialize
   function initMobileCard(){
     var mCard = document.getElementById('mobile-project-card');
     var mImg = document.getElementById('mobile-card-img');
@@ -2767,117 +2782,121 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     if(!mCard || !mImg) { setTimeout(initMobileCard, 200); return; }
     var mActiveProj = null;
 
-    // Access timeline data from global scope
     var projects = window.__tlProjects || [];
     var nodeTargets = window.__tlNodeTargets || [];
     var months = window.__tlMonths || [];
+    var isPin = true; // start as pin icon
 
-    var isMinimized = false;
-    function showCard(proj){
-      isMinimized = false;
+    // Switch to card mode
+    function toCard(proj){
+      isPin = false;
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
       mTitle.textContent = proj.title;
       mDate.textContent = proj.year + ' · ' + (months[proj.month-1] || '');
       mDesc.textContent = proj.description;
-      mCard.classList.remove('card-mini');
-      mCard.style.display = 'flex';
-      mCard.style.opacity = '1';
-      mCard.style.left = '50%';
-      mCard.style.transform = 'translateX(-50%) scale(1)';
-      mCard.style.bottom = '5vh';
-      mCard.style.top = 'auto';
-      mCard.style.width = ''; mCard.style.height = ''; mCard.style.borderRadius = '';
-      // Show card body, hide mini icon
+      mCard.classList.remove('card-pin');
+      document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
     }
 
-    function minimizeCard(){
-      isMinimized = true;
-      mCard.classList.add('card-mini');
-      // Shrink to a small floating button
-      mCard.style.display = 'flex';
-      mCard.style.opacity = '1';
-      mCard.style.left = '50%';
-      mCard.style.bottom = '5vh';
-      mCard.style.top = 'auto';
-      mCard.style.transform = 'translateX(-50%) scale(1)';
-      mCard.style.width = '48px'; mCard.style.height = '48px'; mCard.style.borderRadius = '50%';
-      mCard.style.overflow = 'hidden';
-      mCard.querySelector('.mobile-card-body').style.display = 'none';
-      mCard.querySelector('.mobile-card-image').style.display = 'none';
+    // Switch to pin mode
+    function toPin(){
+      isPin = true;
+      mCard.classList.add('card-pin');
+      document.getElementById('mobile-card-close').style.display = 'none';
     }
 
-    // Close button hidden — card never closes
-    var closeBtn = document.getElementById('mobile-card-close');
-    if(closeBtn){ closeBtn.style.display = 'none'; }
+    // Close button → pin mode
+    document.getElementById('mobile-card-close').addEventListener('touchstart', function(e){
+      toPin(); e.stopPropagation(); e.preventDefault();
+    });
 
-    // Tap mini dot → reopen full card
-    mCard.addEventListener('touchstart', function(e){
-      if(isMinimized){
-        if(mActiveProj) showCard(mActiveProj);
-        e.preventDefault(); e.stopPropagation();
-      }
-    }, { passive: false });
-
-    // Grid tap disabled — only drag changes card
-
-    // Drag card — shrink on hold, center on finger, expand on release, block scroll
+    // Drag (works for both pin and card)
     var SHRINK = 0.35;
     var dsX=0, dsY=0, dragStartL=0, dragStartT=0, dragging=false, hasDragged=false;
+
+    function setPos(left, top, scale){
+      mCard.style.left = left+'px'; mCard.style.top = top+'px'; mCard.style.bottom = 'auto';
+      mCard.style.transform = 'scale('+scale+')';
+      mCard.style.transformOrigin = 'center center';
+    }
+
     mCard.addEventListener('touchstart', function(e){
       if(e.target.closest('.mobile-card-close')) return;
       e.preventDefault();
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
-      // Save card position BEFORE any transform changes
       var r = mCard.getBoundingClientRect();
       dragStartL = r.left; dragStartT = r.top;
       dragging = true; hasDragged = false;
-      // Center card on finger, then shrink
-      var hw = r.width/2, hh = r.height/2;
-      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(dsX-hw)+'px,'+(dsY-hh)+'px) scale('+SHRINK+')';
+      if(!isPin){
+        // Shrink card
+        var hw = r.width/2, hh = r.height/2;
+        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+        mCard.style.transform = 'translate('+(dsX-hw)+'px,'+(dsY-hh)+'px) scale('+SHRINK+')';
+      } else {
+        setPos(dragStartL - 24, dragStartT - 24, 1);
+      }
     }, { passive: false });
 
     mCard.addEventListener('touchmove', function(e){
       if(!dragging) return;
-      e.preventDefault(); e.stopPropagation(); // block page scroll + swipe handler
+      e.preventDefault(); e.stopPropagation();
       var cx = e.touches[0].clientX, cy = e.touches[0].clientY;
       if(Math.abs(cx - dsX) > 3 || Math.abs(cy - dsY) > 3) hasDragged = true;
       if(!hasDragged) return;
-      // Refresh node positions
       if(window.__tlRefreshNodes) window.__tlRefreshNodes();
       if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
-      // Position shrunken card centered on finger
-      var hw = mCard.offsetWidth * SHRINK / 2, hh = mCard.offsetHeight * SHRINK / 2;
-      var vw = window.innerWidth, vh = window.innerHeight;
-      var tx = Math.max(hw, Math.min(vw - hw, cx));
-      var ty = Math.max(hh, Math.min(vh - hh, cy));
-      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(tx - mCard.offsetWidth/2)+'px,'+(ty - mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
-      // Match project at finger position
-      var nearest=null, minD=Infinity;
-      for(var i=0; i<nodeTargets.length; i++){
-        var d = Math.abs(cx - nodeTargets[i].cx);
-        if(d < minD){ minD = d; nearest = nodeTargets[i]; }
-      }
-      if(nearest && nearest.project !== mActiveProj && minD < 100){
-        mActiveProj = nearest.project;
-        mImg.src = nearest.project.coverImage;
-        mCat.textContent = nearest.project.category;
-        mTitle.textContent = nearest.project.title;
-        mDate.textContent = nearest.project.year + ' · ' + (months[nearest.project.month-1] || '');
-        mDesc.textContent = nearest.project.description;
+
+      if(isPin){
+        // Move pin
+        setPos(dragStartL + cx - dsX - 24, dragStartT + cy - dsY - 24, 1);
+        // Check if near a project node → switch to card
+        var nearest=null, minD=Infinity;
+        for(var i=0; i<nodeTargets.length; i++){
+          var d = Math.abs(cx - nodeTargets[i].cx);
+          if(d < minD){ minD = d; nearest = nodeTargets[i]; }
+        }
+        if(nearest && minD < 80){
+          toCard(nearest.project);
+          // Update transform for card mode
+          mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+          mCard.style.transform = 'translate('+(cx - mCard.offsetWidth/2)+'px,'+(cy - mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
+        }
+      } else {
+        // Move shrunken card
+        var hw2 = mCard.offsetWidth*SHRINK/2, hh2 = mCard.offsetHeight*SHRINK/2;
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var tx = Math.max(hw2, Math.min(vw-hw2, cx));
+        var ty = Math.max(hh2, Math.min(vh-hh2, cy));
+        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+        mCard.style.transform = 'translate('+(tx-mCard.offsetWidth/2)+'px,'+(ty-mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
+        // Match project
+        var nearest2=null, minD2=Infinity;
+        for(var j=0; j<nodeTargets.length; j++){
+          var d2 = Math.abs(cx - nodeTargets[j].cx);
+          if(d2 < minD2){ minD2 = d2; nearest2 = nodeTargets[j]; }
+        }
+        if(nearest2 && nearest2.project !== mActiveProj && minD2 < 100){
+          mActiveProj = nearest2.project;
+          mImg.src = nearest2.project.coverImage;
+          mCat.textContent = nearest2.project.category;
+          mTitle.textContent = nearest2.project.title;
+          mDate.textContent = nearest2.project.year + ' · ' + (months[nearest2.project.month-1] || '');
+          mDesc.textContent = nearest2.project.description;
+        }
       }
     }, { passive: false });
 
     mCard.addEventListener('touchend', function(){
       if(!dragging) return;
       dragging = false;
-      if(hasDragged){
-        // Read current transform position, keep card there expanded
+      if(isPin){
+        var r = mCard.getBoundingClientRect();
+        setPos(r.left - 24, r.top - 24, 1);
+      } else if(hasDragged){
         var t = mCard.style.transform;
         var mx = t.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
         if(mx){
