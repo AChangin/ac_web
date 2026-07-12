@@ -143,11 +143,12 @@ export function useLogoInteraction({
         const wheelPageCy = rect.top + WHEEL_CY;
         const newHue = calcHueFromPoint(e.clientX, e.clientY, wheelPageCx, wheelPageCy);
 
-        // Dead zone 2°: filter micro-tremors
+        // Dead zone: 0° before first pick, 2° after (filter micro-tremors)
         let diff = newHue - hueRef.current;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
-        if (Math.abs(diff) > 2) {
+        var deadZone = hasPickedRef.current ? 2 : 0;
+        if (Math.abs(diff) > deadZone) {
           const adjusted = hueRef.current + diff;
           onHueChangeRef.current(adjusted);
           setHasPicked(true);
@@ -206,7 +207,9 @@ export function useLogoInteraction({
       var diff = newHue - hueRef.current;
       if (diff > 180) diff -= 360;
       if (diff < -180) diff += 360;
-      if (Math.abs(diff) > 2) {
+      // Before first pick: no dead zone — any touch changes the color
+      var deadZone = hasPickedRef.current ? 2 : 0;
+      if (Math.abs(diff) > deadZone) {
         hueRef.current = hueRef.current + diff;
         onHueChangeRef.current(hueRef.current);
         setHasPicked(true);
