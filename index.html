@@ -2886,15 +2886,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mCard.style.opacity = '1';
       mCard.style.bottom = 'auto';
       mCard.style.top = 'auto';
-      mCard.style.transform = 'scale(1)';
-      // Position near touch point, constrained to viewport
+      mCard.style.left = '0px';
       var vw = window.innerWidth, vh = window.innerHeight;
-      var left = tx ? tx - mCard.offsetWidth/2 : (vw - mCard.offsetWidth)/2;
-      var top = ty ? ty - mCard.offsetHeight - 20 : vh*0.35;
-      left = Math.max(0, Math.min(vw - mCard.offsetWidth, left));
-      top = Math.max(0, Math.min(vh - mCard.offsetHeight, top));
-      mCard.style.left = left + 'px';
-      mCard.style.top = top + 'px';
+      var left = tx ? tx : vw/2;
+      var top = ty ? ty - mCard.offsetHeight/2 : vh*0.35;
+      left = Math.max(mCard.offsetWidth/2, Math.min(vw - mCard.offsetWidth/2, left));
+      top = Math.max(mCard.offsetHeight/2, Math.min(vh - mCard.offsetHeight/2, top));
+      mCard.style.transform = 'translate('+(left-mCard.offsetWidth/2)+'px,'+(top-mCard.offsetHeight/2)+'px) scale(1)';
     }
 
     function hideCard(){
