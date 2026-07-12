@@ -2875,7 +2875,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var nodeTargets = window.__tlNodeTargets || [];
     var months = window.__tlMonths || [];
 
+    var cardOpen = false; // track state (don't rely on style.display)
     function showCard(proj, tx, ty){
+      cardOpen = true;
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
@@ -2896,6 +2898,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }
 
     function hideCard(){
+      cardOpen = false;
       mCard.style.opacity = '0';
       setTimeout(function(){ mCard.style.display = 'none'; mActiveProj = null; }, 250);
     }
@@ -2913,7 +2916,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var gridEl = document.getElementById('tl-grid-outer');
     if(gridEl){
       gridEl.addEventListener('touchstart', function(e){
-        if(mCard.style.display !== 'none') return; // card already open
+        if(cardOpen) return; // card already open
         var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
         longPressTimer = setTimeout(function(){
           if(window.__tlRefreshNodes) window.__tlRefreshNodes();
@@ -3003,23 +3006,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
   setTimeout(initMobileCard, 500);
 
-  // Track page scroll: close card when 50%+ into another section
-  var lastScrollX = 0;
-  setInterval(function(){
-    var sc = document.getElementById('scroll-container');
-    if(!sc) return;
-    var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
-    var sx = m.m41;
-    var mCard = document.getElementById('mobile-project-card');
-    if(!mCard || mCard.style.display === 'none') { lastScrollX = sx; return; }
-    if(Math.abs(sx - lastScrollX) > 30){
-      var vw = window.innerWidth;
-      // Timeline section is roughly between -140vw and -260vw
-      if(sx > -140*vw/100 || sx < -260*vw/100) mCard.style.opacity = '0';
-      else mCard.style.opacity = '1';
-    }
-    lastScrollX = sx;
-  }, 500);
 })();
 </script>
 
