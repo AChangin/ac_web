@@ -2980,14 +2980,19 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var vw = window.innerWidth, vh = window.innerHeight;
       mCard.style.left = Math.max(hw, Math.min(vw-hw, cx))+'px';
       mCard.style.top  = Math.max(hh, Math.min(vh-hh, cy))+'px';
-      mCard.style.bottom = 'auto';
+      // Find nearest project — update content only, don't touch position/scale
       var nearest=null, minD=Infinity;
       for(var i=0; i<nodeTargets.length; i++){
         var d=Math.abs(cx - nodeTargets[i].cx);
         if(d<minD){ minD=d; nearest=nodeTargets[i]; }
       }
       if(nearest && nearest.project!==mActiveProj && minD<120){
-        showCard(nearest.project, cx, cy);
+        mActiveProj = nearest.project;
+        mImg.src = nearest.project.coverImage;
+        mCat.textContent = nearest.project.category;
+        mTitle.textContent = nearest.project.title;
+        mDate.textContent = nearest.project.year + ' · ' + (months[nearest.project.month-1] || '');
+        mDesc.textContent = nearest.project.description;
       }
     }, { passive: false });
 
