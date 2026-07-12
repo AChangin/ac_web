@@ -3194,6 +3194,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(mCard.classList.contains('card-lifting')){
         mCard.classList.remove('card-lifting');
         mCard.classList.add('card-dragging');
+        mCard.style.transition = 'none'; // re-disable transitions for smooth drag
       }
       // Magnetic snap highlight (use Euclidean distance)
       _applyMagneticSnap(cx, cy);
@@ -3212,6 +3213,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         if(nearest && minD < 80){
           toCard(nearest.project);
           // Update transform for card mode
+          mCard.style.transition = 'none'; // re-disable after toCard enabled it for morph
           mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
           mCard.style.transform = 'translate('+(cx - mCard.offsetWidth/2)+'px,'+(cy - mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
           _dragTx = cx - mCard.offsetWidth/2; _dragTy = cy - mCard.offsetHeight/2;
