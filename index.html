@@ -1058,6 +1058,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   transition:opacity 0.25s;
   flex-direction:column;
 }
+/* Mini floating dot state */
+.card-mini{
+  background:#000 !important;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5) !important;
+}
+.card-mini .mobile-card-close{
+  display:none;
+}
+
 .mobile-card-close{
   position:absolute;
   top:8px;right:8px;
@@ -2875,33 +2884,59 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var nodeTargets = window.__tlNodeTargets || [];
     var months = window.__tlMonths || [];
 
+    var isMinimized = false;
     function showCard(proj){
+      isMinimized = false;
       mActiveProj = proj;
       mImg.src = proj.coverImage;
       mCat.textContent = proj.category;
       mTitle.textContent = proj.title;
       mDate.textContent = proj.year + ' · ' + (months[proj.month-1] || '');
       mDesc.textContent = proj.description;
+      mCard.classList.remove('card-mini');
       mCard.style.display = 'flex';
       mCard.style.opacity = '1';
       mCard.style.left = '50%';
-      mCard.style.transform = 'translateX(-50%)';
+      mCard.style.transform = 'translateX(-50%) scale(1)';
       mCard.style.bottom = '5vh';
       mCard.style.top = 'auto';
+      mCard.style.width = ''; mCard.style.height = ''; mCard.style.borderRadius = '';
+      // Show card body, hide mini icon
+      mCard.querySelector('.mobile-card-body').style.display = '';
+      mCard.querySelector('.mobile-card-image').style.display = '';
     }
 
-    function hideCard(){
-      mCard.style.opacity = '0';
-      setTimeout(function(){ mCard.style.display = 'none'; mActiveProj = null; }, 250);
+    function minimizeCard(){
+      isMinimized = true;
+      mCard.classList.add('card-mini');
+      // Shrink to a small floating button
+      mCard.style.display = 'flex';
+      mCard.style.opacity = '1';
+      mCard.style.left = '50%';
+      mCard.style.bottom = '5vh';
+      mCard.style.top = 'auto';
+      mCard.style.transform = 'translateX(-50%) scale(1)';
+      mCard.style.width = '48px'; mCard.style.height = '48px'; mCard.style.borderRadius = '50%';
+      mCard.style.overflow = 'hidden';
+      mCard.querySelector('.mobile-card-body').style.display = 'none';
+      mCard.querySelector('.mobile-card-image').style.display = 'none';
     }
 
-    // Close button
+    // Close button → minimize to floating dot
     var closeBtn = document.getElementById('mobile-card-close');
     if(closeBtn){
       closeBtn.addEventListener('touchstart', function(e){
-        hideCard(); e.stopPropagation(); e.preventDefault();
+        minimizeCard(); e.stopPropagation(); e.preventDefault();
       });
     }
+
+    // Tap mini dot → reopen full card
+    mCard.addEventListener('touchstart', function(e){
+      if(isMinimized){
+        if(mActiveProj) showCard(mActiveProj);
+        e.preventDefault(); e.stopPropagation();
+      }
+    }, { passive: false });
 
     // Tap grid → show card
     var gridEl = document.getElementById('tl-grid-outer');
@@ -2924,6 +2959,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     }
     if(gridEl){
       gridEl.addEventListener('touchstart', function(e){
+        // Don't change card position when full card is open
+        if(mCard.style.display === 'flex' && !isMinimized) return;
         // Force refresh node positions for current scroll position
         if(window.__tlRefreshNodes) window.__tlRefreshNodes();
         if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
