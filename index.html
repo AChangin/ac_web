@@ -1525,7 +1525,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var hint = document.getElementById('mobile-hint');
     if(hint){
       hint.style.display = '';
+      // Hide hint after 8s or on first drag
+      var hintTimer = setTimeout(function(){
+        hint.style.opacity = '0';
+        setTimeout(function(){ hint.style.display = 'none'; }, 400);
+      }, 8000);
       var hideHint = function(){
+        clearTimeout(hintTimer);
         hint.style.opacity = '0';
         setTimeout(function(){ hint.style.display = 'none'; }, 400);
         document.removeEventListener('touchstart', hideHint);
