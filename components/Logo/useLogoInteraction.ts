@@ -25,8 +25,7 @@ export interface UseLogoInteractionResult {
 // Constants
 // ---------------------------------------------------------------------------
 
-const ACTIVATION_RADIUS = 120;
-const TAP_RADIUS = 120; // mobile tap-to-activate range
+const ACTIVATION_RADIUS = 180;
 const DEBOUNCE_MS = 200;
 
 /** ColorWheel 中心在 Logo 容器内的坐标 */
@@ -215,47 +214,21 @@ export function useLogoInteraction({
       }
     }
 
-    function stopTracking() {
-      if (activeDragMove) { document.removeEventListener("touchmove", activeDragMove); activeDragMove = null; }
-      if (activeDragEnd)   { document.removeEventListener("touchend", activeDragEnd); activeDragEnd = null; }
-      document.removeEventListener("touchcancel", handleCancel);
-      trackingId = null;
-      (window as any).__logoInteracting = false;
-    }
-
     var handleTouchStart = function(e: TouchEvent) {
       var el = containerRef.current;
-      if (!el) return;
-      // Ignore if already tracking a different finger, or if it's a second touch
-      if (trackingId !== null && e.touches.length > 1) return;
-
+      if (!el || trackingId !== null) return;
       var touch = e.changedTouches[0];
       if (!touch) return;
       var rect = getRect(el);
-      var inRange = isInRange(touch.clientX, touch.clientY, rect);
+      if (!isInRange(touch.clientX, touch.clientY, rect)) return;
 
-      if (!inRange) {
-        // Tap outside → deactivate picker
-        stateRef.current.isActive = false;
-        setIsActive(false);
-        return;
-      }
-
-      // Toggle: if already active and user taps again, deactivate
-      if (stateRef.current.isActive && trackingId === null) {
-        stateRef.current.isActive = false;
-        setIsActive(false);
-        return;
-      }
-
-      // Activate picker
       trackingId = touch.identifier;
       stateRef.current.isActive = true;
       setIsActive(true);
       (window as any).__logoInteracting = true;
       trackFromTouch(touch, rect);
 
-      // Attach drag handlers
+      // Attach drag handlers only while tracking
       activeDragMove = function(e2: TouchEvent) {
         var t: Touch | null = null;
         for (var i = 0; i < e2.changedTouches.length; i++) {
@@ -268,7 +241,7 @@ export function useLogoInteraction({
       };
       activeDragEnd = function(e2: TouchEvent) {
         for (var i = 0; i < e2.changedTouches.length; i++) {
-          if (e2.changedTouches[i].identifier === trackingId) { stopTracking(); return; }
+          if (e2.changedTouches[i].identifier === trackingId) { cleanup(); return; }
         }
       };
       document.addEventListener("touchmove", activeDragMove, { passive: false });
