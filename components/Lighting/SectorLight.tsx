@@ -151,6 +151,7 @@ export function SectorLight() {
     var prevOpacity = -1;
     var prevRotateStr = "";
     var prevWrapperTransform = "";
+    var currentCumulative = hue - SPAN + ROTATION_OFFSET; // tracks shortest-path angle
 
     const unreg = registerLightCone(
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
@@ -182,8 +183,13 @@ export function SectorLight() {
 
           // CSS rotation: only on non-canvas (canvas draws at correct angle)
           if (!USE_CANVAS) {
-            const target = rotate + ROTATION_OFFSET;
-            var rotateStr = `rotate(${target.toFixed(1)}deg)`;
+            var rawTarget = rotate + ROTATION_OFFSET;
+            // Shortest-path: track cumulative angle to avoid CSS wrapping the long way
+            var diff = rawTarget - currentCumulative;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            currentCumulative += diff;
+            var rotateStr = `rotate(${currentCumulative.toFixed(1)}deg)`;
             if (rotateStr !== prevRotateStr) {
               prevRotateStr = rotateStr;
               coneRef.current.style.transform = rotateStr;
