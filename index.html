@@ -3051,12 +3051,22 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     // ── Smart positioning: keep card within viewport safe area ──
 
     function _findNodeAnchor(){
-      // Find the timeline node closest to the current card center
-      if(!window.__tlNodeTargets || !mActiveProj) return null;
-      var targets = window.__tlNodeTargets;
-      for(var i = 0; i < targets.length; i++){
-        if(targets[i].project.id === mActiveProj.id){
-          return { cx: targets[i].cx, cy: targets[i].cy };
+      // Use DOM element position directly (more reliable than cached target data)
+      if(!mActiveProj) return null;
+      var nodeEl = document.getElementById('tl-node-' + mActiveProj.id);
+      if(nodeEl){
+        var rect = nodeEl.getBoundingClientRect();
+        if(rect.width > 0 && rect.height > 0){
+          return { cx: rect.left + rect.width/2, cy: rect.top + rect.height/2 };
+        }
+      }
+      // Fallback to window.__tlNodeTargets
+      if(window.__tlNodeTargets){
+        var targets = window.__tlNodeTargets;
+        for(var i = 0; i < targets.length; i++){
+          if(targets[i].project.id === mActiveProj.id){
+            return { cx: targets[i].cx, cy: targets[i].cy };
+          }
         }
       }
       return null;
@@ -3078,9 +3088,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(nav){
         var navRect = nav.getBoundingClientRect();
         // Only use nav height when it's a horizontal top bar (mobile),
-        // not the vertical sidebar (desktop)
-        if(navRect.width > navRect.height && navRect.bottom > sTop){
-          sTop = navRect.bottom;
+        // not the vertical sidebar (desktop). Add 12px breathing room.
+        if(navRect.width > navRect.height){
+          var navSafe = navRect.bottom + 12;
+          if(navSafe > sTop) sTop = navSafe;
         }
       }
 
