@@ -3055,14 +3055,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var cardPageX = 0, cardPageY = 0;
     var hasPagePos = false;
     setInterval(function(){
-      if(!mCard || mCard.style.display === 'none' || isMinimized) { hasPagePos = false; return; }
+      if(!mCard || mCard.style.display === 'none' || isMinimized || dragging) { hasPagePos = false; return; }
       var sc = document.getElementById('scroll-container');
       if(!sc) return;
       var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
       var sx = m.m41;
       if(!hasPagePos){
         var r = mCard.getBoundingClientRect();
-        cardPageX = r.left - sx;   // page-relative X
+        cardPageX = r.left - sx;
         cardPageY = r.top;
         hasPagePos = true;
         mCard.style.left = '0px';
