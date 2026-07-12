@@ -270,10 +270,13 @@ export function useLogoInteraction({
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (!isMobile) return;
     (window as any).__autoPickHue = function(targetHue: number) {
-      if (hasPickedRef.current) return; // already picked
+      if (hasPickedRef.current) return;
       hasPickedRef.current = true;
       setHasPicked(true);
       onHueChangeRef.current(((targetHue % 360) + 360) % 360);
+      // Activate picker so user can immediately drag to refine
+      stateRef.current.isActive = true;
+      setIsActive(true);
     };
     return () => { delete (window as any).__autoPickHue; };
   }, []);

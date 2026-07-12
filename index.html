@@ -1167,7 +1167,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     <div id="mobile-hint" style="
       display:none;
       position:absolute;
-      bottom:18vh;
+      bottom:30vh;
       left:50%;
       transform:translateX(-50%);
       color:rgba(255,255,255,0.7);
@@ -1509,7 +1509,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     // ── Mobile auto-pick: at 60% toward logo section, pick a default hue ──
     if(isMobile && !mobileAutoPicked && progress > 0.20){
       mobileAutoPicked = true;
-      if(window.__autoPickHue) window.__autoPickHue(200); // blue-ish default
+      if(window.__autoPickHue) window.__autoPickHue(240); // blue
       var hint = document.getElementById('mobile-hint');
       if(hint){
         hint.style.display = '';
