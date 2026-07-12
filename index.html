@@ -2802,11 +2802,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mCard.querySelector('.mobile-card-image').style.display = '';
     }
 
-    // Switch to pin mode
+    // Switch to pin mode — pin at card center
     function toPin(){
       isPin = true;
+      var r = mCard.getBoundingClientRect();
+      var cx = r.left + r.width/2, cy = r.top + r.height/2;
       mCard.classList.add('card-pin');
       document.getElementById('mobile-card-close').style.display = 'none';
+      mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+      mCard.style.transform = 'translate('+(cx-24)+'px,'+(cy-24)+'px) scale(1)';
     }
 
     // Close button → pin mode
