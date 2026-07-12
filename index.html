@@ -2983,17 +2983,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
-      // Reposition with smart positioning — use current card center as anchor, clamp to viewport
+      _prevActiveProj = proj;
+      // Trigger card-expand border-radius animation
+      mCard.classList.add('card-expanding');
       setTimeout(function(){
-        var r2 = mCard.getBoundingClientRect();
-        var ax = r2.left + r2.width/2;
-        var ay = r2.top + r2.height/2;
-        var finalW = Math.min(window.innerWidth * 0.8, 320);
-        var pos = _smartPosition(ax, ay, finalW, finalW);
-        mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
-        _dragTx = pos.tx; _dragTy = pos.ty;
-      }, 50);
+        mCard.classList.remove('card-expanding');
+      }, 300);
       _prevActiveProj = proj;
       // Trigger card-expand border-radius animation
       mCard.classList.add('card-expanding');
