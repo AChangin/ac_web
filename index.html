@@ -2137,6 +2137,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     window.__tlNodeTargets = nodeTargets;
     window.__tlProjects = projects;
     window.__tlMonths = CONFIG.months;
+    window.__tlRefreshNodes = updateNodeTargets;
   }
 
   // ============================================================
@@ -2922,11 +2923,24 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(proj) showCard(proj); else hideCard();
     }
     if(gridEl){
-      // TEST: show first project unconditionally on grid touch
       gridEl.addEventListener('touchstart', function(e){
-        document.body.style.background = 'lime';
-        setTimeout(function(){ document.body.style.background = ''; }, 500);
-        if(projects.length > 0) showCard(projects[0]);
+        // Force refresh node positions for current scroll position
+        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+        if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
+        var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
+        var proj = null;
+        var node = e.target.closest('.tl-node');
+        if(node){
+          proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
+        } else if(nodeTargets.length > 0){
+          var nearest = null, minDist = 80;
+          for(var i=0; i<nodeTargets.length; i++){
+            var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
+            if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
+          }
+          if(nearest) proj = nearest.project;
+        }
+        if(proj) showCard(proj); else hideCard();
       }, { passive: false });
       gridEl.addEventListener('click', onGridTap);
       gridEl.style.pointerEvents = 'auto';
