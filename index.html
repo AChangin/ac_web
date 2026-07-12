@@ -2902,29 +2902,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Tap grid → show card
-    var gridEl = document.getElementById('tl-grid-outer');
-    if(gridEl){
-      gridEl.addEventListener('touchstart', function(e){
-        var proj = null;
-        var node = e.target.closest('.tl-node');
-        if(node){
-          var pid = parseInt(node.getAttribute('data-id'));
-          proj = projects.find(function(p){ return p.id === pid; });
-        } else if(nodeTargets.length > 0){
-          // Finger missed the tiny dot — find nearest within 60px
-          var tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-          var nearest = null, minDist = 60;
-          for(var i=0; i<nodeTargets.length; i++){
-            var t = nodeTargets[i];
-            var d = Math.hypot(tx - t.cx, ty - t.cy);
-            if(d < minDist){ minDist = d; nearest = t; }
-          }
-          if(nearest) proj = nearest.project;
-        }
-        if(proj) showCard(proj); else hideCard();
-      }, { passive: true });
-    }
+    // Tap anywhere on body to test card
+    document.body.addEventListener('touchstart', function(e){
+      // Show first project as test
+      if(projects.length > 0 && mCard.style.display === 'none'){
+        showCard(projects[0]);
+      }
+    }, { passive: true });
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
