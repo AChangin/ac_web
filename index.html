@@ -2911,16 +2911,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // TEST: force card visible with hardcoded position
-    if(projects.length > 0){
-      mActiveProj = projects[0];
-      mImg.src = projects[0].coverImage;
-      mCat.textContent = projects[0].category;
-      mTitle.textContent = projects[0].title;
-      mDate.textContent = projects[0].year + ' · ' + (months[projects[0].month-1] || '');
-      mDesc.textContent = projects[0].description;
-      mCard.setAttribute('style', 'display:flex!important;opacity:1!important;position:fixed;left:10vw;top:40vh;width:80vw;max-width:400px;z-index:99999;background:red;padding:20px;border:4px solid yellow;');
-    }
+    // ULTRA TEST: create a brand new div via JS
+    var testDiv = document.createElement('div');
+    testDiv.textContent = 'CARD TEST ' + (projects.length > 0 ? projects[0].title : 'no projects');
+    testDiv.style.cssText = 'position:fixed;left:10vw;top:40vh;width:80vw;background:red;color:#fff;font-size:20px;padding:20px;z-index:99999;border:4px solid yellow;';
+    document.body.appendChild(testDiv);
+    setTimeout(function(){ testDiv.remove(); }, 8000);
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
