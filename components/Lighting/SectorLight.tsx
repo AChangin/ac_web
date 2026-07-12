@@ -121,7 +121,6 @@ export function SectorLight() {
   const coneRef = useRef<HTMLDivElement>(null);
   const coneCanvasRef = useRef<HTMLCanvasElement>(null);  // Apple: low-res canvas
   const blackBgRef = useRef<HTMLDivElement>(null);
-  const animRotateRef = useRef(hue - SPAN + ROTATION_OFFSET);
   const displayHueRef = useRef(hue); // lerped hue for canvas (Apple)
   // Offscreen canvas for Apple cone rendering
   const offscreenRef = useRef<HTMLCanvasElement | null>(null);
@@ -129,15 +128,6 @@ export function SectorLight() {
   // Keep latest hue in ref (avoids re-registering the RAF callback on every change)
   const hueRef = useRef(hue);
   useEffect(() => { hueRef.current = hue; }, [hue]);
-
-  // Windows: sync animRotateRef when hue changes (shortest rotation path)
-  useEffect(() => {
-    var target = hue - SPAN + ROTATION_OFFSET;
-    var diff = target - animRotateRef.current;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-    animRotateRef.current += diff;
-  }, [hue]);
 
   // Init offscreen canvas for Apple cone rendering
   useEffect(() => {
@@ -161,9 +151,6 @@ export function SectorLight() {
     var prevOpacity = -1;
     var prevRotateStr = "";
     var prevWrapperTransform = "";
-    var frameSkip = 0;
-    // Throttle DOM writes on Apple: only every Nth frame for rotation
-    var ROTATE_INTERVAL = isAppleTL ? 2 : 1;
 
     const unreg = registerLightCone(
       ({ opacity, rotate, offsetX, offsetY, ambientOpacity }) => {
@@ -196,19 +183,10 @@ export function SectorLight() {
           // CSS rotation: only on non-canvas (canvas draws at correct angle)
           if (!USE_CANVAS) {
             const target = rotate + ROTATION_OFFSET;
-            let diff = target - animRotateRef.current;
-            if (diff > 180) diff -= 360;
-            if (diff < -180) diff += 360;
-            animRotateRef.current += diff * 0.25;
-
-            frameSkip++;
-            if (frameSkip >= ROTATE_INTERVAL) {
-              frameSkip = 0;
-              const rotateStr = `rotate(${animRotateRef.current.toFixed(1)}deg)`;
-              if (rotateStr !== prevRotateStr) {
-                prevRotateStr = rotateStr;
-                coneRef.current.style.transform = rotateStr;
-              }
+            var rotateStr = `rotate(${target.toFixed(1)}deg)`;
+            if (rotateStr !== prevRotateStr) {
+              prevRotateStr = rotateStr;
+              coneRef.current.style.transform = rotateStr;
             }
           }
 
@@ -286,6 +264,7 @@ export function SectorLight() {
             opacity: 0,
             overflow: "hidden",
             willChange: "opacity",
+            transition: USE_CANVAS ? "none" : "transform 0.5s ease-out",
           }}
         >
           {USE_CANVAS && (
