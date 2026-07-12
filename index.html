@@ -2983,11 +2983,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
-      // Reposition with smart positioning — center on node, clamped to viewport
+      // Reposition with smart positioning — use current card center as anchor, clamp to viewport
       setTimeout(function(){
-        var anchor = _findNodeAnchor();
-        var ax = anchor ? anchor.cx : cx;
-        var ay = anchor ? anchor.cy : cy;
+        var r2 = mCard.getBoundingClientRect();
+        var ax = r2.left + r2.width/2;
+        var ay = r2.top + r2.height/2;
         var finalW = Math.min(window.innerWidth * 0.8, 320);
         var pos = _smartPosition(ax, ay, finalW, finalW);
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
@@ -3315,23 +3315,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           inertiaRaf = requestAnimationFrame(step);
         }
         inertiaRaf = requestAnimationFrame(step);
-        // Expand card after inertia — snap to smart position
+        // Expand card after inertia — use current center, clamp to viewport
         if(!isPin){
           setTimeout(function(){
             if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
             var cw = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
             var ch = mCard.offsetHeight || cw;
-            var anchor = _findNodeAnchor();
-            var pos;
-            if(anchor){
-              pos = _smartPosition(anchor.cx, anchor.cy, cw, ch);
-            } else {
-              // Keep current center but clamp to viewport
-              var r2 = mCard.getBoundingClientRect();
-              var cx2 = r2.left + r2.width/2;
-              var cy2 = r2.top + r2.height/2;
-              pos = _smartPosition(cx2, cy2, cw, ch);
-            }
+            var r2 = mCard.getBoundingClientRect();
+            var pos = _smartPosition(r2.left + r2.width/2, r2.top + r2.height/2, cw, ch);
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
             mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
             _dragTx = pos.tx; _dragTy = pos.ty;
@@ -3343,17 +3334,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(isPin){
         setPos(curLeft - 22, curTop - 22, 1);
       } else {
-        // Snap to smart position around nearest node
+        // Use current card center as anchor, clamp to viewport
         var cw2 = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
         var ch2 = mCard.offsetHeight || cw2;
-        var anchor2 = _findNodeAnchor();
-        var pos2;
-        if(anchor2){
-          pos2 = _smartPosition(anchor2.cx, anchor2.cy, cw2, ch2);
-        } else {
-          var r3 = mCard.getBoundingClientRect();
-          pos2 = _smartPosition(r3.left + r3.width/2, r3.top + r3.height/2, cw2, ch2);
-        }
+        var r3 = mCard.getBoundingClientRect();
+        var pos2 = _smartPosition(r3.left + r3.width/2, r3.top + r3.height/2, cw2, ch2);
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
         mCard.style.transform = 'translate('+pos2.tx+'px,'+pos2.ty+'px) scale(1)';
         _dragTx = pos2.tx; _dragTy = pos2.ty;
