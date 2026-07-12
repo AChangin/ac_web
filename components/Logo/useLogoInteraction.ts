@@ -207,8 +207,9 @@ export function useLogoInteraction({
       var diff = newHue - hueRef.current;
       if (diff > 180) diff -= 360;
       if (diff < -180) diff += 360;
-      // Before first pick: no dead zone — any touch changes the color
-      var deadZone = hasPickedRef.current ? 2 : 0;
+      // Dead zone: 0 before first pick AND on first touch after auto-pick
+      var deadZone = (!hasPickedRef.current || (window as any).__autoPickJustFired) ? 0 : 2;
+      if ((window as any).__autoPickJustFired) (window as any).__autoPickJustFired = false;
       if (Math.abs(diff) > deadZone) {
         hueRef.current = hueRef.current + diff;
         onHueChangeRef.current(hueRef.current);
@@ -274,9 +275,9 @@ export function useLogoInteraction({
       hasPickedRef.current = true;
       setHasPicked(true);
       onHueChangeRef.current(((targetHue % 360) + 360) % 360);
-      // Activate picker so user can immediately drag to refine
       stateRef.current.isActive = true;
       setIsActive(true);
+      (window as any).__autoPickJustFired = true;
     };
     return () => { delete (window as any).__autoPickHue; };
   }, []);
