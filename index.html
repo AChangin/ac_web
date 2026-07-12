@@ -1043,11 +1043,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
 /* ── Mobile project card (timeline section) ── */
 .mobile-project-card{
-  display:none;
+  display:flex;
   position:fixed;
-  bottom:5vh;
-  left:50%;
-  transform:translateX(-50%);
+  top:40vh;
+  left:10vw;
+  transform:none;
   width:88vw;
   max-width:400px;
   background:#111;
@@ -3002,17 +3002,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
      ════════════════════════════════════════════════════════════ -->
 <div class="mobile-project-card" id="mobile-project-card">
   <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
-  <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
+  <div class="mobile-card-image"><img id="mobile-card-img" src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop" alt=""></div>
   <div class="mobile-card-body">
-    <span class="mobile-card-cat" id="mobile-card-cat"></span>
-    <h3 class="mobile-card-title" id="mobile-card-title"></h3>
-    <span class="mobile-card-date" id="mobile-card-date"></span>
-    <p class="mobile-card-desc" id="mobile-card-desc"></p>
+    <span class="mobile-card-cat" id="mobile-card-cat">Default Category</span>
+    <h3 class="mobile-card-title" id="mobile-card-title">Default Title — Card Is Visible</h3>
+    <span class="mobile-card-date" id="mobile-card-date">2024 · Jan</span>
+    <p class="mobile-card-desc" id="mobile-card-desc">If you see this text, the card HTML and CSS are working.</p>
   </div>
 </div>
 
-<script>
-document.write('<div style="position:fixed;top:0;left:0;right:0;background:lime;color:#000;z-index:2147483647;padding:20px;font-size:18px;text-align:center;">FINAL TEST</div>');
-</script>
 </body>
 </html>
