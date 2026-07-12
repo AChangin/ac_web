@@ -2896,13 +2896,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mCard.classList.remove('card-mini');
       mCard.style.display = 'flex';
       mCard.style.opacity = '1';
-      // Keep current position (from dot or previous card position)
-      var r = mCard.getBoundingClientRect();
-      mCard.style.left = (r.left + r.width/2) + 'px';
-      mCard.style.top = (r.top + r.height/2) + 'px';
-      mCard.style.bottom = 'auto';
+      mCard.style.left = '50%';
+      mCard.style.transform = 'translateX(-50%) scale(1)';
+      mCard.style.bottom = '5vh';
+      mCard.style.top = 'auto';
       mCard.style.width = ''; mCard.style.height = ''; mCard.style.borderRadius = '';
-      mCard.style.transform = 'translate(-50%,-50%) scale(1)';
+      // Show card body, hide mini icon
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
     }
@@ -2910,16 +2909,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     function minimizeCard(){
       isMinimized = true;
       mCard.classList.add('card-mini');
-      // Keep current position — read actual viewport position
-      var r = mCard.getBoundingClientRect();
+      // Shrink to a small floating button
       mCard.style.display = 'flex';
       mCard.style.opacity = '1';
-      mCard.style.left = (r.left + r.width/2) + 'px';
-      mCard.style.top = (r.top + r.height/2) + 'px';
-      mCard.style.bottom = 'auto';
+      mCard.style.left = '50%';
+      mCard.style.bottom = '5vh';
+      mCard.style.top = 'auto';
+      mCard.style.transform = 'translateX(-50%) scale(1)';
       mCard.style.width = '48px'; mCard.style.height = '48px'; mCard.style.borderRadius = '50%';
       mCard.style.overflow = 'hidden';
-      mCard.style.transform = 'translate(-50%,-50%) scale(1)';
       mCard.querySelector('.mobile-card-body').style.display = 'none';
       mCard.querySelector('.mobile-card-image').style.display = 'none';
     }
@@ -2932,14 +2930,13 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Mini dot: tap to reopen, drag to move (handled by existing drag code)
-    // On touchend, if not dragged, reopen
-    var origTouchend = mCard.ontouchend;
-    mCard.addEventListener('touchend', function(e){
-      if(isMinimized && !hasDragged && mActiveProj){
-        showCard(mActiveProj);
+    // Tap mini dot → reopen full card
+    mCard.addEventListener('touchstart', function(e){
+      if(isMinimized){
+        if(mActiveProj) showCard(mActiveProj);
+        e.preventDefault(); e.stopPropagation();
       }
-    });
+    }, { passive: false });
 
     // Tap grid → show card
     var gridEl = document.getElementById('tl-grid-outer');
@@ -2992,7 +2989,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchstart', function(e){
       if(e.target.closest('.mobile-card-close')) return;
       e.preventDefault();
-      if(isMinimized){ hasDragged = false; dragging = true; dsX = e.touches[0].clientX; dsY = e.touches[0].clientY; return; }
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
       // Save card position BEFORE any transform changes
       var r = mCard.getBoundingClientRect();
