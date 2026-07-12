@@ -2908,8 +2908,36 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Show first project as default when timeline section is entered
-    // (card appears on first card drag, not on grid tap)
+    // Long-press on grid → show card when it's closed
+    var longPressTimer = 0;
+    var gridEl = document.getElementById('tl-grid-outer');
+    if(gridEl){
+      gridEl.addEventListener('touchstart', function(e){
+        if(mCard.style.display !== 'none') return; // card already open
+        var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
+        longPressTimer = setTimeout(function(){
+          if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+          if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
+          var proj = null;
+          var node = document.elementFromPoint(clientX, clientY);
+          if(node) node = node.closest('.tl-node');
+          if(node){
+            proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
+          } else if(nodeTargets.length > 0){
+            var nearest = null, minDist = 80;
+            for(var i=0; i<nodeTargets.length; i++){
+              var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
+              if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
+            }
+            if(nearest) proj = nearest.project;
+          }
+          if(proj) showCard(proj, clientX, clientY);
+        }, 500);
+      }, { passive: true });
+      gridEl.addEventListener('touchmove', function(){ clearTimeout(longPressTimer); });
+      gridEl.addEventListener('touchend', function(){ clearTimeout(longPressTimer); });
+      gridEl.addEventListener('touchcancel', function(){ clearTimeout(longPressTimer); });
+    }
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
