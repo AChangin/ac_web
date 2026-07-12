@@ -719,7 +719,7 @@ body{
   align-items:center;
   gap:1.2rem;
   text-decoration:none;
-  color:#000;
+  color:#fff;
   position:relative;
   padding-bottom:6px;
   cursor:pointer;
@@ -741,7 +741,7 @@ body{
   position:absolute;
   left:0;bottom:0;
   width:100%;height:1px;
-  background:#000;
+  background:#fff;
   transform:scaleX(0);
   transform-origin:left center;
   transition:transform 0.4s cubic-bezier(0.19,1,0.22,1);
@@ -753,14 +753,13 @@ body{
   font-weight:600;
   letter-spacing:-0.02em;
   paint-order:stroke fill;
-  filter:drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff);
 }
 .orbit-nav-arrow{
   width:clamp(3.2rem,4.8vw,4.8rem);
   height:auto;
   display:block;
   transition:transform 0.35s cubic-bezier(0.19,1,0.22,1);
-  filter:drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff) drop-shadow(2px 2px 20px #fff);
+  filter:brightness(0) invert(1);
 }
 .orbit-nav-link:hover .orbit-nav-arrow{ transform:translateY(-6px); }
 
@@ -768,7 +767,7 @@ body{
    ORBIT SECTION — Mechanical Pen Orbit System
    ============================================================ */
 .orbit-section{
-  background:#fff;
+  background:#000;
   padding:0;
   overflow:hidden;
 }
@@ -796,7 +795,7 @@ body{
   position:absolute;
   width:3px;height:3px;
   border-radius:50%;
-  background:rgba(0,0,0,0.25);
+  background:rgba(255,255,255,0.3);
   pointer-events:none;
 }
 /* Outer filled circle — same ray, larger radius */
@@ -830,6 +829,7 @@ body{
   display:block;
   transform:scaleY(-1) translateZ(0);  /* 垂直翻转 + GPU 层 */
   image-rendering:auto;
+  filter:brightness(0) invert(1);
   -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
@@ -1003,11 +1003,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 /* ============================================================
    SAFARI PERFORMANCE OVERRIDES (body.is-apple / body.is-ios)
    ============================================================ */
-/* Triple drop-shadow is extremely heavy on Safari — reduce to single */
-.is-apple .orbit-nav-text,
-.is-apple .orbit-nav-arrow{
-  filter:drop-shadow(2px 2px 16px rgba(0,0,0,0.12));
-}
+/* Safari: arrow and pen SVG white filter already set in base rules */
 
 /* Pre-rasterize scroll container as single GPU layer (macOS only — iOS viewport units break) */
 .is-apple .scroll-container{
