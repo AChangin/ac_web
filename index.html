@@ -3060,8 +3060,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var sx = m.m41, vw = window.innerWidth;
       // Timeline section: ~1.4vw to ~2.6vw (from left, in negative translateX)
       var inTimeline = sx < -1.3*vw && sx > -2.7*vw;
-      mCard.style.opacity = inTimeline ? '1' : '0';
       mCard.style.pointerEvents = inTimeline ? 'auto' : 'none';
+      if(!inTimeline && mCard.style.display !== 'none') mCard.style.opacity = '0';
+      // Don't force opacity:1 — let showCard/minimizeCard control visibility
     }, 300);
   }
 
