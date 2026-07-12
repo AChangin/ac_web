@@ -3073,6 +3073,17 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var sBottom = parseInt(style.getPropertyValue('--safe-bottom')) || 24;
       var sLeft = parseInt(style.getPropertyValue('--safe-left')) || 16;
 
+      // Account for fixed navigation bar (mobile: horizontal bar at top)
+      var nav = document.getElementById('nav');
+      if(nav){
+        var navRect = nav.getBoundingClientRect();
+        // Only use nav height when it's a horizontal top bar (mobile),
+        // not the vertical sidebar (desktop)
+        if(navRect.width > navRect.height && navRect.bottom > sTop){
+          sTop = navRect.bottom;
+        }
+      }
+
       // Center card on anchor
       var tx = anchorX - cardW / 2;
       var ty = anchorY - cardH / 2;
