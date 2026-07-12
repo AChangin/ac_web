@@ -2922,7 +2922,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       if(proj) showCard(proj); else hideCard();
     }
     if(gridEl){
-      gridEl.addEventListener('touchstart', onGridTap, { passive: false });
+      // TEST: flash green on ANY touch in grid
+      gridEl.addEventListener('touchstart', function(e){
+        document.body.style.background = 'lime';
+        setTimeout(function(){ document.body.style.background = ''; }, 500);
+        onGridTap(e);
+      }, { passive: false });
       gridEl.addEventListener('click', onGridTap);
       gridEl.style.pointerEvents = 'auto';
     }
