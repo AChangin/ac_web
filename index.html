@@ -3047,6 +3047,20 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     });
   }
 
+    // Fade card based on scroll position (timeline = section 2, ~-200vw)
+    setInterval(function(){
+      var sc = document.getElementById('scroll-container');
+      var card = document.getElementById('mobile-project-card');
+      if(!sc || !card || card.style.display === 'none') return;
+      var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
+      var sx = m.m41, vw = window.innerWidth;
+      // Distance from timeline center (-200vw): 0 at center, 1 at edges
+      var dist = Math.abs(sx + 2*vw) / vw; // 0 at timeline, 1 one section away, 2 at hero/orbit
+      var opacity = Math.max(0, Math.min(1, 1 - dist * 0.8));
+      card.style.opacity = String(opacity);
+    }, 200);
+  }
+
   setTimeout(initMobileCard, 500);
 })();
 </script>
