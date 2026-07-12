@@ -2908,28 +2908,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Tap grid → show card
+    // Show card on first tap of any project node, then only dragging changes it
+    var cardShown = false;
     var gridEl = document.getElementById('tl-grid-outer');
-    function onGridTap(e){
-      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      var proj = null;
-      var node = e.target.closest('.tl-node');
-      if(node){
-        proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
-      } else if(nodeTargets.length > 0){
-        var nearest = null, minDist = 60;
-        for(var i=0; i<nodeTargets.length; i++){
-          var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
-          if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
-        }
-        if(nearest) proj = nearest.project;
-      }
-      if(proj) showCard(proj); else hideCard();
-    }
     if(gridEl){
       gridEl.addEventListener('touchstart', function(e){
-        // Force refresh node positions for current scroll position
+        if(cardShown) return; // already shown — only drag changes it now
         if(window.__tlRefreshNodes) window.__tlRefreshNodes();
         if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
         var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
@@ -2945,10 +2929,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           }
           if(nearest) proj = nearest.project;
         }
-        if(proj) showCard(proj, clientX, clientY); else hideCard();
-      }, { passive: false });
-      gridEl.addEventListener('click', onGridTap);
-      gridEl.style.pointerEvents = 'auto';
+        if(proj){ showCard(proj, clientX, clientY); cardShown = true; }
+      }, { passive: true });
     }
 
     // Drag card
