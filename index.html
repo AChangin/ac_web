@@ -2911,9 +2911,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // TEST: always show first card
+    // TEST: force card visible with hardcoded position
     if(projects.length > 0){
-      showCard(projects[0], window.innerWidth/2, window.innerHeight*0.4);
+      mActiveProj = projects[0];
+      mImg.src = projects[0].coverImage;
+      mCat.textContent = projects[0].category;
+      mTitle.textContent = projects[0].title;
+      mDate.textContent = projects[0].year + ' · ' + (months[projects[0].month-1] || '');
+      mDesc.textContent = projects[0].description;
+      mCard.setAttribute('style', 'display:flex!important;opacity:1!important;position:fixed;left:10vw;top:40vh;width:80vw;max-width:400px;z-index:99999;background:red;padding:20px;border:4px solid yellow;');
     }
 
     // Drag card
