@@ -2867,19 +2867,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var mDate = document.getElementById('mobile-card-date');
     var mDesc = document.getElementById('mobile-card-desc');
     if(!mCard || !mImg) { setTimeout(initMobileCard, 200); return; }
-    var hasProjects = window.__tlProjects ? window.__tlProjects.length : 0;
-    var hasNodes = window.__tlNodeTargets ? window.__tlNodeTargets.length : 0;
-    var hasGrid = !!document.getElementById('tl-grid-outer');
-    // Show card with debug info for 8s
-    mCard.style.display = 'flex'; mCard.style.opacity = '1';
-    mCard.style.left = '50%'; mCard.style.bottom = '5vh'; mCard.style.top = 'auto'; mCard.style.transform = 'translateX(-50%)';
-    mImg.src = 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop';
-    mCat.textContent = 'Debug';
-    mTitle.textContent = 'Projects:'+hasProjects+' Nodes:'+hasNodes+' Grid:'+hasGrid;
-    mDate.textContent = '';
-    mDesc.textContent = 'If Projects=0, timeline data not exposed. Tap a dot on timeline to test.';
-    setTimeout(function(){ mCard.style.display = 'none'; }, 8000);
-
     var mActiveProj = null;
 
     // Access timeline data from global scope
@@ -2919,16 +2906,25 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var gridEl = document.getElementById('tl-grid-outer');
     if(gridEl){
       gridEl.addEventListener('touchstart', function(e){
-        console.log('[mobile-card] grid touched, target:', e.target.tagName, e.target.className);
+        var proj = null;
         var node = e.target.closest('.tl-node');
-        if(!node){ console.log('[mobile-card] no .tl-node found'); hideCard(); return; }
-        var pid = parseInt(node.getAttribute('data-id'));
-        console.log('[mobile-card] node clicked, id:', pid);
-        var proj = projects.find(function(p){ return p.id === pid; });
-        if(proj){ console.log('[mobile-card] showing:', proj.title); showCard(proj); }
-        else { console.log('[mobile-card] project not found for id:', pid); }
+        if(node){
+          var pid = parseInt(node.getAttribute('data-id'));
+          proj = projects.find(function(p){ return p.id === pid; });
+        } else if(nodeTargets.length > 0){
+          // Finger missed the tiny dot — find nearest within 60px
+          var tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+          var nearest = null, minDist = 60;
+          for(var i=0; i<nodeTargets.length; i++){
+            var t = nodeTargets[i];
+            var d = Math.hypot(tx - t.cx, ty - t.cy);
+            if(d < minDist){ minDist = d; nearest = t; }
+          }
+          if(nearest) proj = nearest.project;
+        }
+        if(proj) showCard(proj); else hideCard();
       }, { passive: true });
-    } else { console.log('[mobile-card] grid element not found!'); }
+    }
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
