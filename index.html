@@ -1040,6 +1040,58 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
 }
+
+/* ── Mobile project card (timeline section) ── */
+.mobile-project-card{
+  display:none;
+  position:fixed;
+  bottom:5vh;
+  left:50%;
+  transform:translateX(-50%);
+  width:88vw;
+  max-width:400px;
+  background:#111;
+  border-radius:16px;
+  overflow:hidden;
+  z-index:10001;
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
+  touch-action:none;
+  transition:opacity 0.25s;
+}
+.mobile-card-image{
+  width:100%;
+  height:170px;
+  overflow:hidden;
+  background:#1a1a1a;
+}
+.mobile-card-image img{width:100%;height:100%;object-fit:cover;display:block}
+.mobile-card-body{padding:0.9rem 1.1rem}
+.mobile-card-cat{
+  font-family:'Inter',sans-serif;
+  font-size:0.65rem;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  color:rgba(255,255,255,0.45);
+}
+.mobile-card-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:1.1rem;
+  font-weight:600;
+  color:#fff;
+  margin:0.15rem 0 0.25rem;
+}
+.mobile-card-date{
+  font-family:'Inter',sans-serif;
+  font-size:0.7rem;
+  color:rgba(255,255,255,0.35);
+}
+.mobile-card-desc{
+  font-family:'Inter',sans-serif;
+  font-size:0.75rem;
+  color:rgba(255,255,255,0.55);
+  line-height:1.4;
+  margin-top:0.3rem;
+}
 </style>
 </head>
 <body>
@@ -1195,6 +1247,17 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       </div>
     </div>
   </section>
+
+  <!-- ===== MOBILE PROJECT CARD (visible only on mobile inside timeline) ===== -->
+  <div class="mobile-project-card" id="mobile-project-card">
+    <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
+    <div class="mobile-card-body">
+      <span class="mobile-card-cat" id="mobile-card-cat"></span>
+      <h3 class="mobile-card-title" id="mobile-card-title"></h3>
+      <span class="mobile-card-date" id="mobile-card-date"></span>
+      <p class="mobile-card-desc" id="mobile-card-desc"></p>
+    </div>
+  </div>
 
   <!-- ===== ORBIT (Section 3) — Mechanical Pen Orbit System ===== -->
   <section class="section orbit-section" data-index="3" id="orbit-section">
@@ -2282,8 +2345,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     });
 
     // RAF starts on demand (when mouse enters timeline section)
-    // Initial mousemove listener added at loop definition above
-
     console.log(
       '%c Timeline Map %c Active %c— ' + CONFIG.years.length + 'yr · ' + projects.length + ' projects',
       'font-weight:600;','color:#666;','color:#999;'
@@ -2294,6 +2355,93 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  MOBILE: tap node → show card, drag card → move between nodes
+  // ════════════════════════════════════════════════════════════
+  var isMobileTL = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if(isMobileTL){
+    var mCard = document.getElementById('mobile-project-card');
+    var mImg = document.getElementById('mobile-card-img');
+    var mCat = document.getElementById('mobile-card-cat');
+    var mTitle = document.getElementById('mobile-card-title');
+    var mDate = document.getElementById('mobile-card-date');
+    var mDesc = document.getElementById('mobile-card-desc');
+    var mActiveProj = null;
+
+    function showMobileCard(proj){
+      mActiveProj = proj;
+      mImg.src = proj.coverImage;
+      mCat.textContent = proj.category;
+      mTitle.textContent = proj.title;
+      mDate.textContent = proj.year + ' · ' + CONFIG.months[proj.month - 1];
+      mDesc.textContent = proj.description;
+      mCard.style.display = '';
+      mCard.style.opacity = '1';
+      mCard.style.left = '50%';
+      mCard.style.transform = 'translateX(-50%)';
+    }
+
+    function hideMobileCard(){
+      mCard.style.opacity = '0';
+      setTimeout(function(){ mCard.style.display = 'none'; mActiveProj = null; }, 250);
+    }
+
+    // Tap project node → show card
+    var gridOuterEl = document.getElementById('tl-grid-outer');
+    if(gridOuterEl){
+      gridOuterEl.addEventListener('touchstart', function(e){
+        var node = e.target.closest('.tl-node');
+        if(!node){ hideMobileCard(); return; }
+        var id = parseInt(node.getAttribute('data-id'));
+        var proj = projects.find(function(p){ return p.id === id; });
+        if(proj) showMobileCard(proj);
+      }, { passive: true });
+    }
+
+    // Drag card horizontally to switch projects
+    var dragStartX = 0, dragCardL = 0, draggingCard = false;
+    mCard.addEventListener('touchstart', function(e){
+      dragStartX = e.touches[0].clientX;
+      dragCardL = mCard.getBoundingClientRect().left;
+      draggingCard = true;
+      e.stopPropagation();
+    }, { passive: true });
+
+    mCard.addEventListener('touchmove', function(e){
+      if(!draggingCard) return;
+      var dx = e.touches[0].clientX - dragStartX;
+      var vw = window.innerWidth;
+      var newLeft = Math.max(6, Math.min(vw - mCard.offsetWidth - 6, dragCardL + dx));
+      mCard.style.left = newLeft + 'px';
+      mCard.style.transform = 'none';
+      // Find nearest project
+      var cx = newLeft + mCard.offsetWidth/2;
+      var nearest = null, minDist = Infinity;
+      for(var i = 0; i < nodeTargets.length; i++){
+        var t = nodeTargets[i];
+        var d = Math.abs(cx - t.cx);
+        if(d < minDist){ minDist = d; nearest = t; }
+      }
+      if(nearest && nearest.project !== mActiveProj && minDist < 120){
+        showMobileCard(nearest.project);
+      }
+    }, { passive: true });
+
+    mCard.addEventListener('touchend', function(){
+      draggingCard = false;
+      // Snap back to center
+      mCard.style.left = '50%';
+      mCard.style.transform = 'translateX(-50%)';
+    }, { passive: true });
+
+    // Tap outside card → dismiss
+    document.addEventListener('touchstart', function(e){
+      if(!mCard.contains(e.target) && !e.target.closest('.tl-node')){
+        hideMobileCard();
+      }
+    }, { passive: true });
   }
 
 })();
