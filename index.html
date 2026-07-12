@@ -3051,20 +3051,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     });
   }
 
-    // Page-pin: apply scroll delta to card position
-    var lastSX = 0, pinActive = false, pinLeft = 0;
-    setInterval(function(){
-      if(!mCard || mCard.style.display === 'none' || isMinimized || dragging) { pinActive = false; return; }
-      var sc = document.getElementById('scroll-container');
-      if(!sc) return;
-      var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
-      var sx = m.m41;
-      if(!pinActive){ var r = mCard.getBoundingClientRect(); pinLeft = r.left; lastSX = sx; pinActive = true; return; }
-      var delta = sx - lastSX;
-      if(Math.abs(delta) > 1){ mCard.style.left = (pinLeft + delta) + 'px'; }
-    }, 100);
-  }
-
   setTimeout(initMobileCard, 500);
 })();
 </script>
