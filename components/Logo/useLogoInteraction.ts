@@ -26,6 +26,7 @@ export interface UseLogoInteractionResult {
 // ---------------------------------------------------------------------------
 
 const ACTIVATION_RADIUS = 180;
+const ACTIVATION_RADIUS_FIRST = 250; // larger range before first pick
 const DEBOUNCE_MS = 200;
 
 /** ColorWheel 中心在 Logo 容器内的坐标 */
@@ -88,12 +89,14 @@ export function useLogoInteraction({
     isActive: false,
     pendingActive: null as boolean | null,
   });
+  const hasPickedRef = useRef(false);
   const moveCountRef = useRef(0);
   const cachedRectRef = useRef<DOMRect | null>(null);
 
   useEffect(() => { hueRef.current = hue; }, [hue]);
   useEffect(() => { onHueChangeRef.current = onHueChange; }, [onHueChange]);
   useEffect(() => { stateRef.current.isActive = isActive; }, [isActive]);
+  useEffect(() => { hasPickedRef.current = hasPicked; }, [hasPicked]);
 
   // ---- Event-driven: mousemove handler replaces RAF ----
   useEffect(() => {
@@ -114,7 +117,8 @@ export function useLogoInteraction({
       const dxLogo = e.clientX - logoCx;
       const dyLogo = e.clientY - logoCy;
       const distance = Math.sqrt(dxLogo * dxLogo + dyLogo * dyLogo);
-      const shouldBeActive = distance < ACTIVATION_RADIUS;
+      var radius = hasPickedRef.current ? ACTIVATION_RADIUS : ACTIVATION_RADIUS_FIRST;
+      const shouldBeActive = distance < radius;
       const current = stateRef.current;
 
       // 200ms debounce for activation state changes
@@ -191,7 +195,8 @@ export function useLogoInteraction({
       var logoCy = rect.top + rect.height / 2;
       var dx = clientX - logoCx;
       var dy = clientY - logoCy;
-      return Math.sqrt(dx * dx + dy * dy) < ACTIVATION_RADIUS;
+      var radius = hasPickedRef.current ? ACTIVATION_RADIUS : ACTIVATION_RADIUS_FIRST;
+      return Math.sqrt(dx * dx + dy * dy) < radius;
     }
 
     function trackFromTouch(touch: Touch, rect: DOMRect) {
