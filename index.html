@@ -2276,6 +2276,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         var dot = document.createElement('div');
         dot.className = 'tl-node' + (p.color === CONFIG.accentColor ? ' accent' : '');
         dot.setAttribute('data-id', p.id);
+        dot.id = 'tl-node-' + p.id;
         cluster.appendChild(dot);
       });
       row.appendChild(cluster);
@@ -2946,7 +2947,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     var _animState = { snapNode: null };
     var _dragTx = 0, _dragTy = 0; // saved translate values during drag
     var ANIM = {
-      MAGNETIC_RADIUS: 18,
+      MAGNETIC_RADIUS: 50,
       SETTLE_DURATION: 240
     };
 
@@ -2999,12 +3000,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }, ANIM.CONTENT_IN_DURATION || 200);
     }
 
-    function _applyMagneticSnap(clientX){
+    function _applyMagneticSnap(clientX, clientY){
       if(!window.__tlNodeTargets) return;
       var targets = window.__tlNodeTargets;
       var nearest = null, minD = Infinity;
       for(var i = 0; i < targets.length; i++){
-        var d = Math.abs(clientX - targets[i].cx);
+        var dx = clientX - targets[i].cx;
+        var dy = clientY - targets[i].cy;
+        var d = Math.sqrt(dx*dx + dy*dy);
         if(d < minD){ minD = d; nearest = targets[i]; }
       }
       if(_animState.snapNode){
@@ -3012,7 +3015,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         _animState.snapNode = null;
       }
       if(nearest && minD <= ANIM.MAGNETIC_RADIUS){
-        var nodeEl = document.querySelector('.tl-node[data-id="' + nearest.project.id + '"]');
+        var nodeEl = document.getElementById('tl-node-' + nearest.project.id);
         if(nodeEl){
           nodeEl.classList.add('magnetically-near');
           _animState.snapNode = nodeEl;
@@ -3111,8 +3114,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         mCard.classList.remove('card-lifting');
         mCard.classList.add('card-dragging');
       }
-      // Magnetic snap highlight
-      _applyMagneticSnap(cx);
+      // Magnetic snap highlight (use Euclidean distance)
+      _applyMagneticSnap(cx, cy);
       if(window.__tlRefreshNodes) window.__tlRefreshNodes();
       if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
 
