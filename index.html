@@ -3276,6 +3276,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     mCard.addEventListener('touchend', function(){
       if(!dragging) return;
       dragging = false;
+      mCard.classList.remove('card-lifting','card-dragging');
       _clearMagneticSnap();
       mCard.style.transition = ''; // restore CSS transitions
       var r = mCard.getBoundingClientRect();
