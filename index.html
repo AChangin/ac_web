@@ -2964,28 +2964,41 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     mCard.addEventListener('touchmove', function(e){
       if(!dragging) return;
-      e.preventDefault();
-      e.stopPropagation(); // block swipe handler too
+      e.preventDefault(); e.stopPropagation();
       var dx = e.touches[0].clientX - dsX, dy = e.touches[0].clientY - dsY;
-      if(Math.abs(dx)>3 || Math.abs(dy)>3) hasDragged = true;
-      var vw = window.innerWidth, vh = window.innerHeight;
-      var nl = Math.max(0, Math.min(vw - mCard.offsetWidth, dcL + dx));
-      var nt = Math.max(0, Math.min(vh - mCard.offsetHeight, dcT + dy));
-      mCard.style.left = nl+'px'; mCard.style.top = nt+'px';
-      mCard.style.transform = 'none'; mCard.style.bottom = 'auto';
-      mCard.classList.toggle('card-on-right', nl > vw*0.5);
-      // Find nearest project
-      var cx = nl + mCard.offsetWidth/2, nearest=null, minD=Infinity;
-      for(var i=0; i<nodeTargets.length; i++){
-        var t=nodeTargets[i], d=Math.abs(cx-t.cx);
-        if(d<minD){ minD=d; nearest=t; }
+      if(Math.abs(dx)>3 || Math.abs(dy)>3){
+        if(!hasDragged){
+          hasDragged = true;
+          mCard.style.transition = 'transform 0.2s';
+          mCard.style.transform = 'scale(0.35)';
+        }
       }
-      if(nearest && nearest.project !== mActiveProj && minD < 120){
-        showCard(nearest.project, nl + mCard.offsetWidth/2, nt);
+      if(!hasDragged) return;
+      var cx = dsX + dx, cy = dsY + dy;
+      var hw = mCard.offsetWidth*0.35/2, hh = mCard.offsetHeight*0.35/2;
+      var vw = window.innerWidth, vh = window.innerHeight;
+      mCard.style.left = Math.max(hw, Math.min(vw-hw, cx))+'px';
+      mCard.style.top  = Math.max(hh, Math.min(vh-hh, cy))+'px';
+      mCard.style.bottom = 'auto';
+      var nearest=null, minD=Infinity;
+      for(var i=0; i<nodeTargets.length; i++){
+        var d=Math.abs(cx - nodeTargets[i].cx);
+        if(d<minD){ minD=d; nearest=nodeTargets[i]; }
+      }
+      if(nearest && nearest.project!==mActiveProj && minD<120){
+        showCard(nearest.project, cx, cy);
       }
     }, { passive: false });
 
-    mCard.addEventListener('touchend', function(){ dragging = false; });
+    mCard.addEventListener('touchend', function(){
+      if(!dragging) return;
+      dragging = false;
+      if(hasDragged){
+        mCard.style.transition = 'transform 0.25s';
+        mCard.style.transform = 'scale(1)';
+        setTimeout(function(){ mCard.style.transition = ''; }, 250);
+      }
+    });
   }
 
   setTimeout(initMobileCard, 500);
