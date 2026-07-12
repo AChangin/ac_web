@@ -2908,36 +2908,20 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     }
 
-    // Show card on first tap of any project node, then only dragging changes it
-    var cardShown = false;
-    var gridEl = document.getElementById('tl-grid-outer');
-    if(gridEl){
-      gridEl.addEventListener('touchstart', function(e){
-        if(cardShown) return; // already shown — only drag changes it now
-        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
-        if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
-        var clientX = e.touches[0].clientX, clientY = e.touches[0].clientY;
-        var proj = null;
-        var node = e.target.closest('.tl-node');
-        if(node){
-          proj = projects.find(function(p){ return p.id === parseInt(node.getAttribute('data-id')); });
-        } else if(nodeTargets.length > 0){
-          var nearest = null, minDist = 80;
-          for(var i=0; i<nodeTargets.length; i++){
-            var d = Math.hypot(clientX - nodeTargets[i].cx, clientY - nodeTargets[i].cy);
-            if(d < minDist){ minDist = d; nearest = nodeTargets[i]; }
-          }
-          if(nearest) proj = nearest.project;
-        }
-        if(proj){ showCard(proj, clientX, clientY); cardShown = true; }
-      }, { passive: true });
-    }
+    // Show first project as default when timeline section is entered
+    // (card appears on first card drag, not on grid tap)
 
     // Drag card
     var dsX=0, dsY=0, dcL=0, dcT=0, dragging=false, hasDragged=false;
     mCard.addEventListener('touchstart', function(e){
       if(e.target.closest('.mobile-card-close')) return;
       e.preventDefault();
+      // Auto-show first project if card not visible yet
+      if(mCard.style.display === 'none' && projects.length > 0){
+        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+        if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
+        showCard(projects[0], e.touches[0].clientX, e.touches[0].clientY);
+      }
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
       dragging = true; hasDragged = false;
       var hw = mCard.offsetWidth/2, hh = mCard.offsetHeight/2;
@@ -2985,6 +2969,21 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var curY = mx ? parseFloat(mx[2]) : 0;
       mCard.style.transform = 'translate('+curX+'px,'+curY+'px) scale(1)';
     });
+  }
+
+    // Track page scroll: close card when 50%+ into another section
+    var lastScrollX = 0;
+    setInterval(function(){
+      var m = new DOMMatrixReadOnly(getComputedStyle(document.getElementById('scroll-container')).transform);
+      var sx = m.m41; // current translateX
+      if(Math.abs(sx - lastScrollX) > 30 && mCard.style.display !== 'none'){
+        // Close card if scrolled away from timeline (sections: hero=0, logo=-100vw, timeline=-200vw, orbit=-300vw)
+        var vw = window.innerWidth;
+        if(sx > -140*vw/100 || sx < -260*vw/100) hideCard();
+      }
+      lastScrollX = sx;
+    }, 500);
+
   }
 
   setTimeout(initMobileCard, 500);
