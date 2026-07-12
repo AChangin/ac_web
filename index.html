@@ -2399,10 +2399,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       mTitle.textContent = proj.title;
       mDate.textContent = proj.year + ' · ' + CONFIG.months[proj.month - 1];
       mDesc.textContent = proj.description;
-      mCard.style.display = '';
+      mCard.style.display = 'flex';
       mCard.style.opacity = '1';
       mCard.style.left = '50%';
       mCard.style.transform = 'translateX(-50%)';
+      mCard.style.bottom = '5vh';
+      mCard.style.top = 'auto';
     }
 
     function hideMobileCard(){
