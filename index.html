@@ -2969,13 +2969,15 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var cx = e.touches[0].clientX, cy = e.touches[0].clientY;
       if(Math.abs(cx-dsX)>3 || Math.abs(cy-dsY)>3) hasDragged = true;
       if(!hasDragged) return;
+      // Refresh node positions every drag frame (page may have scrolled)
+      if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+      if(window.__tlNodeTargets) nodeTargets = window.__tlNodeTargets;
       var hw = mCard.offsetWidth/2, hh = mCard.offsetHeight/2;
       var vw = window.innerWidth, vh = window.innerHeight;
-      // Constrain so scaled card stays in viewport
       var tx = Math.max(hw*0.35, Math.min(vw-hw*0.35, cx));
       var ty = Math.max(hh*0.35, Math.min(vh-hh*0.35, cy));
       mCard.style.transform = 'translate('+(tx-hw)+'px,'+(ty-hh)+'px) scale(0.35)';
-      // Match projects by finger position
+      // Match projects by finger screen position (nodes are in screen coords)
       var nearest=null, minD=Infinity;
       for(var i=0; i<nodeTargets.length; i++){
         var d=Math.abs(cx - nodeTargets[i].cx);
