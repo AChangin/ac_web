@@ -1720,7 +1720,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   if(isMobile){
     document.body.classList.add('is-mobile');
     document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
     document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'none';
     var logoMount = document.getElementById('logo-mount');
     if(logoMount) logoMount.style.touchAction = 'none';
     // Reset any restored scroll position + GSAP transform
@@ -1774,23 +1776,19 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         touching = false;
 
         // ── Auto-pick on first real swipe into logo section ──
-        if(!mobileAutoPicked){
-          var d = getDist();
-          var prog = d > 0 ? -tx / d : 0;
-          if(prog > 0.15){
-            mobileAutoPicked = true;
-            sessionStorage.setItem('ac_autopick', '1');
-            if(window.__autoPickHue) window.__autoPickHue(240);
-            var hint = document.getElementById('mobile-hint');
-            if(hint){
-              hint.style.display = '';
-              var hideHint = function(){
-                hint.style.opacity = '0';
-                setTimeout(function(){ hint.style.display = 'none'; }, 400);
-                document.removeEventListener('touchstart', hideHint);
-              };
-              document.addEventListener('touchstart', hideHint, { once: true });
-            }
+        if(!mobileAutoPicked && scrollProgress > 0.15){
+          mobileAutoPicked = true;
+          sessionStorage.setItem('ac_autopick', '1');
+          if(window.__autoPickHue) window.__autoPickHue(240);
+          var hint = document.getElementById('mobile-hint');
+          if(hint){
+            hint.style.display = '';
+            var hideHint = function(){
+              hint.style.opacity = '0';
+              setTimeout(function(){ hint.style.display = 'none'; }, 400);
+              document.removeEventListener('touchstart', hideHint);
+            };
+            document.addEventListener('touchstart', hideHint, { once: true });
           }
         }
 
