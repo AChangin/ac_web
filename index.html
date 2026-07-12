@@ -1776,7 +1776,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         touching = false;
 
         // ── Auto-pick on first real swipe into logo section ──
-        if(!mobileAutoPicked && scrollProgress > 0.15){
+        if(!mobileAutoPicked && scrollProgress > 0.10){
+          console.log('[auto-pick] progress:', scrollProgress.toFixed(3));
           mobileAutoPicked = true;
           sessionStorage.setItem('ac_autopick', '1');
           if(window.__autoPickHue) window.__autoPickHue(240);
