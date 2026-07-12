@@ -2863,8 +2863,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   var testCard = document.getElementById('mobile-project-card');
   var testDiv2 = document.createElement('div');
   testDiv2.textContent = 'Card found: ' + !!testCard;
-  testDiv2.style.cssText = 'position:fixed;top:10px;left:10px;background:cyan;color:#000;z-index:999999;padding:10px;font-size:14px;';
-  document.body.appendChild(testDiv2);
+  testDiv2.style.cssText = 'position:fixed;top:10px;left:10px;background:cyan;color:#000;z-index:2147483647;padding:10px;font-size:14px;';
+  (document.documentElement || document.body).appendChild(testDiv2);
   setTimeout(function(){ testDiv2.remove(); }, 8000);
 
   // Wait for timeline to initialize
