@@ -3051,6 +3051,29 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     });
   }
 
+    // Pin card to page position (follow scroll, not viewport)
+    var cardPageX = 0, cardPageY = 0;
+    var hasPagePos = false;
+    setInterval(function(){
+      if(!mCard || mCard.style.display === 'none' || isMinimized) { hasPagePos = false; return; }
+      var sc = document.getElementById('scroll-container');
+      if(!sc) return;
+      var m = new DOMMatrixReadOnly(getComputedStyle(sc).transform);
+      var sx = m.m41;
+      if(!hasPagePos){
+        var r = mCard.getBoundingClientRect();
+        cardPageX = r.left - sx;   // page-relative X
+        cardPageY = r.top;
+        hasPagePos = true;
+        mCard.style.left = '0px';
+        mCard.style.top = '0px';
+        mCard.style.bottom = 'auto';
+      }
+      mCard.style.transform = 'translate('+(cardPageX + sx)+'px,'+cardPageY+'px) scale(1)';
+    }, 100);
+
+  }
+
   setTimeout(initMobileCard, 500);
 })();
 </script>
