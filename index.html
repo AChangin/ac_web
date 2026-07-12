@@ -2955,7 +2955,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         }
         if(nearest) proj = nearest.project;
       }
-      if(proj) showCard(proj); else hideCard();
+      if(proj) showCard(proj); else minimizeCard();
     }
     if(gridEl){
       gridEl.addEventListener('touchstart', function(e){
@@ -2977,7 +2977,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           }
           if(nearest) proj = nearest.project;
         }
-        if(proj) showCard(proj); else hideCard();
+        if(proj) showCard(proj); else minimizeCard();
       }, { passive: false });
       gridEl.addEventListener('click', onGridTap);
       gridEl.style.pointerEvents = 'auto';
