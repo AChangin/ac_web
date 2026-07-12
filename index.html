@@ -1106,7 +1106,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 .mobile-card-body{padding:0.9rem 1.1rem;text-align:left}
 .mobile-card-cat{
   font-family:'Inter',sans-serif;
-  font-size:1.95rem;
+  font-size:1.5rem;
   text-transform:uppercase;
   letter-spacing:0.1em;
   color:rgba(255,255,255,0.45);
@@ -1120,14 +1120,14 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 }
 .mobile-card-date{
   font-family:'Inter',sans-serif;
-  font-size:2.1rem;
+  font-size:1.5rem;
   color:rgba(255,255,255,0.35);
 }
 .mobile-card-desc{
   font-family:'Inter',sans-serif;
   font-size:2.25rem;
   color:rgba(255,255,255,0.55);
-  line-height:1.4;
+  line-height:0.8;
   margin-top:0.3rem;
 }
 /* Mobile: hide old desktop cursor card */
@@ -2029,7 +2029,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     (function(){
       var tx = 0, vx = 0, touching = false, lastX = 0, lastTime = 0, inertiaRaf = 0;
       var snapRaf = 0, snapTimer = 0;
-      var SNAP = { THRESHOLD: 60, MAX_VELOCITY: 0.3, DURATION: 280, IDLE_DELAY: 100 };
+      var SNAP = { THRESHOLD: 140, MAX_VELOCITY: 0.3, DURATION: 500, IDLE_DELAY: 100 };
 
       function getDist(){ return scrollContainer.scrollWidth - window.innerWidth; }
       function clamp(v){ var m = -getDist(); return Math.max(m, Math.min(0, v)); }
