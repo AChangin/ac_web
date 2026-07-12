@@ -181,9 +181,12 @@ export function useLogoInteraction({
       if (activeDragEnd)   { document.removeEventListener("touchend", activeDragEnd); activeDragEnd = null; }
       document.removeEventListener("touchcancel", handleCancel);
       trackingId = null;
-      stateRef.current.isActive = false;
-      setIsActive(false);
       (window as any).__logoInteracting = false;
+      // After first pick, keep picker open so user can continue adjusting
+      if (!hasPickedRef.current) {
+        stateRef.current.isActive = false;
+        setIsActive(false);
+      }
     }
 
     function getRect(el: HTMLElement): DOMRect {
@@ -229,7 +232,14 @@ export function useLogoInteraction({
       var touch = e.changedTouches[0];
       if (!touch) return;
       var rect = getRect(el);
-      if (!isInRange(touch.clientX, touch.clientY, rect)) return;
+      if (!isInRange(touch.clientX, touch.clientY, rect)){
+        // Tap outside range → close picker (only after first pick)
+        if(hasPickedRef.current){
+          stateRef.current.isActive = false;
+          setIsActive(false);
+        }
+        return;
+      }
 
       trackingId = touch.identifier;
       stateRef.current.isActive = true;
