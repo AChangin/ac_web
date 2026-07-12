@@ -1503,26 +1503,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
   // ========== PARALLAX — standalone so mobile swipe can drive it too ==========
   var mobileAutoPicked = false;
-  var mobileUserScrolled = false;
   function applyParallax(progress){
     scrollProgress = progress;
-
-    // ── Mobile auto-pick: only after user actually scrolls + 60% into logo ──
-    if(isMobile && !mobileAutoPicked && mobileUserScrolled && progress > 0.20){
-      mobileAutoPicked = true;
-      if(window.__autoPickHue) window.__autoPickHue(240); // blue
-      var hint = document.getElementById('mobile-hint');
-      if(hint){
-        hint.style.display = '';
-        // Hide hint after user manually changes color (via touch)
-        var hideHint = function(){
-          hint.style.opacity = '0';
-          setTimeout(function(){ hint.style.display = 'none'; }, 400);
-          document.removeEventListener('touchstart', hideHint);
-        };
-        document.addEventListener('touchstart', hideHint, { once: true });
-      }
-    }
 
     var vw = window.innerWidth;
 
@@ -1773,7 +1755,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
       document.addEventListener('touchmove', function(e){
         if(!touching) return;
-        mobileUserScrolled = true;
         var x = e.touches[0].clientX;
         var dx = x - lastX;
         var dt = performance.now() - lastTime;
@@ -1786,6 +1767,27 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       document.addEventListener('touchend', function(){
         if(!touching) return;
         touching = false;
+
+        // ── Auto-pick on first real swipe into logo section ──
+        if(!mobileAutoPicked){
+          var d = getDist();
+          var prog = d > 0 ? -tx / d : 0;
+          if(prog > 0.15){
+            mobileAutoPicked = true;
+            if(window.__autoPickHue) window.__autoPickHue(240);
+            var hint = document.getElementById('mobile-hint');
+            if(hint){
+              hint.style.display = '';
+              var hideHint = function(){
+                hint.style.opacity = '0';
+                setTimeout(function(){ hint.style.display = 'none'; }, 400);
+                document.removeEventListener('touchstart', hideHint);
+              };
+              document.addEventListener('touchstart', hideHint, { once: true });
+            }
+          }
+        }
+
         if(Math.abs(vx) > 0.1){
           stopInertia();
           (function step(){
