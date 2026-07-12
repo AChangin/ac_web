@@ -1507,7 +1507,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     scrollProgress = progress;
 
     // ── Mobile auto-pick: at 60% toward logo section, pick a default hue ──
-    if(isMobile && !mobileAutoPicked && progress > 0.20){
+    if(isMobile && !mobileAutoPicked && progress > 0.20 && performance.now() > 1500){
       mobileAutoPicked = true;
       if(window.__autoPickHue) window.__autoPickHue(240); // blue
       var hint = document.getElementById('mobile-hint');
