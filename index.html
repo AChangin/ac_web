@@ -1159,14 +1159,11 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   transition:opacity 0.22s ease-out,transform 0.22s ease-out;
 }
 .mobile-project-card.card-pin .mobile-card-pin-icon{
-  animation:contentIn 250ms ease-out both;
-}
-.mobile-project-card.card-pin{
-  animation:pinBreathe 2s ease-in-out 0.5s infinite;
+  animation:contentIn 250ms ease-out both, pinBreathe 2s ease-in-out 0.8s infinite;
 }
 @keyframes pinBreathe{
-  0%,100%{ transform:translate(-50%,-50%) scale(1); }
-  50%{ transform:translate(-50%,-50%) scale(1.15); }
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.18); }
 }
 
 /* ── Close button micro-interactions ── */
@@ -3003,8 +3000,9 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       // Let CSS transition animate pin→card
       var r = mCard.getBoundingClientRect();
       var cx = r.left + r.width/2, cy = r.top + r.height/2;
+      var finalW = Math.min(window.innerWidth * 0.8, 320);
       mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(cx-30)+'px,'+(cy-24)+'px) scale(1)';
+      mCard.style.transform = 'translate('+(cx - finalW/2)+'px,'+(cy - finalW/2)+'px) scale(1)';
       mCard.classList.remove('card-pin');
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
@@ -3115,7 +3113,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         mCard.offsetHeight;
         mCard.style.transition = '';
         mCard.classList.add('card-pin');
-        mCard.style.transform = 'translate('+(savedX-30)+'px,'+(savedY-22)+'px) scale(1)';
+        mCard.style.transform = 'translate('+(savedX-30)+'px,'+(savedY-30)+'px) scale(1)';
         document.getElementById('mobile-card-close').style.display = 'none';
       }, 180);
     }
