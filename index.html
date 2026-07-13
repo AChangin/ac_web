@@ -1181,6 +1181,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
 }
 .mobile-project-card.card-pin .mobile-card-pin-icon{
   animation:contentIn 250ms ease-out both, pinBreathe 2s ease-in-out 0.8s infinite;
+  filter:drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff);
 }
 @keyframes pinBreathe{
   0%,100%{ transform:scale(1); }
@@ -1855,7 +1856,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     var sectionLeft = vw * (tlSectionIdx - progress * (totalSections - 1));
     var gridPadPx = vw * 0.05;
     var labelNatural = sectionLeft + gridPadPx + containerShift;
-    var pinTarget = vw * 0.20;
+    var pinTarget = vw * (window.innerWidth <= 768 ? 0.08 : 0.20);
     var tlMonthLabelsEl = document.getElementById('tl-month-labels');
     if(tlMonthLabelsEl){
       if(labelNatural < pinTarget && sectionLeft > -vw * 0.7){
