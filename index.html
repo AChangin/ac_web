@@ -495,10 +495,6 @@ body{
 /* ============================================================
    CUSTOM CURSOR — only active inside Timeline section
    ============================================================ */
-.timeline-section{
-  cursor:url('icons/pin.svg') 0 44, auto;
-}
-
 .tl-cursor{
   position:fixed;
   z-index:10000;
@@ -1130,10 +1126,6 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   line-height:1.2;
   margin-top:0.3rem;
 }
-/* Mobile: hide old desktop cursor card */
-@media(max-width:1024px){
-  .tl-cursor{display:none!important}
-}
 /* Hide desktop cursor on touch devices (iPad, etc.) */
 .is-touch .tl-cursor{display:none!important}
 /* Hide mobile card on non-touch desktop */
@@ -1167,11 +1159,14 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   transition:opacity 0.22s ease-out,transform 0.22s ease-out;
 }
 .mobile-project-card.card-pin .mobile-card-pin-icon{
-  animation:contentIn 250ms ease-out both, pinBreathe 2s ease-in-out 0.5s infinite;
+  animation:contentIn 250ms ease-out both;
+}
+.mobile-project-card.card-pin{
+  animation:pinBreathe 2s ease-in-out 0.5s infinite;
 }
 @keyframes pinBreathe{
   0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.15); }
+  50%{ transform:scale(1.12); }
 }
 
 /* ── Close button micro-interactions ── */
@@ -3311,7 +3306,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
 
       if(isPin){
         // Tap on pin → find nearest node and expand
-        if(!hasDragged && window.__tlNodeTargets){
+        if(window.__tlRefreshNodes) window.__tlRefreshNodes();
+        if(!hasDragged && window.__tlNodeTargets && window.__tlNodeTargets.length > 0){
           var targets3 = window.__tlNodeTargets;
           var nearest3 = null, minD3 = Infinity;
           for(var k = 0; k < targets3.length; k++){
