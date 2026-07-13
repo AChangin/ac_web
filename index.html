@@ -1050,9 +1050,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 }
 /* Pin mode: small icon */
 .mobile-project-card.card-pin{
-  width:44px;
+  width:60px;
   aspect-ratio:auto;
-  height:44px;
+  height:60px;
   border-radius:50%;
   background:transparent;
   box-shadow:none;
@@ -1165,8 +1165,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   animation:pinBreathe 2s ease-in-out 0.5s infinite;
 }
 @keyframes pinBreathe{
-  0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.12); }
+  0%,100%{ transform:translate(-50%,-50%) scale(1); }
+  50%{ transform:translate(-50%,-50%) scale(1.15); }
 }
 
 /* ── Close button micro-interactions ── */
@@ -3004,7 +3004,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       var r = mCard.getBoundingClientRect();
       var cx = r.left + r.width/2, cy = r.top + r.height/2;
       mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(cx-24)+'px,'+(cy-24)+'px) scale(1)';
+      mCard.style.transform = 'translate('+(cx-30)+'px,'+(cy-24)+'px) scale(1)';
       mCard.classList.remove('card-pin');
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
@@ -3115,7 +3115,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         mCard.offsetHeight;
         mCard.style.transition = '';
         mCard.classList.add('card-pin');
-        mCard.style.transform = 'translate('+(savedX-22)+'px,'+(savedY-22)+'px) scale(1)';
+        mCard.style.transform = 'translate('+(savedX-30)+'px,'+(savedY-22)+'px) scale(1)';
         document.getElementById('mobile-card-close').style.display = 'none';
       }, 180);
     }
@@ -3154,7 +3154,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         mCard.style.transform = 'translate('+(dsX-hw)+'px,'+(dsY-hh)+'px) scale('+SHRINK+')';
         _dragTx = dsX - hw; _dragTy = dsY - hh;
       } else {
-        setPos(dragStartL - 24, dragStartT - 24, 1);
+        setPos(dragStartL - 30, dragStartT - 30, 1);
       }
       // Press lift animation (card "picked up")
       mCard.classList.remove('card-settling','card-closing');
@@ -3274,12 +3274,12 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
           if(Math.abs(vx) < 0.1 && Math.abs(vy) < 0.1){ inertiaRaf = 0; return; }
           curLeft += vx; curTop += vy;
           var vw = window.innerWidth, vh = window.innerHeight;
-          var hw = isPin ? 22 : mCard.offsetWidth*curScale/2;
-          var hh = isPin ? 22 : mCard.offsetHeight*curScale/2;
+          var hw = isPin ? 30 : mCard.offsetWidth*curScale/2;
+          var hh = isPin ? 30 : mCard.offsetHeight*curScale/2;
           curLeft = Math.max(-hw, Math.min(vw - hw, curLeft));
           curTop = Math.max(-hh, Math.min(vh - hh, curTop));
           if(isPin){
-            setPos(curLeft - 22, curTop - 22, 1);
+            setPos(curLeft - 30, curTop - 30, 1);
           } else {
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
             mCard.style.transform = 'translate('+(curLeft-mCard.offsetWidth/2)+'px,'+(curTop-mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
@@ -3311,7 +3311,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
           var targets3 = window.__tlNodeTargets;
           var nearest3 = null, minD3 = Infinity;
           for(var k = 0; k < targets3.length; k++){
-            var d3 = Math.abs(curLeft + 22 - targets3[k].cx);
+            var d3 = Math.abs(curLeft + 30 - targets3[k].cx);
             if(d3 < minD3){ minD3 = d3; nearest3 = targets3[k]; }
           }
           if(nearest3 && minD3 < 120){
@@ -3321,10 +3321,10 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
             mCard.style.transform = 'translate('+pos3.tx+'px,'+pos3.ty+'px) scale(1)';
             _dragTx = pos3.tx; _dragTy = pos3.ty;
           } else {
-            setPos(curLeft - 22, curTop - 22, 1);
+            setPos(curLeft - 30, curTop - 30, 1);
           }
         } else {
-          setPos(curLeft - 22, curTop - 22, 1);
+          setPos(curLeft - 30, curTop - 30, 1);
         }
       } else {
         var cw2 = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
