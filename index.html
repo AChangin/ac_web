@@ -496,7 +496,7 @@ body{
    CUSTOM CURSOR — only active inside Timeline section
    ============================================================ */
 .timeline-section{
-  cursor:url('icons/pin.svg') 15 0, auto;
+  cursor:url('icons/pin.svg') 0 44, auto;
 }
 
 .tl-cursor{
@@ -507,7 +507,14 @@ body{
   backface-visibility:hidden;
 }
 .tl-cursor-dot{
-  display:none;
+  width:60px;
+  height:auto;
+  position:absolute;
+  left:0;top:0;
+  transform:translateY(-100%);
+  transform-origin:left bottom;
+  pointer-events:none;
+  z-index:1;
 }
 .tl-cursor-card{
   position:absolute;
@@ -521,6 +528,7 @@ body{
   pointer-events:none;
   clip-path:circle(4px at 50% 50%);
   transform:translate(-50%,-50%) scale(0.4);
+  z-index:2;
 }
 .tl-cursor-card-image{
   position:absolute;
@@ -1126,6 +1134,10 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 @media(max-width:1024px){
   .tl-cursor{display:none!important}
 }
+/* Hide desktop cursor on touch devices (iPad, etc.) */
+.is-touch .tl-cursor{display:none!important}
+/* Hide mobile card on non-touch desktop */
+body:not(.is-touch) .mobile-project-card{display:none!important}
 
 /* ── Safe area for card positioning ── */
 :root {
@@ -1155,7 +1167,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   transition:opacity 0.22s ease-out,transform 0.22s ease-out;
 }
 .mobile-project-card.card-pin .mobile-card-pin-icon{
-  animation:contentIn 250ms ease-out both;
+  animation:contentIn 250ms ease-out both, pinBreathe 2s ease-in-out 0.5s infinite;
+}
+@keyframes pinBreathe{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.15); }
 }
 
 /* ── Close button micro-interactions ── */
@@ -1436,7 +1452,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       </div>
     </div>
 
-    <div class="mobile-project-card card-pin" id="mobile-project-card" style="position:absolute;left:50%;bottom:5vh;transform:translateX(-50%);z-index:10;">
+    <div class="mobile-project-card card-pin" id="mobile-project-card" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;">
       <img class="mobile-card-pin-icon" id="mobile-card-pin-icon" src="icons/pin.svg" alt="">
       <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
       <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
@@ -2005,6 +2021,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   });
 
   // ========== MOBILE HORIZONTAL SWIPE (velocity-based, native-feel) ==========
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if(isTouch) document.body.classList.add('is-touch');
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if(isMobile){
     document.body.classList.add('is-mobile');
@@ -3292,7 +3310,26 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       }
 
       if(isPin){
-        setPos(curLeft - 22, curTop - 22, 1);
+        // Tap on pin → find nearest node and expand
+        if(!hasDragged && window.__tlNodeTargets){
+          var targets3 = window.__tlNodeTargets;
+          var nearest3 = null, minD3 = Infinity;
+          for(var k = 0; k < targets3.length; k++){
+            var d3 = Math.abs(curLeft + 22 - targets3[k].cx);
+            if(d3 < minD3){ minD3 = d3; nearest3 = targets3[k]; }
+          }
+          if(nearest3 && minD3 < 120){
+            toCard(nearest3.project);
+            var pos3 = _smartPosition(nearest3.cx, nearest3.cy, Math.min(window.innerWidth * 0.8, 320), Math.min(window.innerWidth * 0.8, 320));
+            mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
+            mCard.style.transform = 'translate('+pos3.tx+'px,'+pos3.ty+'px) scale(1)';
+            _dragTx = pos3.tx; _dragTy = pos3.ty;
+          } else {
+            setPos(curLeft - 22, curTop - 22, 1);
+          }
+        } else {
+          setPos(curLeft - 22, curTop - 22, 1);
+        }
       } else {
         var cw2 = mCard.offsetWidth || Math.min(window.innerWidth * 0.8, 320);
         var ch2 = mCard.offsetHeight || cw2;
