@@ -99,20 +99,25 @@ body{
         var relX = (viewCenter - elCenter) / viewW;
         var inView = (elX + elW > scrollX) && (elX < scrollX + viewW);
 
+        // Calculate visual position (accounting for parallax)
+        var px = c.parallax ? scrollX * c.parallax : 0;
+        var visualX = elX + px;
+        var visualInView = (visualX + elW > scrollX) && (visualX < scrollX + viewW);
+
         var tx = 0, ty = 0, sc = 1, op = 1;
-        if(c.parallax){ tx = scrollX * c.parallax; }
+        if(c.parallax){ tx = px; }
         if(c.float){ ty = Math.sin(scrollX * 0.002 + elX * 0.001) * (c.floatAmount || 20); }
         if(c.fadeIn){
-          var leftEdge = elX, rightEdge = elX + elW;
+          var leftEdge = visualX, rightEdge = visualX + elW;
           var fadeZone = viewW * 0.25;
           var enterDist = rightEdge - scrollX;
           var exitDist = (scrollX + viewW) - leftEdge;
           if(enterDist < fadeZone && enterDist > 0){ op = 0.1 + 0.9 * (enterDist / fadeZone); }
           else if(exitDist < fadeZone && exitDist > 0){ op = 0.1 + 0.9 * (exitDist / fadeZone); }
-          else if(inView){ op = 1; }
+          else if(visualInView){ op = 1; }
           else { op = 0.1; }
         }
-        if(c.scaleOnScroll){ sc = 0.8 + 0.2 * Math.min(1, Math.max(0, 1 - Math.abs(relX))); }
+        if(c.scaleOnScroll){ var vRelX = (viewCenter - (visualX + elW/2)) / viewW; sc = 0.8 + 0.2 * Math.min(1, Math.max(0, 1 - Math.abs(vRelX))); }
         el.style.transform = 'translate3d('+tx+'px,'+ty+'px,0) scale('+sc+')';
         el.style.opacity = op;
       }
