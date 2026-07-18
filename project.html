@@ -141,7 +141,7 @@ body{
     var canvasW = narrative.canvasWidth || 10000;
     canvas.style.width = canvasW + 'px';
     inner.style.width = canvasW + 'px';
-    document.body.style.minHeight = '100vh';
+    setupDesktopScroll(canvasW);
 
     // Render elements
     narrative.scenes.forEach(function(scene){
@@ -210,9 +210,12 @@ body{
   }
 
   // ═══════════════════════════════════════
-  //  HORIZONTAL SCROLL — native browser scroll drives horizontal canvas
+  //  HORIZONTAL SCROLL — same principle as index.html
+  //  Desktop: body height = canvasWidth → vertical scroll → horizontal translateX
+  //  Mobile: touch events with velocity inertia
   // ═══════════════════════════════════════
   var scrollX = 0;
+  var isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   function clampX(v){
     var maxScroll = Math.max(0, parseFloat(canvas.style.width || 0) - window.innerWidth);
@@ -222,54 +225,61 @@ body{
   function setScrollX(x){
     scrollX = clampX(x);
     canvas.style.transform = 'translateX(' + (-scrollX) + 'px)';
-    NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
   }
 
-  // Desktop: wheel → horizontal scroll
-  window.addEventListener('wheel', function(e){
-    e.preventDefault();
-    stopInertia();
-    setScrollX(scrollX + e.deltaY);
-  }, { passive: false });
+  // ── Desktop: tall body, scroll drives horizontal ──
+  function setupDesktopScroll(canvasW){
+    if(isMobileDevice) return;
+    document.body.style.height = (canvasW + window.innerHeight) + 'px';
+    document.body.style.overflowY = 'auto';
+    document.body.style.overflowX = 'hidden';
 
-  // Mobile: touch with native momentum
+    window.addEventListener('scroll', function(){
+      var sy = window.pageYOffset || window.scrollY;
+      setScrollX(sy);
+      NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
+    }, { passive: true });
+  }
+
+  // ── Mobile: touch with velocity inertia ──
   var touchVX = 0, touchLastX = 0, touchLastT = 0, touching = false, inertiaRaf = 0;
-
   function stopInertia(){ if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; } }
 
-  window.addEventListener('touchstart', function(e){
-    if(e.touches.length !== 1) return;
-    stopInertia();
-    touchLastX = e.touches[0].clientX;
-    touchLastT = performance.now();
-    touchVX = 0;
-    touching = true;
-  }, { passive: true });
-
-  window.addEventListener('touchmove', function(e){
-    if(!touching) return;
-    var x = e.touches[0].clientX;
-    var dx = touchLastX - x;
-    var dt = performance.now() - touchLastT;
-    touchVX = dt > 0 ? dx / dt : 0;
-    setScrollX(scrollX + dx);
-    touchLastX = x;
-    touchLastT = performance.now();
-  }, { passive: true });
-
-  window.addEventListener('touchend', function(){
-    if(!touching) return;
-    touching = false;
-    if(Math.abs(touchVX) > 0.1){
+  if(isMobileDevice){
+    window.addEventListener('touchstart', function(e){
+      if(e.touches.length !== 1) return;
       stopInertia();
-      (function step(){
-        if(Math.abs(touchVX) < 0.03){ inertiaRaf = 0; return; }
-        touchVX *= 0.95;
-        setScrollX(scrollX + touchVX * 16);
-        inertiaRaf = requestAnimationFrame(step);
-      })();
-    }
-  }, { passive: true });
+      touchLastX = e.touches[0].clientX;
+      touchLastT = performance.now();
+      touchVX = 0;
+      touching = true;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', function(e){
+      if(!touching) return;
+      var x = e.touches[0].clientX;
+      var dx = touchLastX - x;
+      var dt = performance.now() - touchLastT;
+      touchVX = dt > 0 ? dx / dt : 0;
+      setScrollX(scrollX + dx);
+      touchLastX = x;
+      touchLastT = performance.now();
+    }, { passive: true });
+
+    window.addEventListener('touchend', function(){
+      if(!touching) return;
+      touching = false;
+      if(Math.abs(touchVX) > 0.1){
+        stopInertia();
+        (function step(){
+          if(Math.abs(touchVX) < 0.03){ inertiaRaf = 0; return; }
+          touchVX *= 0.95;
+          setScrollX(scrollX + touchVX * 16);
+          inertiaRaf = requestAnimationFrame(step);
+        })();
+      }
+    }, { passive: true });
+  }
 
   window.addEventListener('resize', function(){
     setScrollX(scrollX);
