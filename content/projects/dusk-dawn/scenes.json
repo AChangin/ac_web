@@ -1,0 +1,118 @@
+{
+  "canvasWidth": 12000,
+  "scenes": [
+    {
+      "id": "opening",
+      "x": 0,
+      "width": 3000,
+      "elements": [
+        {
+          "type": "image",
+          "src": "posts/tired_20260718.jpg",
+          "x": 200, "y": 60, "width": 700, "height": 500,
+          "zIndex": 1,
+          "animation": { "parallax": 0.2, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "黄昏黎明<br>融作一片",
+          "x": 1100, "y": 120,
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "6rem", "fontWeight": "600",
+          "color": "#fff", "lineHeight": 1.1,
+          "zIndex": 2,
+          "animation": { "parallax": 0.4, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "NOTE · 2026 JUL",
+          "x": 1100, "y": 360,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1rem", "fontWeight": "500",
+          "color": "rgba(255,255,255,0.5)", "letterSpacing": "0.15em",
+          "zIndex": 2,
+          "animation": { "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "Where the boundaries between night and day<br>become indistinguishable, and the in-between<br>emerges as its own form of light.",
+          "x": 1100, "y": 420,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.3rem", "fontWeight": "300",
+          "color": "rgba(255,255,255,0.55)", "lineHeight": 1.8,
+          "maxWidth": "500px",
+          "zIndex": 2,
+          "animation": { "parallax": 0.25, "fadeIn": true }
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "x": 3000,
+      "width": 4000,
+      "elements": [
+        {
+          "type": "image",
+          "src": "posts/test_20260718.jpg",
+          "x": 3200, "y": 80, "width": 600, "height": 450,
+          "zIndex": 1,
+          "animation": { "parallax": 0.15, "float": true, "floatAmount": 15 }
+        },
+        {
+          "type": "text",
+          "content": "The space between light and shadow<br>defines everything we see.",
+          "x": 4000, "y": 200,
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "4rem", "fontWeight": "600",
+          "color": "#fff", "lineHeight": 1.2,
+          "zIndex": 2,
+          "animation": { "parallax": 0.35, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "Form emerges not from what we add,<br>but from what we choose to reveal.",
+          "x": 4000, "y": 420,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.4rem", "fontWeight": "300",
+          "color": "rgba(255,255,255,0.5)", "lineHeight": 1.8,
+          "zIndex": 2,
+          "animation": { "parallax": 0.2, "fadeIn": true }
+        }
+      ]
+    },
+    {
+      "id": "closing",
+      "x": 7000,
+      "width": 5000,
+      "elements": [
+        {
+          "type": "image",
+          "src": "posts/tired_20260718.jpg",
+          "x": 7300, "y": 50, "width": 800, "height": 550,
+          "zIndex": 1,
+          "animation": { "parallax": 0.1, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "Every surface holds a story<br>waiting for the right angle of light.",
+          "x": 8300, "y": 180,
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "4.5rem", "fontWeight": "600",
+          "color": "#fff", "lineHeight": 1.2,
+          "zIndex": 2,
+          "animation": { "parallax": 0.3, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "Clarity is not about brightness.<br>It is about direction.",
+          "x": 8300, "y": 400,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.3rem", "fontWeight": "300",
+          "color": "rgba(255,255,255,0.5)", "lineHeight": 1.8,
+          "zIndex": 2,
+          "animation": { "parallax": 0.15, "fadeIn": true }
+        }
+      ]
+    }
+  ]
+}

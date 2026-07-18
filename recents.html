@@ -256,28 +256,10 @@ body{
 <script>
 (function(){
   // ═══════════════════════════════════════
-  //  DATA — add new projects here
+  //  DATA — add project slugs here, metadata loaded from content/projects/[slug]/project.json
   // ═══════════════════════════════════════
-  var recentsData = [
-    {
-      number: 1,
-      type: "NOTE",
-      icon: "icons/note.svg",
-      title: "黄昏黎明融作一片",
-      date: "2026 JUL",
-      description: "A brief exploration of twilight and dawn dissolving into one another — where the boundaries between night and day become indistinguishable and the in-between emerges as its own form.",
-      image: "C:/Users/28077/Desktop/web_test/posts/tired_20260718.jpg"
-    },
-    {
-      number: 2,
-      type: "PROJECT",
-      icon: "icons/project.svg",
-      title: "The Shape of Silence",
-      date: "2026 JUN",
-      description: "An investigation into negative space as an active design element — how absence shapes presence in visual communication and editorial composition.",
-      image: "c:/Users/28077/Desktop/web_test/posts/test_20260718.jpg"
-    }
-  ];
+  var projectSlugs = ["dusk-dawn", "shape-of-silence"];
+  var recentsData = [];
 
   var activeProject = 0;
   var stage = document.getElementById('recents-stage');
@@ -289,12 +271,15 @@ body{
     stage.innerHTML = '';
     recentsData.forEach(function(proj, idx){
       var isLarge = (idx === activeProject);
-      var el = document.createElement('div');
+      var el = document.createElement('a');
       el.className = 'recents-project ' + (isLarge ? 'is-large' : 'is-small');
       el.setAttribute('data-index', idx);
+      el.href = 'project.html?slug=' + proj.slug;
+      el.style.textDecoration = 'none';
+      el.style.color = 'inherit';
       el.innerHTML =
         '<div class="recents-project-image">' +
-          '<img src="' + proj.image + '" alt="">' +
+          '<img src="' + proj.cover + '" alt="">' +
           '<div class="recents-project-number">' + pad(proj.number) + '</div>' +
         '</div>' +
         '<div class="recents-project-info">' +
@@ -311,7 +296,13 @@ body{
     stage.querySelectorAll('.recents-project').forEach(function(el){
       var i = parseInt(el.getAttribute('data-index'));
       el.addEventListener('mouseenter', function(){ if(i !== activeProject) swapTo(i); });
-      el.addEventListener('click', function(){ if(i !== activeProject) swapTo(i); });
+      el.addEventListener('click', function(e){
+        if(i !== activeProject){
+          e.preventDefault();
+          swapTo(i);
+        }
+        // if already active, let the <a href> navigate to project.html
+      });
     });
 
     stage.addEventListener('mouseleave', function(){
@@ -329,7 +320,26 @@ body{
     });
   }
 
-  render();
+  // ═══════════════════════════════════════
+  //  INIT — load project metadata from JSON
+  // ═══════════════════════════════════════
+  var loaded = 0;
+  projectSlugs.forEach(function(slug, idx){
+    fetch('content/projects/' + slug + '/project.json')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        data.number = idx + 1;
+        recentsData[idx] = data;
+        loaded++;
+        if(loaded === projectSlugs.length){
+          render();
+        }
+      })
+      .catch(function(){
+        loaded++;
+        if(loaded === projectSlugs.length) render();
+      });
+  });
 
   // ── Mobile menu toggle ──
   var menuBtn = document.getElementById('nav-menu-btn');

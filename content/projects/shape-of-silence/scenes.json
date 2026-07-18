@@ -1,0 +1,115 @@
+{
+  "canvasWidth": 15000,
+  "scenes": [
+    {
+      "id": "intro",
+      "x": 0,
+      "width": 4000,
+      "elements": [
+        {
+          "type": "image",
+          "src": "posts/test_20260718.jpg",
+          "x": 300, "y": 80, "width": 650, "height": 480,
+          "zIndex": 1,
+          "animation": { "parallax": 0.25, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "The Shape<br>of Silence",
+          "x": 1200, "y": 100,
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "6.5rem", "fontWeight": "600",
+          "color": "#fff", "lineHeight": 1.05,
+          "zIndex": 2,
+          "animation": { "parallax": 0.45, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "PROJECT · 2026 JUN",
+          "x": 1200, "y": 350,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1rem", "fontWeight": "500",
+          "color": "rgba(255,255,255,0.5)", "letterSpacing": "0.15em",
+          "zIndex": 2,
+          "animation": { "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "How absence shapes presence<br>in visual communication and<br>editorial composition.",
+          "x": 1200, "y": 410,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.3rem", "fontWeight": "300",
+          "color": "rgba(255,255,255,0.55)", "lineHeight": 1.8,
+          "maxWidth": "480px",
+          "zIndex": 2,
+          "animation": { "parallax": 0.2, "fadeIn": true }
+        }
+      ]
+    },
+    {
+      "id": "development",
+      "x": 4000,
+      "width": 5000,
+      "elements": [
+        {
+          "type": "image",
+          "src": "posts/tired_20260718.jpg",
+          "x": 4300, "y": 60, "width": 550, "height": 420,
+          "zIndex": 1,
+          "animation": { "parallax": 0.18, "float": true, "floatAmount": 20 }
+        },
+        {
+          "type": "text",
+          "content": "Negative space is not empty.<br>It is active, breathing, alive.",
+          "x": 5100, "y": 180,
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "4rem", "fontWeight": "600",
+          "color": "#fff", "lineHeight": 1.2,
+          "zIndex": 2,
+          "animation": { "parallax": 0.35, "fadeIn": true }
+        },
+        {
+          "type": "image",
+          "src": "posts/test_20260718.jpg",
+          "x": 7000, "y": 100, "width": 500, "height": 380,
+          "zIndex": 1,
+          "animation": { "parallax": 0.12, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "What you remove is just as important<br>as what you leave behind.",
+          "x": 7800, "y": 520,
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.5rem", "fontWeight": "300",
+          "color": "rgba(255,255,255,0.5)", "lineHeight": 1.7,
+          "zIndex": 2,
+          "animation": { "parallax": 0.2, "fadeIn": true }
+        }
+      ]
+    },
+    {
+      "id": "conclusion",
+      "x": 9000,
+      "width": 6000,
+      "elements": [
+        {
+          "type": "image",
+          "src": "posts/tired_20260718.jpg",
+          "x": 9300, "y": 40, "width": 850, "height": 560,
+          "zIndex": 1,
+          "animation": { "parallax": 0.1, "fadeIn": true }
+        },
+        {
+          "type": "text",
+          "content": "Silence is not the absence<br>of sound. It is the presence<br>of space.",
+          "x": 10400, "y": 150,
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "5rem", "fontWeight": "600",
+          "color": "#fff", "lineHeight": 1.15,
+          "zIndex": 2,
+          "animation": { "parallax": 0.3, "fadeIn": true }
+        }
+      ]
+    }
+  ]
+}

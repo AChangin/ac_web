@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000">
+<title>Project — AC</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:clamp(8px,0.833vw,16px);-webkit-text-size-adjust:none}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background:#000;color:#fff;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+
+/* ── Back button ── */
+.project-back{
+  position:fixed;top:2rem;left:2rem;z-index:100;
+  display:flex;align-items:center;gap:0.5rem;
+  font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;
+  color:rgba(255,255,255,0.6);text-decoration:none;
+  letter-spacing:0.05em;transition:color 0.3s ease;
+  pointer-events:all;
+}
+.project-back:hover{ color:#fff; }
+.project-back svg{ width:1.2rem;height:1.2rem; }
+
+/* ── Canvas ── */
+.project-canvas{
+  position:fixed;top:0;left:0;
+  height:100vh;
+  will-change:transform;
+}
+.project-canvas-inner{
+  position:relative;
+  height:100vh;
+}
+
+/* ── Element base ── */
+.narrative-el{
+  position:absolute;
+  pointer-events:none;
+}
+.narrative-el.text{
+  white-space:normal;
+}
+
+/* ── Loading / Error ── */
+.project-loading{
+  position:fixed;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  font-family:'Inter',sans-serif;font-size:1rem;
+  color:rgba(255,255,255,0.4);
+}
+
+@media(max-width:768px){
+  html{font-size:clamp(9px,2vw,15px)}
+  .project-back{top:1.2rem;left:1rem;font-size:0.85rem}
+}
+</style>
+</head>
+<body>
+
+<a href="recents.html" class="project-back">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Back
+</a>
+
+<div class="project-loading" id="project-loading">Loading...</div>
+<div class="project-canvas" id="project-canvas">
+  <div class="project-canvas-inner" id="project-canvas-inner"></div>
+</div>
+
+<script>
+(function(){
+  // ═══════════════════════════════════════
+  //  NarrativeEngine — scroll-driven animation
+  // ═══════════════════════════════════════
+  var NarrativeEngine = {
+    elements: [],
+    register: function(el, config){
+      this.elements.push({ el:el, config:config||{} });
+    },
+    update: function(scrollX, viewW, viewH){
+      for(var i=0; i<this.elements.length; i++){
+        var entry = this.elements[i];
+        var el = entry.el;
+        var c = entry.config;
+        var elX = parseFloat(el.getAttribute('data-x')) || 0;
+        var elW = parseFloat(el.getAttribute('data-w')) || 300;
+        var elCenter = elX + elW/2;
+        var viewCenter = scrollX + viewW/2;
+        var relX = (viewCenter - elCenter) / viewW;
+        var inView = (elX + elW > scrollX) && (elX < scrollX + viewW);
+
+        var tx = 0, ty = 0, sc = 1, op = 1;
+        if(c.parallax){ tx = scrollX * c.parallax; }
+        if(c.float){ ty = Math.sin(scrollX * 0.002 + elX * 0.001) * (c.floatAmount || 20); }
+        if(c.fadeIn){ op = inView ? Math.min(1, Math.max(0, 1 - Math.abs(relX) * 2)) : 0.15; }
+        if(c.scaleOnScroll){ sc = 0.8 + 0.2 * Math.min(1, Math.max(0, 1 - Math.abs(relX))); }
+        el.style.transform = 'translate3d('+tx+'px,'+ty+'px,0) scale('+sc+')';
+        el.style.opacity = op;
+      }
+    }
+  };
+
+  // ═══════════════════════════════════════
+  //  INIT
+  // ═══════════════════════════════════════
+  var slug = new URLSearchParams(window.location.search).get('slug') || 'dusk-dawn';
+  var base = 'content/projects/' + slug + '/';
+  var canvas = document.getElementById('project-canvas');
+  var inner = document.getElementById('project-canvas-inner');
+  var loading = document.getElementById('project-loading');
+  var projectMeta = null;
+
+  Promise.all([
+    fetch(base + 'project.json').then(function(r){ return r.json(); }),
+    fetch(base + 'scenes.json').then(function(r){ return r.json(); })
+  ]).then(function(results){
+    projectMeta = results[0];
+    var narrative = results[1];
+    document.title = projectMeta.title + ' — AC';
+
+    // Set canvas width
+    var canvasW = narrative.canvasWidth || 10000;
+    canvas.style.width = canvasW + 'px';
+    inner.style.width = canvasW + 'px';
+
+    // Render elements
+    narrative.scenes.forEach(function(scene){
+      scene.elements.forEach(function(elCfg){
+        var el = document.createElement('div');
+        el.className = 'narrative-el ' + (elCfg.type || '');
+        el.setAttribute('data-x', elCfg.x);
+        el.setAttribute('data-w', elCfg.width || 300);
+        el.style.left = elCfg.x + 'px';
+        el.style.top = elCfg.y + 'px';
+        if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
+
+        if(elCfg.type === 'image'){
+          el.style.width = elCfg.width + 'px';
+          el.style.height = elCfg.height + 'px';
+          el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:cover;display:block">';
+        } else if(elCfg.type === 'text'){
+          el.style.width = elCfg.width ? elCfg.width+'px' : 'auto';
+          el.style.maxWidth = elCfg.maxWidth || 'none';
+          el.style.fontFamily = elCfg.fontFamily || "'Inter',sans-serif";
+          el.style.fontSize = elCfg.fontSize || '1rem';
+          el.style.fontWeight = elCfg.fontWeight || '400';
+          el.style.color = elCfg.color || '#fff';
+          el.style.lineHeight = elCfg.lineHeight || '1.5';
+          el.style.letterSpacing = elCfg.letterSpacing || 'normal';
+          el.innerHTML = elCfg.content;
+        } else {
+          el.style.width = (elCfg.width||300)+'px';
+          el.style.height = (elCfg.height||200)+'px';
+        }
+
+        inner.appendChild(el);
+        if(elCfg.animation){
+          NarrativeEngine.register(el, elCfg.animation);
+        }
+      });
+    });
+
+    loading.style.display = 'none';
+  }).catch(function(err){
+    loading.textContent = 'Failed to load project. ' + err.message;
+  });
+
+  // ═══════════════════════════════════════
+  //  HORIZONTAL SCROLL
+  // ═══════════════════════════════════════
+  var scrollX = 0, vx = 0, touching = false;
+  var lastX = 0, lastTime = 0;
+  var inertiaRaf = 0, animRaf = 0;
+
+  function clamp(v){ var maxW = parseFloat(canvas.style.width) - window.innerWidth; return Math.max(0, Math.min(maxW, v)); }
+  function setScroll(x){
+    scrollX = x;
+    canvas.style.transform = 'translateX(' + (-x) + 'px)';
+    NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
+  }
+
+  // Desktop: wheel
+  document.addEventListener('wheel', function(e){
+    if(touching) return;
+    e.preventDefault();
+    scrollX = clamp(scrollX + e.deltaY);
+    setScroll(scrollX);
+  }, { passive: false });
+
+  // Mobile: touch
+  document.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1) return;
+    if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
+    lastX = e.touches[0].clientX;
+    lastTime = performance.now();
+    vx = 0;
+    touching = true;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e){
+    if(!touching) return;
+    var x = e.touches[0].clientX;
+    var dx = lastX - x;
+    var dt = performance.now() - lastTime;
+    vx = dt > 0 ? dx / dt : 0;
+    scrollX = clamp(scrollX + dx);
+    setScroll(scrollX);
+    lastX = x;
+    lastTime = performance.now();
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(){
+    if(!touching) return;
+    touching = false;
+    if(Math.abs(vx) > 0.1){
+      if(inertiaRaf) cancelAnimationFrame(inertiaRaf);
+      (function step(){
+        if(Math.abs(vx) < 0.03){ inertiaRaf = 0; return; }
+        vx *= 0.95;
+        scrollX = clamp(scrollX + vx * 16);
+        setScroll(scrollX);
+        inertiaRaf = requestAnimationFrame(step);
+      })();
+    }
+  }, { passive: true });
+
+  // Initial render
+  setScroll(0);
+
+  // Continuous RAF for float animations
+  (function animLoop(){
+    if(!touching && !inertiaRaf){
+      NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
+    }
+    animRaf = requestAnimationFrame(animLoop);
+  })();
+})();
+</script>
+
+</body>
+</html>
