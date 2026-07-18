@@ -235,17 +235,17 @@ body{
 
     window.addEventListener('wheel', function(e){
       e.preventDefault();
-      velX += e.deltaY;
-      targetX = clampX(targetX + e.deltaY);
+      velX += e.deltaY * 0.35;
+      targetX = clampX(targetX + e.deltaY * 0.35);
     }, { passive: false });
 
     (function scrollLoop(){
       if(!isMobileDevice && Math.abs(velX) > 0.05){
-        velX *= 0.92;
+        velX *= 0.95;
         targetX = clampX(targetX + velX);
       }
       // Lerp current position toward target
-      scrollX += (targetX - scrollX) * 0.12;
+      scrollX += (targetX - scrollX) * 0.08;
       if(Math.abs(targetX - scrollX) < 0.1) scrollX = targetX;
       setScrollX(scrollX);
       NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
