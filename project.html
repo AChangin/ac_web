@@ -102,7 +102,16 @@ body{
         var tx = 0, ty = 0, sc = 1, op = 1;
         if(c.parallax){ tx = scrollX * c.parallax; }
         if(c.float){ ty = Math.sin(scrollX * 0.002 + elX * 0.001) * (c.floatAmount || 20); }
-        if(c.fadeIn){ op = inView ? Math.min(1, Math.max(0, 1 - Math.abs(relX) * 2)) : 0.15; }
+        if(c.fadeIn){
+          var leftEdge = elX, rightEdge = elX + elW;
+          var fadeZone = viewW * 0.25;
+          var enterDist = rightEdge - scrollX;
+          var exitDist = (scrollX + viewW) - leftEdge;
+          if(enterDist < fadeZone && enterDist > 0){ op = 0.1 + 0.9 * (enterDist / fadeZone); }
+          else if(exitDist < fadeZone && exitDist > 0){ op = 0.1 + 0.9 * (exitDist / fadeZone); }
+          else if(inView){ op = 1; }
+          else { op = 0.1; }
+        }
         if(c.scaleOnScroll){ sc = 0.8 + 0.2 * Math.min(1, Math.max(0, 1 - Math.abs(relX))); }
         el.style.transform = 'translate3d('+tx+'px,'+ty+'px,0) scale('+sc+')';
         el.style.opacity = op;
@@ -156,6 +165,7 @@ body{
         el.style.left = u(elCfg.x);
         el.style.top = u(elCfg.y);
         if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
+        if(elCfg.margin) el.style.margin = u(elCfg.margin);
 
         if(elCfg.type === 'image'){
           el.style.width = u(elCfg.width);
