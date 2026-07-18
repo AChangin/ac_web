@@ -19,17 +19,15 @@ body{
   background:#000;color:#fff;
 }
 
-/* ── Back button ── */
+/* ── Close button ── */
 .project-back{
-  position:fixed;top:2rem;left:2rem;z-index:100;
-  display:flex;align-items:center;gap:0.5rem;
-  font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;
-  color:rgba(255,255,255,0.6);text-decoration:none;
-  letter-spacing:0.05em;transition:color 0.3s ease;
+  position:fixed;top:2rem;right:2rem;z-index:100;
+  font-family:'Inter',sans-serif;font-size:2rem;font-weight:300;
+  color:rgba(255,255,255,0.5);text-decoration:none;
+  line-height:1;transition:color 0.3s ease;
   pointer-events:all;
 }
 .project-back:hover{ color:#fff; }
-.project-back svg{ width:1.2rem;height:1.2rem; }
 
 /* ── Canvas ── */
 .project-canvas{
@@ -61,16 +59,13 @@ body{
 
 @media(max-width:768px){
   html{font-size:clamp(9px,2vw,15px)}
-  .project-back{top:1.2rem;left:1rem;font-size:0.85rem}
+  .project-back{top:1.2rem;right:1rem;font-size:1.6rem}
 }
 </style>
 </head>
 <body>
 
-<a href="recents.html" class="project-back">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-  Back
-</a>
+<a href="recents.html" class="project-back" title="Close">&times;</a>
 
 <div class="project-loading" id="project-loading">Loading...</div>
 <div class="project-canvas" id="project-canvas">
