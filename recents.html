@@ -30,6 +30,7 @@ body{
   background:rgba(139,0,0,0.8);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
+  pointer-events:all;
 }
 .nav-left{display:flex;align-items:center;justify-content:center}
 .nav-logo{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
@@ -43,6 +44,36 @@ body{
 .nav-child{font-size:0.95rem;color:rgba(255,255,255,0.65);padding-left:0.4rem}
 .nav-child:hover{color:#fff}
 .nav-right{display:flex;align-items:center;justify-content:center}
+
+/* ── Hamburger menu ── */
+.nav-menu-btn{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  gap:5px;width:2.4rem;height:2.4rem;cursor:pointer;
+  background:none;border:none;padding:0;position:relative;z-index:51;
+}
+.nav-menu-btn span{
+  display:block;width:20px;height:1.5px;background:#fff;
+  transition:transform 0.3s ease,opacity 0.3s ease;transform-origin:center;
+}
+.nav-menu-btn.open span:nth-child(1){ transform:translateY(3.25px) rotate(45deg); }
+.nav-menu-btn.open span:nth-child(2){ transform:translateY(-3.25px) rotate(-45deg); }
+
+/* ── Mobile menu overlay ── */
+.mobile-menu{
+  position:fixed;inset:0;z-index:49;background:#8b0000;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s ease;
+}
+.mobile-menu.open{ opacity:1;pointer-events:all; }
+.mobile-menu__inner{ display:flex;flex-direction:column;align-items:center;gap:2.4rem; }
+.mobile-menu__link{
+  font-family:'Playfair Display',Georgia,serif;font-size:3rem;font-weight:600;
+  letter-spacing:-0.02em;color:#fff;text-decoration:none;cursor:pointer;
+  transition:opacity 0.2s ease;
+}
+.mobile-menu__link:hover{ opacity:0.6; }
+.mobile-menu__link.active{ text-decoration:underline;text-underline-offset:8px;text-decoration-thickness:1px; }
 
 /* ── Recents page ── */
 .recents-page{
@@ -95,7 +126,7 @@ body{
   transition:transform 0.55s cubic-bezier(0.22,1,0.36,1);
 }
 .is-large .recents-project-image{ width:55%; }
-.is-small .recents-project-image{ width:24%; }
+.is-small .recents-project-image{ width:24%; max-height:20vh; }
 .is-small:hover .recents-project-image img{ transform:scale(1.03); }
 
 /* ── Number ── */
@@ -112,7 +143,7 @@ body{
   font-size:14rem;top:-3rem;left:-2.5rem;
 }
 .is-small .recents-project-number{
-  font-size:4.5rem;top:50%;left:0.3rem;transform:translateY(-50%);
+  font-size:8rem;top:50%;left:0.3rem;transform:translateY(-50%);
 }
 
 /* ── Info ── */
@@ -128,29 +159,31 @@ body{
   width:1.2rem;height:1.2rem;filter:brightness(0) invert(1);
 }
 .recents-project-type span{
-  font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:500;
-  letter-spacing:0.15em;text-transform:uppercase;
+  font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:500;
+  text-transform:uppercase;
   color:rgba(255,255,255,0.45);
 }
 .recents-project-title{
   font-family:'Playfair Display',Georgia,serif;
   font-weight:600;letter-spacing:-0.02em;color:#fff;
-  margin:0 0 0.4rem 0;line-height:1.1;
+  margin:0.4rem 0 0.4rem 0;line-height:1.1;
   transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1);
 }
 .is-large .recents-project-title{ font-size:3rem; }
 .is-small .recents-project-title{ font-size:1.3rem; }
 .recents-project-date{
-  font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:400;
-  letter-spacing:0.08em;color:rgba(255,255,255,0.3);
+  font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:400;
+  color:rgba(255,255,255,0.45);
   margin-bottom:0.8rem;
+  margin-top: 0.8rem;
 }
 .recents-project-desc{
-  font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:300;
-  line-height:1.7;color:rgba(255,255,255,0.5);
+  font-family:'Inter',sans-serif;font-size:1.25rem;font-weight:400;
+  line-height:1.7;color:rgba(255,255,255,0.75);
   max-width:34rem;
   transition:opacity 0.35s ease,max-height 0.55s cubic-bezier(0.22,1,0.36,1);
   overflow:hidden;
+  margin-top: 0.8rem;
 }
 .is-small .recents-project-desc{ opacity:0;max-height:0; }
 .is-large .recents-project-desc{ opacity:1;max-height:8rem; }
@@ -165,8 +198,10 @@ body{
   .is-large .recents-project-image{width:48%}
 }
 @media(max-width:768px){
+  html{font-size:clamp(9px,2vw,15px)}
   .nav{width:100%;height:4.8rem;flex-direction:row;padding:0 1.6rem;border-bottom:none}
   .nav-center{display:none}
+  .nav-menu-btn{display:flex}
   .recents-page{margin-left:0;margin-top:4.8rem;padding:2rem 1.2rem}
   .recents-heading{font-size:3rem;margin-bottom:1.5rem}
   .recents-project{flex-direction:column}
@@ -198,8 +233,20 @@ body{
       <a class="nav-link nav-child active">Browse</a>
     </div>
   </div>
-  <div class="nav-right"></div>
+  <div class="nav-right">
+    <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </div>
 </nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu__inner">
+    <a class="mobile-menu__link" href="index.html">Home</a>
+    <a class="mobile-menu__link" href="index.html">Posts</a>
+    <a class="mobile-menu__link active">Recents</a>
+  </div>
+</div>
 
 <div class="recents-page">
   <h1 class="recents-heading">Recents</h1>
@@ -219,7 +266,7 @@ body{
       title: "黄昏黎明融作一片",
       date: "2026 JUL",
       description: "A brief exploration of twilight and dawn dissolving into one another — where the boundaries between night and day become indistinguishable and the in-between emerges as its own form.",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop"
+      image: "C:/Users/28077/Desktop/web_test/posts/tired_20260718.jpg"
     },
     {
       number: 2,
@@ -228,7 +275,7 @@ body{
       title: "The Shape of Silence",
       date: "2026 JUN",
       description: "An investigation into negative space as an active design element — how absence shapes presence in visual communication and editorial composition.",
-      image: "https://images.unsplash.com/photo-1511818966892-d7d6716dcb1a?w=800&h=600&fit=crop"
+      image: "c:/Users/28077/Desktop/web_test/posts/test_20260718.jpg"
     }
   ];
 
@@ -283,6 +330,19 @@ body{
   }
 
   render();
+
+  // ── Mobile menu toggle ──
+  var menuBtn = document.getElementById('nav-menu-btn');
+  var mobileMenu = document.getElementById('mobile-menu');
+  var menuOpen = false;
+  if(menuBtn && mobileMenu){
+    menuBtn.addEventListener('click', function(){
+      menuOpen = !menuOpen;
+      menuBtn.classList.toggle('open', menuOpen);
+      mobileMenu.classList.toggle('open', menuOpen);
+      document.body.style.overflow = menuOpen ? 'hidden' : '';
+    });
+  }
 })();
 </script>
 
