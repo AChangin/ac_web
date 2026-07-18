@@ -175,7 +175,9 @@ body{
         }
 
         // ── Build transform ──
-        var transform = 'translate3d('+tx+'px,'+ty+'px,0)';
+        var cx = el.getAttribute('data-center-x') ? '-50%' : '0px';
+        var cy = el.getAttribute('data-center-y') ? '-50%' : '0px';
+        var transform = 'translate3d('+tx+'px,'+ty+'px,0) translate('+cx+','+cy+')';
         if(sc !== 1 || rot !== 0) transform += ' scale('+sc+')';
         if(rot !== 0) transform += ' rotate('+rot+'deg)';
         el.style.transform = transform;
@@ -258,6 +260,9 @@ body{
       if(cfg.background) el.style.background = cfg.background;
       if(cfg.borderRadius) el.style.borderRadius = u(cfg.borderRadius);
       if(cfg.overflow) el.style.overflow = cfg.overflow;
+      // Centering: stored as data for NarrativeEngine to include in transform
+      if(cfg.centerX) el.setAttribute('data-center-x', '1');
+      if(cfg.centerY) el.setAttribute('data-center-y', '1');
       if(cfg.fontFamily) el.style.fontFamily = cfg.fontFamily;
       if(cfg.fontSize) el.style.fontSize = cfg.fontSize;
       if(cfg.fontWeight) el.style.fontWeight = cfg.fontWeight;
