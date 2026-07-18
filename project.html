@@ -227,18 +227,30 @@ body{
     canvas.style.transform = 'translateX(' + (-scrollX) + 'px)';
   }
 
-  // ── Desktop: tall body, scroll drives horizontal ──
+  // ── Desktop: smooth scroll with inertia ──
+  var targetX = 0, velX = 0, scrollRaf = 0;
   function setupDesktopScroll(canvasW){
     if(isMobileDevice) return;
-    document.body.style.height = (canvasW + window.innerHeight) + 'px';
-    document.body.style.overflowY = 'auto';
-    document.body.style.overflowX = 'hidden';
+    document.body.style.overflow = 'hidden';
 
-    window.addEventListener('scroll', function(){
-      var sy = window.pageYOffset || window.scrollY;
-      setScrollX(sy);
+    window.addEventListener('wheel', function(e){
+      e.preventDefault();
+      velX += e.deltaY;
+      targetX = clampX(targetX + e.deltaY);
+    }, { passive: false });
+
+    (function scrollLoop(){
+      if(!isMobileDevice && Math.abs(velX) > 0.05){
+        velX *= 0.92;
+        targetX = clampX(targetX + velX);
+      }
+      // Lerp current position toward target
+      scrollX += (targetX - scrollX) * 0.12;
+      if(Math.abs(targetX - scrollX) < 0.1) scrollX = targetX;
+      setScrollX(scrollX);
       NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
-    }, { passive: true });
+      scrollRaf = requestAnimationFrame(scrollLoop);
+    })();
   }
 
   // ── Mobile: touch with velocity inertia ──
