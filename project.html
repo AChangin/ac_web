@@ -155,29 +155,58 @@ body{
     // Helper: number → px, string → use as-is (supports vw/vh/rem/%)
     function u(v){ return typeof v === 'number' ? v + 'px' : v; }
 
+    // Apply all common layout/visual properties from config to element
+    function applyLayout(el, cfg, offsetX, offsetY){
+      offsetX = offsetX || 0; offsetY = offsetY || 0;
+      if(cfg.x !== undefined) el.style.left = u(typeof cfg.x === 'number' ? cfg.x + offsetX : cfg.x);
+      else if(cfg.left !== undefined) el.style.left = u(typeof cfg.left === 'number' ? cfg.left + offsetX : cfg.left);
+      if(cfg.y !== undefined) el.style.top = u(typeof cfg.y === 'number' ? cfg.y + offsetY : cfg.y);
+      else if(cfg.top !== undefined) el.style.top = u(typeof cfg.top === 'number' ? cfg.top + offsetY : cfg.top);
+      if(cfg.right !== undefined) el.style.right = u(cfg.right);
+      if(cfg.bottom !== undefined) el.style.bottom = u(cfg.bottom);
+      if(cfg.width) el.style.width = u(cfg.width);
+      if(cfg.height) el.style.height = u(cfg.height);
+      if(cfg.minWidth) el.style.minWidth = u(cfg.minWidth);
+      if(cfg.maxWidth) el.style.maxWidth = u(cfg.maxWidth);
+      if(cfg.minHeight) el.style.minHeight = u(cfg.minHeight);
+      if(cfg.maxHeight) el.style.maxHeight = u(cfg.maxHeight);
+      if(cfg.padding) el.style.padding = u(cfg.padding);
+      if(cfg.paddingTop) el.style.paddingTop = u(cfg.paddingTop);
+      if(cfg.paddingRight) el.style.paddingRight = u(cfg.paddingRight);
+      if(cfg.paddingBottom) el.style.paddingBottom = u(cfg.paddingBottom);
+      if(cfg.paddingLeft) el.style.paddingLeft = u(cfg.paddingLeft);
+      if(cfg.margin) el.style.margin = u(cfg.margin);
+      if(cfg.marginTop) el.style.marginTop = u(cfg.marginTop);
+      if(cfg.marginRight) el.style.marginRight = u(cfg.marginRight);
+      if(cfg.marginBottom) el.style.marginBottom = u(cfg.marginBottom);
+      if(cfg.marginLeft) el.style.marginLeft = u(cfg.marginLeft);
+      if(cfg.zIndex) el.style.zIndex = cfg.zIndex;
+      if(cfg.opacity !== undefined) el.style.opacity = cfg.opacity;
+      if(cfg.background) el.style.background = cfg.background;
+      if(cfg.borderRadius) el.style.borderRadius = u(cfg.borderRadius);
+      if(cfg.overflow) el.style.overflow = cfg.overflow;
+      if(cfg.fontFamily) el.style.fontFamily = cfg.fontFamily;
+      if(cfg.fontSize) el.style.fontSize = cfg.fontSize;
+      if(cfg.fontWeight) el.style.fontWeight = cfg.fontWeight;
+      if(cfg.color) el.style.color = cfg.color;
+      if(cfg.lineHeight) el.style.lineHeight = cfg.lineHeight;
+      if(cfg.letterSpacing) el.style.letterSpacing = cfg.letterSpacing;
+      if(cfg.textAlign) el.style.textAlign = cfg.textAlign;
+      var ax = cfg.x || cfg.left || 0;
+      el.setAttribute('data-x', typeof ax === 'number' ? ax + offsetX : ax);
+      el.setAttribute('data-w', cfg.width || 100);
+    }
+
     // Recursive element renderer
     function renderElement(elCfg, parentEl, offsetX, offsetY){
       offsetX = offsetX || 0; offsetY = offsetY || 0;
       var el = document.createElement('div');
 
       if(elCfg.type === 'group'){
-        // Group: auto-sizes to fit children. If child has x/y → absolute, otherwise → flows naturally
         el.className = 'narrative-el group';
         el.style.position = 'absolute';
-        if(elCfg.x !== undefined) el.style.left = u(typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x);
-        else if(elCfg.right !== undefined) el.style.right = u(elCfg.right);
-        if(elCfg.y !== undefined) el.style.top = u(typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y);
-        else if(elCfg.bottom !== undefined) el.style.bottom = u(elCfg.bottom);
-        if(elCfg.width) el.style.width = u(elCfg.width);
-        if(elCfg.height) el.style.height = u(elCfg.height);
-        if(elCfg.padding) el.style.padding = u(elCfg.padding);
-        if(elCfg.margin) el.style.margin = u(elCfg.margin);
-        if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
-        // Auto-size to children (absolutely positioned, so use width:max-content)
-        if(!elCfg.width){ el.style.width = 'max-content'; }
-        el.setAttribute('data-x', elCfg.x || offsetX);
-        el.setAttribute('data-w', elCfg.width || 100);
-
+        applyLayout(el, elCfg, offsetX, offsetY);
+        if(!elCfg.width) el.style.width = 'max-content';
         if(elCfg.children){
           elCfg.children.forEach(function(child){
             renderElement(child, el, 0, 0);
@@ -190,56 +219,19 @@ body{
 
       // Leaf element
       el.className = 'narrative-el ' + (elCfg.type || '');
-      var hasXY = elCfg.x !== undefined || elCfg.y !== undefined;
-      if(hasXY){
-        el.style.position = 'absolute';
-        el.style.left = u(typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x);
-        el.style.top = u(typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y);
-        el.setAttribute('data-x', (typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x));
-      } else {
-        // Flow naturally inside group — override the CSS absolute positioning
-        el.style.position = 'relative';
-        if(elCfg.marginTop) el.style.marginTop = u(elCfg.marginTop);
-        if(elCfg.marginLeft) el.style.marginLeft = u(elCfg.marginLeft);
-        el.setAttribute('data-x', offsetX);
-      }
-      el.setAttribute('data-w', elCfg.width || 300);
-      if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
-      if(elCfg.margin) el.style.margin = u(elCfg.margin);
+      var hasXY = elCfg.x !== undefined || elCfg.y !== undefined || elCfg.left !== undefined || elCfg.top !== undefined;
+      if(hasXY){ el.style.position = 'absolute'; }
+      else { el.style.position = 'relative'; if(!elCfg.maxWidth) el.style.whiteSpace = 'nowrap'; }
+      applyLayout(el, elCfg, offsetX, offsetY);
 
       if(elCfg.type === 'image'){
-        el.style.width = u(elCfg.width);
-        el.style.height = u(elCfg.height);
-        el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:cover;display:block">';
+        el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:'+(elCfg.objectFit||'cover')+';display:block">';
       } else if(elCfg.type === 'text'){
-        el.style.width = elCfg.width ? u(elCfg.width) : 'auto';
-        el.style.maxWidth = elCfg.maxWidth || 'none';
-        el.style.fontFamily = elCfg.fontFamily || "'Inter',sans-serif";
-        el.style.fontSize = elCfg.fontSize || '1rem';
-        el.style.fontWeight = elCfg.fontWeight || '400';
-        el.style.color = elCfg.color || '#fff';
-        el.style.lineHeight = elCfg.lineHeight || '1.5';
-        el.style.letterSpacing = elCfg.letterSpacing || 'normal';
-        // Inside groups: don't wrap unless maxWidth is set
-        if(!hasXY && !elCfg.maxWidth) el.style.whiteSpace = 'nowrap';
         el.innerHTML = elCfg.content;
-      } else {
-        el.style.width = u(elCfg.width||300);
-        el.style.height = u(elCfg.height||200);
       }
 
       parentEl.appendChild(el);
       if(elCfg.animation) NarrativeEngine.register(el, elCfg.animation);
-    }
-
-    // Render all top-level elements
-    narrative.scenes.forEach(function(scene){
-      scene.elements.forEach(function(elCfg){
-        renderElement(elCfg, inner, 0, 0);
-      });
-    });
-
-    loading.style.display = 'none';
   }
 
   // ═══════════════════════════════════════
