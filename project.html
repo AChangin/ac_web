@@ -124,7 +124,7 @@ body{
         var anims = c.enterAnimation;
         if(!anims && c.fadeIn){ anims = [{ type:'fade' }]; } // legacy support
         if(anims){
-          if(!Array.isArray(anims)) anims = [anims];
+          if(!(anims instanceof Array)) anims = [anims];
           for(var a=0; a<anims.length; a++){
             var anim = anims[a];
             var dur = anim.duration || 0.35; // in viewport widths
@@ -290,7 +290,17 @@ body{
           });
         }
         parentEl.appendChild(el);
-        if(elCfg.animation) NarrativeEngine.register(el, elCfg.animation);
+        if(elCfg.animation || elCfg.enterAnimation || elCfg.parallax || elCfg.float || elCfg.fadeIn){
+          var animCfg = {};
+          // Merge legacy animation.* and direct properties into one config
+          if(elCfg.animation){ for(var k in elCfg.animation) animCfg[k] = elCfg.animation[k]; }
+          if(elCfg.enterAnimation) animCfg.enterAnimation = elCfg.enterAnimation;
+          if(elCfg.parallax) animCfg.parallax = elCfg.parallax;
+          if(elCfg.float) animCfg.float = elCfg.float;
+          if(elCfg.floatAmount) animCfg.floatAmount = elCfg.floatAmount;
+          if(elCfg.fadeIn) animCfg.fadeIn = elCfg.fadeIn;
+          NarrativeEngine.register(el, animCfg);
+        }
         return;
       }
 
