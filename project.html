@@ -116,18 +116,27 @@ body{
   //  INIT
   // ═══════════════════════════════════════
   var slug = new URLSearchParams(window.location.search).get('slug') || 'dusk-dawn';
-  var base = 'content/projects/' + slug + '/';
   var canvas = document.getElementById('project-canvas');
   var inner = document.getElementById('project-canvas-inner');
   var loading = document.getElementById('project-loading');
   var projectMeta = null;
 
-  Promise.all([
-    fetch(base + 'project.json').then(function(r){ return r.json(); }),
-    fetch(base + 'scenes.json').then(function(r){ return r.json(); })
-  ]).then(function(results){
-    projectMeta = results[0];
-    var narrative = results[1];
+  // ═══════════════════════════════════════
+  //  EMBEDDED DATA — sync with content/projects/*/project.json + scenes.json
+  // ═══════════════════════════════════════
+  var EMBEDDED = {
+    "dusk-dawn": {
+      meta: {"slug":"dusk-dawn","title":"黄昏黎明融作一片","type":"NOTE","icon":"icons/note.svg","date":"2026 JUL","description":"A brief exploration of twilight and dawn dissolving into one another — where the boundaries between night and day become indistinguishable and the in-between emerges as its own form.","cover":"posts/tired_20260718.jpg"},
+      narrative: {"canvasWidth":12000,"scenes":[{"id":"opening","x":0,"width":3000,"elements":[{"type":"image","src":"posts/tired_20260718.jpg","x":200,"y":60,"width":700,"height":500,"zIndex":1,"animation":{"parallax":0.2,"fadeIn":true}},{"type":"text","content":"黄昏黎明<br>融作一片","x":1100,"y":120,"fontFamily":"'Playfair Display', Georgia, serif","fontSize":"6rem","fontWeight":"600","color":"#fff","lineHeight":1.1,"zIndex":2,"animation":{"parallax":0.4,"fadeIn":true}},{"type":"text","content":"NOTE · 2026 JUL","x":1100,"y":360,"fontFamily":"'Inter', sans-serif","fontSize":"1rem","fontWeight":"500","color":"rgba(255,255,255,0.5)","letterSpacing":"0.15em","zIndex":2,"animation":{"fadeIn":true}},{"type":"text","content":"Where the boundaries between night and day<br>become indistinguishable, and the in-between<br>emerges as its own form of light.","x":1100,"y":420,"fontFamily":"'Inter', sans-serif","fontSize":"1.3rem","fontWeight":"300","color":"rgba(255,255,255,0.55)","lineHeight":1.8,"maxWidth":"500px","zIndex":2,"animation":{"parallax":0.25,"fadeIn":true}}]},{"id":"middle","x":3000,"width":4000,"elements":[{"type":"image","src":"posts/test_20260718.jpg","x":3200,"y":80,"width":600,"height":450,"zIndex":1,"animation":{"parallax":0.15,"float":true,"floatAmount":15}},{"type":"text","content":"The space between light and shadow<br>defines everything we see.","x":4000,"y":200,"fontFamily":"'Playfair Display', Georgia, serif","fontSize":"4rem","fontWeight":"600","color":"#fff","lineHeight":1.2,"zIndex":2,"animation":{"parallax":0.35,"fadeIn":true}},{"type":"text","content":"Form emerges not from what we add,<br>but from what we choose to reveal.","x":4000,"y":420,"fontFamily":"'Inter', sans-serif","fontSize":"1.4rem","fontWeight":"300","color":"rgba(255,255,255,0.5)","lineHeight":1.8,"zIndex":2,"animation":{"parallax":0.2,"fadeIn":true}}]},{"id":"closing","x":7000,"width":5000,"elements":[{"type":"image","src":"posts/tired_20260718.jpg","x":7300,"y":50,"width":800,"height":550,"zIndex":1,"animation":{"parallax":0.1,"fadeIn":true}},{"type":"text","content":"Every surface holds a story<br>waiting for the right angle of light.","x":8300,"y":180,"fontFamily":"'Playfair Display', Georgia, serif","fontSize":"4.5rem","fontWeight":"600","color":"#fff","lineHeight":1.2,"zIndex":2,"animation":{"parallax":0.3,"fadeIn":true}},{"type":"text","content":"Clarity is not about brightness.<br>It is about direction.","x":8300,"y":400,"fontFamily":"'Inter', sans-serif","fontSize":"1.3rem","fontWeight":"300","color":"rgba(255,255,255,0.5)","lineHeight":1.8,"zIndex":2,"animation":{"parallax":0.15,"fadeIn":true}}]}]}
+    },
+    "shape-of-silence": {
+      meta: {"slug":"shape-of-silence","title":"The Shape of Silence","type":"PROJECT","icon":"icons/project.svg","date":"2026 JUN","description":"An investigation into negative space as an active design element — how absence shapes presence in visual communication and editorial composition.","cover":"posts/test_20260718.jpg"},
+      narrative: {"canvasWidth":15000,"scenes":[{"id":"intro","x":0,"width":4000,"elements":[{"type":"image","src":"posts/test_20260718.jpg","x":300,"y":80,"width":650,"height":480,"zIndex":1,"animation":{"parallax":0.25,"fadeIn":true}},{"type":"text","content":"The Shape<br>of Silence","x":1200,"y":100,"fontFamily":"'Playfair Display', Georgia, serif","fontSize":"6.5rem","fontWeight":"600","color":"#fff","lineHeight":1.05,"zIndex":2,"animation":{"parallax":0.45,"fadeIn":true}},{"type":"text","content":"PROJECT · 2026 JUN","x":1200,"y":350,"fontFamily":"'Inter', sans-serif","fontSize":"1rem","fontWeight":"500","color":"rgba(255,255,255,0.5)","letterSpacing":"0.15em","zIndex":2,"animation":{"fadeIn":true}},{"type":"text","content":"How absence shapes presence<br>in visual communication and<br>editorial composition.","x":1200,"y":410,"fontFamily":"'Inter', sans-serif","fontSize":"1.3rem","fontWeight":"300","color":"rgba(255,255,255,0.55)","lineHeight":1.8,"maxWidth":"480px","zIndex":2,"animation":{"parallax":0.2,"fadeIn":true}}]},{"id":"development","x":4000,"width":5000,"elements":[{"type":"image","src":"posts/tired_20260718.jpg","x":4300,"y":60,"width":550,"height":420,"zIndex":1,"animation":{"parallax":0.18,"float":true,"floatAmount":20}},{"type":"text","content":"Negative space is not empty.<br>It is active, breathing, alive.","x":5100,"y":180,"fontFamily":"'Playfair Display', Georgia, serif","fontSize":"4rem","fontWeight":"600","color":"#fff","lineHeight":1.2,"zIndex":2,"animation":{"parallax":0.35,"fadeIn":true}},{"type":"image","src":"posts/test_20260718.jpg","x":7000,"y":100,"width":500,"height":380,"zIndex":1,"animation":{"parallax":0.12,"fadeIn":true}},{"type":"text","content":"What you remove is just as important<br>as what you leave behind.","x":7800,"y":520,"fontFamily":"'Inter', sans-serif","fontSize":"1.5rem","fontWeight":"300","color":"rgba(255,255,255,0.5)","lineHeight":1.7,"zIndex":2,"animation":{"parallax":0.2,"fadeIn":true}}]},{"id":"conclusion","x":9000,"width":6000,"elements":[{"type":"image","src":"posts/tired_20260718.jpg","x":9300,"y":40,"width":850,"height":560,"zIndex":1,"animation":{"parallax":0.1,"fadeIn":true}},{"type":"text","content":"Silence is not the absence<br>of sound. It is the presence<br>of space.","x":10400,"y":150,"fontFamily":"'Playfair Display', Georgia, serif","fontSize":"5rem","fontWeight":"600","color":"#fff","lineHeight":1.15,"zIndex":2,"animation":{"parallax":0.3,"fadeIn":true}}]}]}
+    }
+  };
+
+  function initProject(meta, narrative){
+    projectMeta = meta;
     document.title = projectMeta.title + ' — AC';
 
     // Set canvas width
@@ -173,9 +182,33 @@ body{
     });
 
     loading.style.display = 'none';
-  }).catch(function(err){
-    loading.textContent = 'Failed to load project. ' + err.message;
-  });
+  }
+
+  // ═══════════════════════════════════════
+  //  LOAD — use embedded data (file://) or fetch JSON (server)
+  // ═══════════════════════════════════════
+  var isFileProtocol = window.location.protocol === 'file:';
+  if(isFileProtocol || EMBEDDED[slug]){
+    var project = EMBEDDED[slug];
+    if(project){
+      initProject(project.meta, project.narrative);
+    } else {
+      loading.textContent = 'Project not found: ' + slug;
+    }
+  } else {
+    var base = 'content/projects/' + slug + '/';
+    Promise.all([
+      fetch(base + 'project.json').then(function(r){ return r.json(); }),
+      fetch(base + 'scenes.json').then(function(r){ return r.json(); })
+    ]).then(function(results){
+      initProject(results[0], results[1]);
+    }).catch(function(err){
+      // Fallback to embedded
+      var fb = EMBEDDED[slug];
+      if(fb){ initProject(fb.meta, fb.narrative); }
+      else { loading.textContent = 'Failed to load project. ' + err.message; }
+    });
+  }
 
   // ═══════════════════════════════════════
   //  HORIZONTAL SCROLL
