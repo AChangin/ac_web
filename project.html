@@ -91,6 +91,7 @@ body{
     elements: [],
     register: function(el, config){
       this.elements.push({ el:el, config:config||{} });
+      if(config && config.enterAnimation) console.log('Registered enterAnimation:', config.enterAnimation);
     },
     update: function(scrollX, viewW, viewH){
       for(var i=0; i<this.elements.length; i++){
@@ -333,7 +334,16 @@ body{
       }
 
       parentEl.appendChild(el);
-      if(elCfg.animation) NarrativeEngine.register(el, elCfg.animation);
+      if(elCfg.animation || elCfg.enterAnimation || elCfg.parallax || elCfg.float || elCfg.fadeIn){
+        var animCfg = {};
+        if(elCfg.animation){ for(var k in elCfg.animation) animCfg[k] = elCfg.animation[k]; }
+        if(elCfg.enterAnimation) animCfg.enterAnimation = elCfg.enterAnimation;
+        if(elCfg.parallax) animCfg.parallax = elCfg.parallax;
+        if(elCfg.float) animCfg.float = elCfg.float;
+        if(elCfg.floatAmount) animCfg.floatAmount = elCfg.floatAmount;
+        if(elCfg.fadeIn) animCfg.fadeIn = elCfg.fadeIn;
+        NarrativeEngine.register(el, animCfg);
+      }
     }
 
     // Render all scenes
