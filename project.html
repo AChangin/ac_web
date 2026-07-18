@@ -21,8 +21,8 @@ body{
 
 /* ── Close button ── */
 .project-back{
-  position:fixed;top:2rem;right:2rem;z-index:100;
-  font-family:'Inter',sans-serif;font-size:2rem;font-weight:300;
+  position:fixed;top:2rem;right:3rem;z-index:100;
+  font-family:'Inter',sans-serif;font-size:6rem;font-weight:300;
   color:rgba(255,255,255,0.5);text-decoration:none;
   line-height:1;transition:color 0.3s ease;
   pointer-events:all;
@@ -102,10 +102,11 @@ body{
         var visualX = elX + px;
         var visualInView = (visualX + elW > scrollX) && (visualX < scrollX + viewW);
 
-        // How far the element's RIGHT edge has entered the viewport (0=just appearing, 1+=inside)
-        var enterProgress = Math.max(0, Math.min(1, (visualX + elW - scrollX) / viewW));
-        // How far before the LEFT edge exits (1=fully in, 0=just leaving)
-        var exitProgress = Math.max(0, Math.min(1, (scrollX + viewW - visualX) / viewW));
+        // Element enters from the RIGHT as user scrolls right
+        // 0 = left edge just touching right viewport edge, 1 = left edge at left viewport edge
+        var enterProgress = Math.max(0, Math.min(1, ((scrollX + viewW) - visualX) / viewW));
+        // Element exits to the LEFT: 1 = fully in, 0 = right edge just leaving
+        var exitProgress = Math.max(0, Math.min(1, (visualX + elW - scrollX) / viewW));
 
         var tx = px, ty = 0, sc = 1, op = 1, blur = 0, rot = 0, clipX = 0;
 
