@@ -3,22 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#8b0000">
 <title>Recents — AC</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:clamp(8px,0.833vw,16px)}
+html{font-size:clamp(8px,0.833vw,16px);-webkit-text-size-adjust:none}
 body{
   font-family:'Inter',-apple-system,sans-serif;
   -webkit-font-smoothing:antialiased;
-  background:#fff;color:#000;
+  background:#000;color:#fff;
 }
 
-/* Nav (same as index) */
+/* ── Nav (matching index.html dark theme) ── */
 .nav{
   position:fixed;top:0;left:0;
   width:7rem;height:100vh;
@@ -26,74 +27,156 @@ body{
   align-items:center;justify-content:space-between;
   padding:2rem 0;
   z-index:50;
-  background:rgba(255,255,255,0.6);
+  background:rgba(139,0,0,0.8);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
 }
 .nav-left{display:flex;align-items:center;justify-content:center}
-.nav-logo{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#000}
-.nav-logo img{display:block;width:2.5rem;height:2.5rem}
+.nav-logo{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
+.nav-logo img{display:block;width:2.5rem;height:2.5rem;filter:brightness(0) invert(1)}
 .nav-center{display:flex;flex-direction:column;align-items:flex-start;gap:2.8rem}
 .nav-group{display:flex;flex-direction:column;align-items:flex-start;gap:0.35rem}
-.nav-link{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:400;letter-spacing:0.02em;color:#333;text-decoration:none;transition:color 0.3s ease;cursor:pointer}
-.nav-link:hover{color:#000}
-.nav-link.active{color:#000}
+.nav-link{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:400;letter-spacing:0.02em;color:rgba(255,255,255,0.85);text-decoration:none;transition:color 0.3s ease;cursor:pointer}
+.nav-link:hover{color:#fff}
+.nav-link.active{color:#fff}
 .nav-parent{font-weight:600;font-size:1.3rem;letter-spacing:0.01em}
-.nav-child{font-size:0.95rem;color:#666;padding-left:0.4rem}
-.nav-child:hover{color:#000}
+.nav-child{font-size:0.95rem;color:rgba(255,255,255,0.65);padding-left:0.4rem}
+.nav-child:hover{color:#fff}
 .nav-right{display:flex;align-items:center;justify-content:center}
 
-/* Recents page */
+/* ── Recents page ── */
 .recents-page{
   margin-left:7rem;
-  padding:6rem 8rem;
+  padding:5rem 8rem;
   min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
-.recents-title{
+.recents-heading{
   font-family:'Playfair Display',Georgia,serif;
   font-size:6rem;font-weight:600;
-  letter-spacing:-0.03em;color:#000;
-}
-.recents-sub{
-  font-family:'Inter',sans-serif;
-  font-size:1.4rem;font-weight:300;
-  letter-spacing:0.1em;color:rgba(0,0,0,0.4);
-  margin-top:0.5rem;margin-bottom:4rem;
-}
-.recents-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:2.5rem;
-}
-.recents-card{
-  border-bottom:1px solid rgba(0,0,0,0.1);
-  padding-bottom:2rem;
-}
-.recents-card-label{
-  font-family:'Inter',sans-serif;
-  font-size:0.7rem;font-weight:500;
-  letter-spacing:0.12em;text-transform:uppercase;
-  color:rgba(0,0,0,0.35);
-  margin-bottom:0.8rem;
-}
-.recents-card-title{
-  font-family:'Playfair Display',Georgia,serif;
-  font-size:1.8rem;font-weight:600;
-  letter-spacing:-0.02em;color:#000;
-  margin-bottom:0.5rem;
-}
-.recents-card-desc{
-  font-family:'Inter',sans-serif;
-  font-size:0.95rem;font-weight:300;
-  line-height:1.6;color:rgba(0,0,0,0.5);
+  letter-spacing:-0.03em;color:#fff;
+  margin-bottom:3rem;
+  flex-shrink:0;
 }
 
+/* ── Stage ── */
+.recents-stage{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+/* ── Project card ── */
+.recents-project{
+  display:flex;
+  align-items:stretch;
+  cursor:pointer;
+  position:relative;
+  transition:flex 0.55s cubic-bezier(0.22,1,0.36,1),
+             opacity 0.4s ease;
+  overflow:hidden;
+}
+.recents-project.is-large{ flex:3; }
+.recents-project.is-small{ flex:1; opacity:0.45; }
+.recents-project.is-small:hover{ opacity:0.8; }
+
+/* ── Image ── */
+.recents-project-image{
+  position:relative;
+  overflow:hidden;
+  flex-shrink:0;
+  transition:width 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.is-large .recents-project-image{ width:55%; }
+.is-small .recents-project-image{ width:24%; }
+.recents-project-image img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:transform 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.is-small:hover .recents-project-image img{ transform:scale(1.03); }
+
+/* ── Number ── */
+.recents-project-number{
+  position:absolute;
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:700;color:rgba(255,255,255,0.1);
+  line-height:1;pointer-events:none;z-index:1;
+  transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1),
+             top 0.55s cubic-bezier(0.22,1,0.36,1),
+             left 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.is-large .recents-project-number{
+  font-size:14rem;top:-3rem;left:-2.5rem;
+}
+.is-small .recents-project-number{
+  font-size:4.5rem;top:50%;left:0.3rem;transform:translateY(-50%);
+}
+
+/* ── Info ── */
+.recents-project-info{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 2.5rem;flex:1;min-width:0;
+}
+.is-small .recents-project-info{ padding:0 1.2rem; }
+.recents-project-type{
+  display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem;
+}
+.recents-project-type img{
+  width:1.2rem;height:1.2rem;filter:brightness(0) invert(1);
+}
+.recents-project-type span{
+  font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:500;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+}
+.recents-project-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:600;letter-spacing:-0.02em;color:#fff;
+  margin:0 0 0.4rem 0;line-height:1.1;
+  transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.is-large .recents-project-title{ font-size:3rem; }
+.is-small .recents-project-title{ font-size:1.3rem; }
+.recents-project-date{
+  font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:400;
+  letter-spacing:0.08em;color:rgba(255,255,255,0.3);
+  margin-bottom:0.8rem;
+}
+.recents-project-desc{
+  font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:300;
+  line-height:1.7;color:rgba(255,255,255,0.5);
+  max-width:34rem;
+  transition:opacity 0.35s ease,max-height 0.55s cubic-bezier(0.22,1,0.36,1);
+  overflow:hidden;
+}
+.is-small .recents-project-desc{ opacity:0;max-height:0; }
+.is-large .recents-project-desc{ opacity:1;max-height:8rem; }
+
+/* ── Responsive ── */
+@media(max-width:1024px){
+  .recents-page{padding:4rem 3rem}
+  .recents-heading{font-size:4.5rem}
+  .is-large .recents-project-title{font-size:2.4rem}
+  .is-small .recents-project-title{font-size:1.1rem}
+  .is-large .recents-project-number{font-size:10rem}
+  .is-large .recents-project-image{width:48%}
+}
 @media(max-width:768px){
-  .nav{width:100%;height:4.8rem;flex-direction:row;padding:0 1.6rem;border-bottom:1px solid #e5e5e5}
+  .nav{width:100%;height:4.8rem;flex-direction:row;padding:0 1.6rem;border-bottom:none}
   .nav-center{display:none}
-  .recents-page{margin-left:0;margin-top:4.8rem;padding:3rem 1.5rem}
-  .recents-title{font-size:3.5rem}
-  .recents-grid{grid-template-columns:1fr}
+  .recents-page{margin-left:0;margin-top:4.8rem;padding:2rem 1.2rem}
+  .recents-heading{font-size:3rem;margin-bottom:1.5rem}
+  .recents-project{flex-direction:column}
+  .is-large .recents-project-image,
+  .is-small .recents-project-image{width:100%;height:38vw}
+  .is-large .recents-project-number{font-size:5rem;top:-0.5rem;left:0.5rem}
+  .is-small .recents-project-number{font-size:2.5rem;top:0.3rem;left:0.5rem;transform:none}
+  .recents-project-info{padding:0.8rem 0.5rem}
+  .is-large .recents-project-title{font-size:1.8rem}
+  .is-small .recents-project-title{font-size:1.1rem}
 }
 </style>
 </head>
@@ -119,16 +202,89 @@ body{
 </nav>
 
 <div class="recents-page">
-  <h1 class="recents-title">Recents</h1>
-  <p class="recents-sub">Browse recent works and explorations.</p>
-  <div class="recents-grid">
-    <div class="recents-card">
-      <p class="recents-card-label">Coming Soon</p>
-      <h3 class="recents-card-title">New projects in progress</h3>
-      <p class="recents-card-desc">Stay tuned for updates to this section.</p>
-    </div>
-  </div>
+  <h1 class="recents-heading">Recents</h1>
+  <div class="recents-stage" id="recents-stage"></div>
 </div>
+
+<script>
+(function(){
+  // ═══════════════════════════════════════
+  //  DATA — add new projects here
+  // ═══════════════════════════════════════
+  var recentsData = [
+    {
+      number: 1,
+      type: "NOTE",
+      icon: "icons/note.svg",
+      title: "黄昏黎明融作一片",
+      date: "2026 JUL",
+      description: "A brief exploration of twilight and dawn dissolving into one another — where the boundaries between night and day become indistinguishable and the in-between emerges as its own form.",
+      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop"
+    },
+    {
+      number: 2,
+      type: "PROJECT",
+      icon: "icons/project.svg",
+      title: "The Shape of Silence",
+      date: "2026 JUN",
+      description: "An investigation into negative space as an active design element — how absence shapes presence in visual communication and editorial composition.",
+      image: "https://images.unsplash.com/photo-1511818966892-d7d6716dcb1a?w=800&h=600&fit=crop"
+    }
+  ];
+
+  var activeProject = 0;
+  var stage = document.getElementById('recents-stage');
+  if(!stage) return;
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function render(){
+    stage.innerHTML = '';
+    recentsData.forEach(function(proj, idx){
+      var isLarge = (idx === activeProject);
+      var el = document.createElement('div');
+      el.className = 'recents-project ' + (isLarge ? 'is-large' : 'is-small');
+      el.setAttribute('data-index', idx);
+      el.innerHTML =
+        '<div class="recents-project-image">' +
+          '<img src="' + proj.image + '" alt="">' +
+          '<div class="recents-project-number">' + pad(proj.number) + '</div>' +
+        '</div>' +
+        '<div class="recents-project-info">' +
+          '<div class="recents-project-type">' +
+            '<img src="' + proj.icon + '" alt=""><span>' + proj.type + '</span>' +
+          '</div>' +
+          '<h3 class="recents-project-title">' + proj.title + '</h3>' +
+          '<div class="recents-project-date">' + proj.date + '</div>' +
+          '<p class="recents-project-desc">' + proj.description + '</p>' +
+        '</div>';
+      stage.appendChild(el);
+    });
+
+    stage.querySelectorAll('.recents-project').forEach(function(el){
+      var i = parseInt(el.getAttribute('data-index'));
+      el.addEventListener('mouseenter', function(){ if(i !== activeProject) swapTo(i); });
+      el.addEventListener('click', function(){ if(i !== activeProject) swapTo(i); });
+    });
+
+    stage.addEventListener('mouseleave', function(){
+      if(activeProject !== 0) swapTo(0);
+    });
+  }
+
+  function swapTo(newActive){
+    if(newActive === activeProject) return;
+    activeProject = newActive;
+    stage.querySelectorAll('.recents-project').forEach(function(el){
+      var i = parseInt(el.getAttribute('data-index'));
+      if(i === activeProject){ el.classList.remove('is-small'); el.classList.add('is-large'); }
+      else { el.classList.remove('is-large'); el.classList.add('is-small'); }
+    });
+  }
+
+  render();
+})();
+</script>
 
 </body>
 </html>

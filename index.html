@@ -851,202 +851,6 @@ body{
 }
 
 /* ============================================================
-   RECENTS SECTION (Section 4) — dark project showcase
-   ============================================================ */
-.recents-section{
-  background:#000;
-  padding:5.6rem 0 0 0;
-  overflow:hidden;
-}
-.recents-inner{
-  display:flex;
-  flex-direction:column;
-  width:100%;height:100%;
-  padding:0 8%;
-  position:relative;
-}
-.recents-heading{
-  font-family:'Playfair Display',Georgia,serif;
-  font-size:6rem;
-  font-weight:600;
-  letter-spacing:-0.03em;
-  color:#fff;
-  margin:0 0 2rem 0;
-  flex-shrink:0;
-}
-.recents-stage{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:0;
-  overflow:hidden;
-  position:relative;
-}
-
-/* ── Project cards ── */
-.recents-project{
-  display:flex;
-  align-items:stretch;
-  transition:flex 0.55s cubic-bezier(0.22,1,0.36,1),
-             opacity 0.4s ease;
-  cursor:pointer;
-  position:relative;
-}
-.recents-project.is-large{
-  flex:3;
-}
-.recents-project.is-small{
-  flex:1;
-  opacity:0.5;
-}
-.recents-project.is-small:hover{
-  opacity:0.85;
-}
-
-/* ── Project image ── */
-.recents-project-image{
-  position:relative;
-  overflow:hidden;
-  flex-shrink:0;
-  transition:width 0.55s cubic-bezier(0.22,1,0.36,1);
-}
-.is-large .recents-project-image{
-  width:58%;
-}
-.is-small .recents-project-image{
-  width:28%;
-}
-.recents-project-image img{
-  width:100%;height:100%;
-  object-fit:cover;
-  display:block;
-  transition:transform 0.55s cubic-bezier(0.22,1,0.36,1);
-}
-.is-small:hover .recents-project-image img{
-  transform:scale(1.03);
-}
-
-/* ── Project number ── */
-.recents-project-number{
-  position:absolute;
-  top:-1rem;left:-2rem;
-  font-family:'Playfair Display',Georgia,serif;
-  font-size:10rem;
-  font-weight:700;
-  color:rgba(255,255,255,0.12);
-  line-height:1;
-  pointer-events:none;
-  transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1),
-             opacity 0.4s ease,
-             top 0.55s cubic-bezier(0.22,1,0.36,1),
-             left 0.55s cubic-bezier(0.22,1,0.36,1);
-  z-index:1;
-}
-.is-small .recents-project-number{
-  font-size:5rem;
-  top:50%;left:0.5rem;
-  transform:translateY(-50%);
-}
-
-/* ── Project info ── */
-.recents-project-info{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding:0 2.5rem;
-  flex:1;
-  min-width:0;
-}
-.is-small .recents-project-info{
-  padding:0 1.5rem;
-}
-.recents-project-type{
-  display:flex;
-  align-items:center;
-  gap:0.5rem;
-  margin-bottom:0.6rem;
-}
-.recents-project-type img{
-  width:1.2rem;height:1.2rem;
-  filter:brightness(0) invert(1);
-}
-.recents-project-type span{
-  font-family:'Inter',sans-serif;
-  font-size:0.75rem;
-  font-weight:500;
-  letter-spacing:0.15em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.5);
-}
-.recents-project-title{
-  font-family:'Playfair Display',Georgia,serif;
-  font-size:2.8rem;
-  font-weight:600;
-  letter-spacing:-0.02em;
-  color:#fff;
-  margin:0 0 0.4rem 0;
-  line-height:1.1;
-  transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1);
-}
-.is-small .recents-project-title{
-  font-size:1.4rem;
-}
-.recents-project-date{
-  font-family:'Inter',sans-serif;
-  font-size:0.8rem;
-  font-weight:400;
-  letter-spacing:0.08em;
-  color:rgba(255,255,255,0.35);
-  margin-bottom:0.8rem;
-}
-.recents-project-desc{
-  font-family:'Inter',sans-serif;
-  font-size:0.95rem;
-  font-weight:300;
-  line-height:1.7;
-  color:rgba(255,255,255,0.55);
-  max-width:32rem;
-  transition:opacity 0.35s ease,
-             max-height 0.55s cubic-bezier(0.22,1,0.36,1);
-  overflow:hidden;
-}
-.is-small .recents-project-desc{
-  opacity:0;
-  max-height:0;
-}
-.is-large .recents-project-desc{
-  opacity:1;
-  max-height:6rem;
-}
-
-/* ── Responsive: Recents ── */
-@media(max-width:1024px){
-  .recents-heading{font-size:4.5rem}
-  .recents-project-title{font-size:2.2rem}
-  .is-small .recents-project-title{font-size:1.2rem}
-  .recents-project-number{font-size:8rem}
-  .is-small .recents-project-number{font-size:4rem}
-  .is-large .recents-project-image{width:52%}
-  .is-small .recents-project-image{width:32%}
-}
-@media(max-width:768px){
-  .recents-section{padding-top:2rem}
-  .recents-inner{padding:0 4%}
-  .recents-heading{font-size:3.5rem;margin-bottom:1.2rem}
-  .recents-stage{gap:0.5rem}
-  .recents-project{flex-direction:column}
-  .is-large .recents-project-image,
-  .is-small .recents-project-image{width:100%;height:40vw}
-  .recents-project-number{font-size:5rem;top:-0.5rem;left:0.5rem}
-  .is-small .recents-project-number{font-size:3rem;top:0.5rem;left:0.5rem;transform:none}
-  .recents-project-info{padding:0.8rem 1rem}
-  .is-small .recents-project-info{padding:0.5rem 1rem}
-  .recents-project-title{font-size:1.8rem}
-  .is-small .recents-project-title{font-size:1.2rem}
-  .recents-project-desc{font-size:0.85rem}
-}
-
-/* ============================================================
    LAYER 3a: PC ALPHA VIDEO (z-index: 100 — topmost)
    16:10 cover — viewport as cropping window, center-crop only.
    ============================================================ */
@@ -1542,8 +1346,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       <a class="nav-link nav-child" data-section="2">Posts</a>
     </div>
     <div class="nav-group">
-      <a class="nav-link nav-parent" data-section="4">Recents</a>
-      <a class="nav-link nav-child" data-section="4">Browse</a>
+      <a class="nav-link nav-parent" href="recents.html">Recents</a>
+      <a class="nav-link nav-child" href="recents.html">Browse</a>
     </div>
   </div>
   <div class="nav-right">
@@ -1558,7 +1362,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   <div class="mobile-menu__inner">
     <a class="mobile-menu__link active" data-section="0">Home</a>
     <a class="mobile-menu__link" data-section="2">Posts</a>
-    <a class="mobile-menu__link" data-section="4">Recents</a>
+    <a class="mobile-menu__link" href="recents.html">Recents</a>
   </div>
 </div>
 
@@ -1700,16 +1504,6 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         <a class="orbit-nav-link" href="#"><span class="orbit-nav-text">See My Works</span><img class="orbit-nav-arrow" src="icons/arrow.svg" alt=""></a>
         <a class="orbit-nav-link" href="#"><span class="orbit-nav-text">Contact Me</span><img class="orbit-nav-arrow" src="icons/arrow.svg" alt=""></a>
       </nav>
-    </div>
-  </section>
-
-  <!-- ===== RECENTS (Section 4) ===== -->
-  <section class="section recents-section" data-index="4" id="recents-section">
-    <div class="recents-inner" id="recents-inner">
-      <h2 class="recents-heading">Recents</h2>
-      <div class="recents-stage" id="recents-stage">
-        <!-- Projects rendered by JS -->
-      </div>
     </div>
   </section>
 
@@ -3603,116 +3397,6 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     }
 
   }, 600);
-})();
-</script>
-
-<!-- ==========================================================
-     RECENTS PAGE — data-driven project showcase with swap
-     ========================================================== -->
-<script>
-(function(){
-  // ═══════════════════════════════════════════════════════════
-  //  DATA — add new projects here, the layout adapts automatically
-  // ═══════════════════════════════════════════════════════════
-  var recentsData = [
-    {
-      number: 1,
-      type: "NOTE",
-      icon: "icons/note.svg",
-      title: "黄昏黎明融作一片",
-      date: "2026 JUL",
-      description: "A brief exploration of twilight and dawn dissolving into one another — where the boundaries between night and day become indistinguishable.",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop"
-    },
-    {
-      number: 2,
-      type: "PROJECT",
-      icon: "icons/project.svg",
-      title: "The Shape of Silence",
-      date: "2026 JUN",
-      description: "An investigation into negative space as an active design element — how absence shapes presence in visual communication and editorial design.",
-      image: "https://images.unsplash.com/photo-1511818966892-d7d6716dcb1a?w=800&h=600&fit=crop"
-    }
-  ];
-
-  var activeProject = 0; // 0 = first project is large, 1 = second project is large
-  var stage = document.getElementById('recents-stage');
-  if(!stage) return;
-
-  // ═══════════════════════════════════════════════════════════
-  //  RENDER — build project DOM from data
-  // ═══════════════════════════════════════════════════════════
-  function render(){
-    stage.innerHTML = '';
-    recentsData.forEach(function(proj, idx){
-      var isLarge = (idx === activeProject);
-      var el = document.createElement('div');
-      el.className = 'recents-project ' + (isLarge ? 'is-large' : 'is-small');
-      el.setAttribute('data-index', idx);
-      el.innerHTML =
-        '<div class="recents-project-image">' +
-          '<img src="' + proj.image + '" alt="">' +
-          '<div class="recents-project-number">' + padNumber(proj.number) + '</div>' +
-        '</div>' +
-        '<div class="recents-project-info">' +
-          '<div class="recents-project-type">' +
-            '<img src="' + proj.icon + '" alt="">' +
-            '<span>' + proj.type + '</span>' +
-          '</div>' +
-          '<h3 class="recents-project-title">' + proj.title + '</h3>' +
-          '<div class="recents-project-date">' + proj.date + '</div>' +
-          '<p class="recents-project-desc">' + proj.description + '</p>' +
-        '</div>';
-      stage.appendChild(el);
-    });
-
-    // Attach hover/click handlers
-    var projects = stage.querySelectorAll('.recents-project');
-    projects.forEach(function(el){
-      var idx = parseInt(el.getAttribute('data-index'));
-      // Desktop: hover to swap
-      el.addEventListener('mouseenter', function(){
-        if(idx !== activeProject){
-          swapTo(idx);
-        }
-      });
-      // Mobile: click to swap
-      el.addEventListener('click', function(e){
-        if(idx !== activeProject){
-          swapTo(idx);
-        }
-      });
-    });
-
-    // Mouse leaves stage → reset to default (project 0 large)
-    stage.addEventListener('mouseleave', function(){
-      if(activeProject !== 0){
-        swapTo(0);
-      }
-    });
-  }
-
-  function padNumber(n){
-    return n < 10 ? '0' + n : '' + n;
-  }
-
-  function swapTo(newActive){
-    if(newActive === activeProject) return;
-    activeProject = newActive;
-    var projects = stage.querySelectorAll('.recents-project');
-    projects.forEach(function(el){
-      var idx = parseInt(el.getAttribute('data-index'));
-      if(idx === activeProject){
-        el.classList.remove('is-small');
-        el.classList.add('is-large');
-      } else {
-        el.classList.remove('is-large');
-        el.classList.add('is-small');
-      }
-    });
-  }
-
-  render();
 })();
 </script>
 
