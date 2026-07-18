@@ -228,6 +228,21 @@ body{
         el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:'+(elCfg.objectFit||'cover')+';display:block">';
       } else if(elCfg.type === 'text'){
         el.innerHTML = elCfg.content;
+      } else if(elCfg.type === 'svg'){
+        if(elCfg.src){
+          // External SVG via <img>. Use svgColor as direct CSS filter (e.g. "brightness(0) invert(1)")
+          var svgFilter = elCfg.svgColor || '';
+          el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;'+(svgFilter?'filter:'+svgFilter+';':'')+'display:block">';
+        } else if(elCfg.content){
+          // Inline SVG — fill/stroke applied directly
+          el.innerHTML = elCfg.content;
+          var svgEl = el.querySelector('svg');
+          if(svgEl){
+            if(elCfg.svgFill) svgEl.style.fill = elCfg.svgFill;
+            if(elCfg.svgStroke) svgEl.style.stroke = elCfg.svgStroke;
+            if(elCfg.svgColor){ svgEl.style.fill = elCfg.svgColor; svgEl.style.stroke = elCfg.svgColor; }
+          }
+        }
       }
 
       parentEl.appendChild(el);
