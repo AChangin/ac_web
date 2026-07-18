@@ -171,9 +171,8 @@ body{
         if(elCfg.padding) el.style.padding = u(elCfg.padding);
         if(elCfg.margin) el.style.margin = u(elCfg.margin);
         if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
-        // Default to flex column so group auto-sizes to children
-        if(!elCfg.width) el.style.display = 'flex';
-        if(!elCfg.width) el.style.flexDirection = 'column';
+        // Auto-size to children (absolutely positioned, so use width:max-content)
+        if(!elCfg.width){ el.style.width = 'max-content'; }
         el.setAttribute('data-x', elCfg.x || offsetX);
         el.setAttribute('data-w', elCfg.width || 100);
 
@@ -196,9 +195,10 @@ body{
         el.style.top = u(typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y);
         el.setAttribute('data-x', (typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x));
       } else {
-        // Flow naturally inside group — use margin for spacing
-        if(elCfg.marginLeft) el.style.marginLeft = u(elCfg.marginLeft);
+        // Flow naturally inside group — override the CSS absolute positioning
+        el.style.position = 'relative';
         if(elCfg.marginTop) el.style.marginTop = u(elCfg.marginTop);
+        if(elCfg.marginLeft) el.style.marginLeft = u(elCfg.marginLeft);
         el.setAttribute('data-x', offsetX);
       }
       el.setAttribute('data-w', elCfg.width || 300);
@@ -218,6 +218,8 @@ body{
         el.style.color = elCfg.color || '#fff';
         el.style.lineHeight = elCfg.lineHeight || '1.5';
         el.style.letterSpacing = elCfg.letterSpacing || 'normal';
+        // Inside groups: don't wrap unless maxWidth is set
+        if(!hasXY && !elCfg.maxWidth) el.style.whiteSpace = 'nowrap';
         el.innerHTML = elCfg.content;
       } else {
         el.style.width = u(elCfg.width||300);
