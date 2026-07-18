@@ -247,6 +247,16 @@ body{
 
       parentEl.appendChild(el);
       if(elCfg.animation) NarrativeEngine.register(el, elCfg.animation);
+    }
+
+    // Render all scenes
+    narrative.scenes.forEach(function(scene){
+      scene.elements.forEach(function(elCfg){
+        renderElement(elCfg, inner, 0, 0);
+      });
+    });
+
+    loading.style.display = 'none';
   }
 
   // ═══════════════════════════════════════
