@@ -82,6 +82,11 @@ body{
   // ═══════════════════════════════════════
   //  NarrativeEngine — scroll-driven animation
   // ═══════════════════════════════════════
+  // Easing functions
+  function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+  function easeOutQuad(t){ return 1 - (1-t)*(1-t); }
+  function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+
   var NarrativeEngine = {
     elements: [],
     register: function(el, config){
@@ -92,34 +97,101 @@ body{
         var entry = this.elements[i];
         var el = entry.el;
         var c = entry.config;
+
+        // Element's original position
         var elX = parseFloat(el.getAttribute('data-x')) || 0;
         var elW = parseFloat(el.getAttribute('data-w')) || 300;
-        var elCenter = elX + elW/2;
-        var viewCenter = scrollX + viewW/2;
-        var relX = (viewCenter - elCenter) / viewW;
-        var inView = (elX + elW > scrollX) && (elX < scrollX + viewW);
 
-        // Calculate visual position (accounting for parallax)
+        // Parallax offset
         var px = c.parallax ? scrollX * c.parallax : 0;
         var visualX = elX + px;
         var visualInView = (visualX + elW > scrollX) && (visualX < scrollX + viewW);
 
-        var tx = 0, ty = 0, sc = 1, op = 1;
+        // How far the element's RIGHT edge has entered the viewport (0=just appearing, 1+=inside)
+        var enterProgress = Math.max(0, Math.min(1, (visualX + elW - scrollX) / viewW));
+        // How far before the LEFT edge exits (1=fully in, 0=just leaving)
+        var exitProgress = Math.max(0, Math.min(1, (scrollX + viewW - visualX) / viewW));
+
+        var tx = px, ty = 0, sc = 1, op = 1, blur = 0, rot = 0, clipX = 0;
+
+        // ── Parallax ──
         if(c.parallax){ tx = px; }
+
+        // ── Float ──
         if(c.float){ ty = Math.sin(scrollX * 0.002 + elX * 0.001) * (c.floatAmount || 20); }
-        if(c.fadeIn){
-          var leftEdge = visualX, rightEdge = visualX + elW;
-          var fadeZone = viewW * 0.25;
-          var enterDist = rightEdge - scrollX;
-          var exitDist = (scrollX + viewW) - leftEdge;
-          if(enterDist < fadeZone && enterDist > 0){ op = 0.1 + 0.9 * (enterDist / fadeZone); }
-          else if(exitDist < fadeZone && exitDist > 0){ op = 0.1 + 0.9 * (exitDist / fadeZone); }
-          else if(visualInView){ op = 1; }
-          else { op = 0.1; }
+
+        // ── Unified enterAnimation ──
+        var anims = c.enterAnimation;
+        if(!anims && c.fadeIn){ anims = [{ type:'fade' }]; } // legacy support
+        if(anims){
+          if(!Array.isArray(anims)) anims = [anims];
+          for(var a=0; a<anims.length; a++){
+            var anim = anims[a];
+            var dur = anim.duration || 0.35; // in viewport widths
+            var del = anim.delay || 0;
+            // Progress through this animation (0=before start, 1=complete)
+            var t = Math.max(0, Math.min(1, (enterProgress - del) / dur));
+            var e = anim.ease || 'cubic';
+            var ev = e === 'quad' ? easeOutQuad(t) : e === 'inout' ? easeInOutCubic(t) : easeOutCubic(t);
+
+            switch(anim.type){
+              case 'fade':
+                op = 0.05 + 0.95 * ev;
+                break;
+              case 'slideUp':
+                ty += (anim.distance || 60) * (1 - ev);
+                break;
+              case 'slideLeft':
+                tx += (anim.distance || 40) * (1 - ev);
+                break;
+              case 'slideRight':
+                tx -= (anim.distance || 40) * (1 - ev);
+                break;
+              case 'scale':
+                sc = (anim.from || 0.85) + (1 - (anim.from || 0.85)) * ev;
+                break;
+              case 'blur':
+                blur = (anim.amount || 10) * (1 - ev);
+                break;
+              case 'rotate':
+                rot = (anim.amount || 3) * (1 - ev);
+                break;
+              case 'reveal':
+                // Clip from right: element reveals as it scrolls in
+                clipX = 100 * (1 - ev);
+                break;
+            }
+          }
         }
-        if(c.scaleOnScroll){ var vRelX = (viewCenter - (visualX + elW/2)) / viewW; sc = 0.8 + 0.2 * Math.min(1, Math.max(0, 1 - Math.abs(vRelX))); }
-        el.style.transform = 'translate3d('+tx+'px,'+ty+'px,0) scale('+sc+')';
+
+        // ── Legacy fadeIn/scaleOnScroll (if no enterAnimation) ──
+        if(!anims){
+          if(c.fadeIn){
+            var leftEdge = visualX, rightEdge = visualX + elW;
+            var fadeZone = viewW * 0.25;
+            var enterDist = rightEdge - scrollX;
+            var exitDist = (scrollX + viewW) - leftEdge;
+            if(enterDist < fadeZone && enterDist > 0){ op = 0.1 + 0.9 * (enterDist / fadeZone); }
+            else if(exitDist < fadeZone && exitDist > 0){ op = 0.1 + 0.9 * (exitDist / fadeZone); }
+            else if(visualInView){ op = 1; }
+            else { op = 0.1; }
+          }
+        }
+
+        // ── Build transform ──
+        var transform = 'translate3d('+tx+'px,'+ty+'px,0)';
+        if(sc !== 1 || rot !== 0) transform += ' scale('+sc+')';
+        if(rot !== 0) transform += ' rotate('+rot+'deg)';
+        el.style.transform = transform;
         el.style.opacity = op;
+
+        // ── Filter (blur) ──
+        if(blur > 0.1){ el.style.filter = 'blur('+blur+'px)'; }
+        else { el.style.filter = ''; }
+
+        // ── Clip-path (reveal) ──
+        if(clipX > 0.1){ el.style.clipPath = 'inset(0 '+clipX+'% 0 0)'; }
+        else { el.style.clipPath = ''; }
       }
     }
   };
