@@ -1941,15 +1941,19 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
 
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
+      var sec = link.getAttribute('data-section');
+      if(sec === null) return; // external link, let browser navigate
       e.preventDefault();
-      scrollToSection(parseInt(link.getAttribute('data-section')));
+      scrollToSection(parseInt(sec));
     });
   });
 
   mobileMenuLinks.forEach(link => {
     link.addEventListener('click', (e) => {
+      var sec = link.getAttribute('data-section');
+      if(sec === null) return; // external link, let browser navigate
       e.preventDefault();
-      scrollToSection(parseInt(link.getAttribute('data-section')));
+      scrollToSection(parseInt(sec));
     });
   });
 
