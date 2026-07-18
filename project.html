@@ -143,6 +143,9 @@ body{
     inner.style.width = canvasW + 'px';
     setupDesktopScroll(canvasW);
 
+    // Helper: number → px, string → use as-is (supports vw/vh/rem/%)
+    function u(v){ return typeof v === 'number' ? v + 'px' : v; }
+
     // Render elements
     narrative.scenes.forEach(function(scene){
       scene.elements.forEach(function(elCfg){
@@ -150,16 +153,16 @@ body{
         el.className = 'narrative-el ' + (elCfg.type || '');
         el.setAttribute('data-x', elCfg.x);
         el.setAttribute('data-w', elCfg.width || 300);
-        el.style.left = elCfg.x + 'px';
-        el.style.top = elCfg.y + 'px';
+        el.style.left = u(elCfg.x);
+        el.style.top = u(elCfg.y);
         if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
 
         if(elCfg.type === 'image'){
-          el.style.width = elCfg.width + 'px';
-          el.style.height = elCfg.height + 'px';
+          el.style.width = u(elCfg.width);
+          el.style.height = u(elCfg.height);
           el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:cover;display:block">';
         } else if(elCfg.type === 'text'){
-          el.style.width = elCfg.width ? elCfg.width+'px' : 'auto';
+          el.style.width = elCfg.width ? u(elCfg.width) : 'auto';
           el.style.maxWidth = elCfg.maxWidth || 'none';
           el.style.fontFamily = elCfg.fontFamily || "'Inter',sans-serif";
           el.style.fontSize = elCfg.fontSize || '1rem';
