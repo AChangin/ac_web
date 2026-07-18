@@ -7,6 +7,7 @@
       "width": 3000,
       "elements": [
         
+
         {
           "type": "group",
           "x": 50, "bottom": "50px",
@@ -17,14 +18,15 @@
               "type": "text",
               "content": "黄昏黎明融作一片",
               "fontSize": "6rem",
-              "fontWeight": "600",
+              "fontWeight": "800",
               "fontFamily": "'Playfair Display', Georgia, serif",
+              "marginBottom": "-1rem",
               "color": "#fff"
             },
             {
               "type": "text",
               "content": "2026 JUL",
-              "fontSize": "10rem",
+              "fontSize": "12rem",
               "fontWeight": "800",
               "color": "rgba(255,255,255,0.5)"
             }
@@ -32,18 +34,50 @@
         },
 
         {
+          "type": "group",
+          "x": 50, "y": "50px",
+          "padding": "2rem",
+          "marginBottom": "20",
+          "children": [
+            {
+              "type": "svg",
+              "src": "icons/note.svg",
+              "width": "3rem", "height": "3rem",
+              "svgColor": "brightness(0) invert(1)"
+            },
+            {
+              "type": "text",
+              "content": "NOTE",
+              "fontSize": "3rem",
+              "fontWeight": "800",
+              "fontFamily": "'Inter', sans-serif",
+              "marginBottom": "-1rem",
+              "color": "rgba(255,255,255,0.5)",
+              "marginTop": "1rem"
+            }
+            
+          ]
+        },
+
+        {
           "type": "text",
-          "content": "Where the boundaries between night and day<br>become indistinguishable, and the in-between<br>emerges as its own form of light.",
-          "x": 1100, "y": 420,
+          "content": "马克思主义政治经济学而且对于社会主义国家，官僚资本主义比资本主义更恐怖。因为社会主义国家的集体思想与集中制，更容易形成权力的垄断与独裁。资本主义制度下的制度，始终披着自由与民主的外衣，资本家之间相互扶持，但又相互竞争，就像美国的共和党和民主党，其中无法有一方能彻底掌握政治话语权。但如苏联的官僚特权阶级为例子，大量腐败的官员铁板一块，相互包庇进行钱权交换，一党独大，人民也缺乏有效监督与管理，就像报警了，结果敌人的电话响了，法官还是他亲戚……这就是苏联修正主义下官僚腐败的特征之一。",
+          "x": 700, "y": "40%",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "1.3rem", "fontWeight": "300",
           "color": "rgba(255,255,255,0.55)", "lineHeight": 1.8,
           "maxWidth": "500px",
           "zIndex": 2,
+          "enterAnimation": [
+                { "type": "fade", "duration": 1.5 },
+                { "type": "scale", "from": 0.1, "delay": 0.1 }
+              ],
           "animation": { "parallax": 0.25, "fadeIn": true }
         }
       ]
     },
+
+
     {
       "id": "middle",
       "x": 3000,
@@ -54,6 +88,10 @@
           "src": "posts/test_20260718.jpg",
           "x": 3200, "y": 80, "width": 600, "height": 450,
           "zIndex": 1,
+          "enterAnimation": [
+                { "type": "fade", "duration": 0.3 },
+                { "type": "slideUp", "distance": 80, "ease": "cubic", "delay": 0.05 }
+              ],
           "animation": { "parallax": 0.15, "float": true, "floatAmount": 15 }
         },
         {

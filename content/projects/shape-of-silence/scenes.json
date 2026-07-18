@@ -6,32 +6,56 @@
       "x": 0,
       "width": 4000,
       "elements": [
+        
         {
-          "type": "image",
-          "src": "posts/test_20260718.jpg",
-          "x": 300, "y": 80, "width": 650, "height": 480,
-          "zIndex": 1,
-          "animation": { "parallax": 0.25, "fadeIn": true }
+          "type": "group",
+          "x": 50, "bottom": "50px",
+          "padding": "2rem",
+          "marginBottom": "20",
+          "children": [
+            {
+              "type": "text",
+              "content": "黄昏黎明融作一片",
+              "fontSize": "6rem",
+              "fontWeight": "800",
+              "fontFamily": "'Playfair Display', Georgia, serif",
+              "marginBottom": "-1rem",
+              "color": "#fff"
+            },
+            {
+              "type": "text",
+              "content": "2026 JUL",
+              "fontSize": "12rem",
+              "fontWeight": "800",
+              "color": "rgba(255,255,255,0.5)"
+            }
+          ]
         },
+
         {
-          "type": "text",
-          "content": "The Shape<br>of Silence",
-          "x": 1200, "y": 100,
-          "fontFamily": "'Playfair Display', Georgia, serif",
-          "fontSize": "6.5rem", "fontWeight": "600",
-          "color": "#fff", "lineHeight": 1.05,
-          "zIndex": 2,
-          "animation": { "parallax": 0.45, "fadeIn": true }
-        },
-        {
-          "type": "text",
-          "content": "PROJECT · 2026 JUN",
-          "x": 1200, "y": 350,
-          "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1rem", "fontWeight": "500",
-          "color": "rgba(255,255,255,0.5)", "letterSpacing": "0.15em",
-          "zIndex": 2,
-          "animation": { "fadeIn": true }
+          "type": "group",
+          "x": 50, "y": "50px",
+          "padding": "2rem",
+          "marginBottom": "20",
+          "children": [
+            {
+              "type": "svg",
+              "src": "icons/note.svg",
+              "width": "6rem", "height": "6rem",
+              "svgColor": "brightness(0) invert(1)"
+            },
+            {
+              "type": "text",
+              "content": "NOTE",
+              "fontSize": "6rem",
+              "fontWeight": "800",
+              "fontFamily": "'Inter', sans-serif",
+              "marginBottom": "-1rem",
+              "color": "rgba(255,255,255,0.5)",
+              "marginTop": "1rem"
+            }
+            
+          ]
         },
         {
           "type": "text",
