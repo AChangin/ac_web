@@ -91,7 +91,6 @@ body{
     elements: [],
     register: function(el, config){
       this.elements.push({ el:el, config:config||{} });
-      if(config && config.enterAnimation) console.log('Registered enterAnimation:', config.enterAnimation);
     },
     update: function(scrollX, viewW, viewH){
       for(var i=0; i<this.elements.length; i++){
