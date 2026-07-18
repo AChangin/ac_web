@@ -6,33 +6,31 @@
       "x": 0,
       "width": 3000,
       "elements": [
+        
         {
-          "type": "image",
-          "src": "posts/tired_20260718.jpg",
-          "x": 200, "y": 60, "width": 700, "height": 500,
-          "zIndex": 1,
-          "animation": { "parallax": 0.2, "fadeIn": true }
+          "type": "group",
+          "x": 50, "bottom": "50px",
+          "padding": "2rem",
+          "marginBottom": "20",
+          "children": [
+            {
+              "type": "text",
+              "content": "黄昏黎明融作一片",
+              "fontSize": "6rem",
+              "fontWeight": "600",
+              "fontFamily": "'Playfair Display', Georgia, serif",
+              "color": "#fff"
+            },
+            {
+              "type": "text",
+              "content": "2026 JUL",
+              "fontSize": "10rem",
+              "fontWeight": "800",
+              "color": "rgba(255,255,255,0.5)"
+            }
+          ]
         },
-        {
-          "type": "text",
-          "content": "黄昏黎明<br>融作一片",
-          "x": 1100, "y": 120,
-          "fontFamily": "'Playfair Display', Georgia, serif",
-          "fontSize": "6rem", "fontWeight": "600",
-          "color": "#fff", "lineHeight": 1.1,
-          "zIndex": 2,
-          "animation": { "parallax": 0.4, "fadeIn": true }
-        },
-        {
-          "type": "text",
-          "content": "NOTE · 2026 JUL",
-          "x": 1100, "y": 360,
-          "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1rem", "fontWeight": "500",
-          "color": "rgba(255,255,255,0.5)", "letterSpacing": "0.15em",
-          "zIndex": 2,
-          "animation": { "fadeIn": true }
-        },
+
         {
           "type": "text",
           "content": "Where the boundaries between night and day<br>become indistinguishable, and the in-between<br>emerges as its own form of light.",

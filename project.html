@@ -164,8 +164,10 @@ body{
         // Group: auto-sizes to fit children. If child has x/y → absolute, otherwise → flows naturally
         el.className = 'narrative-el group';
         el.style.position = 'absolute';
-        el.style.left = u(elCfg.x ? (typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x) : u(offsetX));
-        el.style.top = u(elCfg.y ? (typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y) : u(offsetY));
+        if(elCfg.x !== undefined) el.style.left = u(typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x);
+        else if(elCfg.right !== undefined) el.style.right = u(elCfg.right);
+        if(elCfg.y !== undefined) el.style.top = u(typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y);
+        else if(elCfg.bottom !== undefined) el.style.bottom = u(elCfg.bottom);
         if(elCfg.width) el.style.width = u(elCfg.width);
         if(elCfg.height) el.style.height = u(elCfg.height);
         if(elCfg.padding) el.style.padding = u(elCfg.padding);
