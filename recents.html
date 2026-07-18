@@ -269,6 +269,10 @@ body{
 
   function render(){
     stage.innerHTML = '';
+    if(!recentsData.length){
+      stage.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:1.2rem;padding:2rem 0;">Unable to load projects. Please refresh or check your connection.</p>';
+      return;
+    }
     recentsData.forEach(function(proj, idx){
       var isLarge = (idx === activeProject);
       var el = document.createElement('a');
@@ -326,20 +330,32 @@ body{
   var loaded = 0;
   projectSlugs.forEach(function(slug, idx){
     fetch('content/projects/' + slug + '/project.json')
-      .then(function(r){ return r.json(); })
+      .then(function(r){
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
       .then(function(data){
         data.number = idx + 1;
         recentsData[idx] = data;
         loaded++;
-        if(loaded === projectSlugs.length){
-          render();
-        }
+        if(loaded === projectSlugs.length) render();
       })
-      .catch(function(){
+      .catch(function(err){
+        console.warn('Failed to load project ' + slug + ':', err.message);
+        // Fallback: use any hardcoded data if present
         loaded++;
         if(loaded === projectSlugs.length) render();
       });
   });
+  // Fallback timeout: if fetches hang, use hardcoded defaults
+  setTimeout(function(){
+    if(loaded < projectSlugs.length){
+      if(!recentsData[0]) recentsData[0] = {number:1,slug:"dusk-dawn",type:"NOTE",icon:"icons/note.svg",title:"黄昏黎明融作一片",date:"2026 JUL",description:"A brief exploration of twilight and dawn dissolving into one another.",cover:"posts/tired_20260718.jpg"};
+      if(!recentsData[1]) recentsData[1] = {number:2,slug:"shape-of-silence",type:"PROJECT",icon:"icons/project.svg",title:"The Shape of Silence",date:"2026 JUN",description:"An investigation into negative space as an active design element.",cover:"posts/test_20260718.jpg"};
+      loaded = projectSlugs.length;
+      render();
+    }
+  }, 3000);
 
   // ── Mobile menu toggle ──
   var menuBtn = document.getElementById('nav-menu-btn');
