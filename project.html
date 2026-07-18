@@ -211,31 +211,46 @@ body{
   }
 
   // ═══════════════════════════════════════
-  //  HORIZONTAL SCROLL
+  //  HORIZONTAL SCROLL — velocity-based inertia (matches index.html)
   // ═══════════════════════════════════════
   var scrollX = 0, vx = 0, touching = false;
   var lastX = 0, lastTime = 0;
-  var inertiaRaf = 0, animRaf = 0;
+  var inertiaRaf = 0;
+  var maxScroll = 0;
 
-  function clamp(v){ var maxW = parseFloat(canvas.style.width) - window.innerWidth; return Math.max(0, Math.min(maxW, v)); }
+  function updateMaxScroll(){ maxScroll = Math.max(0, parseFloat(canvas.style.width || 0) - window.innerWidth); }
+  function clampV(v){ return Math.max(0, Math.min(maxScroll, v)); }
+
   function setScroll(x){
     scrollX = x;
     canvas.style.transform = 'translateX(' + (-x) + 'px)';
-    NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
   }
 
-  // Desktop: wheel
+  function stopInertia(){ if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; } }
+
+  // ── Desktop: wheel with inertia ──
   document.addEventListener('wheel', function(e){
     if(touching) return;
     e.preventDefault();
-    scrollX = clamp(scrollX + e.deltaY);
+    stopInertia();
+    vx += e.deltaY * (e.deltaMode === 1 ? 40 : 1);
+    scrollX = clampV(scrollX + vx * 0.5);
     setScroll(scrollX);
+    if(Math.abs(vx) > 1){
+      (function step(){
+        if(Math.abs(vx) < 0.05){ inertiaRaf = 0; return; }
+        vx *= 0.92;
+        scrollX = clampV(scrollX + vx);
+        setScroll(scrollX);
+        inertiaRaf = requestAnimationFrame(step);
+      })();
+    }
   }, { passive: false });
 
-  // Mobile: touch
+  // ── Mobile: touch with velocity + inertia ──
   document.addEventListener('touchstart', function(e){
     if(e.touches.length !== 1) return;
-    if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
+    stopInertia();
     lastX = e.touches[0].clientX;
     lastTime = performance.now();
     vx = 0;
@@ -248,7 +263,7 @@ body{
     var dx = lastX - x;
     var dt = performance.now() - lastTime;
     vx = dt > 0 ? dx / dt : 0;
-    scrollX = clamp(scrollX + dx);
+    scrollX = clampV(scrollX + dx);
     setScroll(scrollX);
     lastX = x;
     lastTime = performance.now();
@@ -258,26 +273,28 @@ body{
     if(!touching) return;
     touching = false;
     if(Math.abs(vx) > 0.1){
-      if(inertiaRaf) cancelAnimationFrame(inertiaRaf);
+      stopInertia();
       (function step(){
         if(Math.abs(vx) < 0.03){ inertiaRaf = 0; return; }
         vx *= 0.95;
-        scrollX = clamp(scrollX + vx * 16);
+        scrollX = clampV(scrollX + vx * 16);
         setScroll(scrollX);
         inertiaRaf = requestAnimationFrame(step);
       })();
     }
   }, { passive: true });
 
-  // Initial render
-  setScroll(0);
+  // Resize: update max scroll
+  window.addEventListener('resize', function(){ updateMaxScroll(); });
 
-  // Continuous RAF for float animations
-  (function animLoop(){
-    if(!touching && !inertiaRaf){
-      NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
-    }
-    animRaf = requestAnimationFrame(animLoop);
+  // ═══════════════════════════════════════
+  //  MAIN RAF LOOP — animation + scroll
+  // ═══════════════════════════════════════
+  setScroll(0);
+  updateMaxScroll();
+  (function mainLoop(){
+    NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
+    requestAnimationFrame(mainLoop);
   })();
 })();
 </script>
