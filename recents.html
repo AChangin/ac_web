@@ -87,6 +87,7 @@ body{
   position:relative;
   overflow:hidden;
   flex-shrink:0;
+  max-height:60vh;
   transition:width 0.55s cubic-bezier(0.22,1,0.36,1);
 }
 .is-large .recents-project-image{ width:55%; }
@@ -102,7 +103,7 @@ body{
 .recents-project-number{
   position:absolute;
   font-family:'Playfair Display',Georgia,serif;
-  font-weight:700;color:rgba(255,255,255,0.1);
+  font-weight:700;color:#fff;
   line-height:1;pointer-events:none;z-index:1;
   transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1),
              top 0.55s cubic-bezier(0.22,1,0.36,1),
@@ -117,7 +118,7 @@ body{
 
 /* ── Info ── */
 .recents-project-info{
-  display:flex;flex-direction:column;justify-content:center;
+  display:flex;flex-direction:column;justify-content:flex-start;
   padding:0 2.5rem;flex:1;min-width:0;
 }
 .is-small .recents-project-info{ padding:0 1.2rem; }
@@ -236,7 +237,7 @@ body{
   var stage = document.getElementById('recents-stage');
   if(!stage) return;
 
-  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  function pad(n){ return '' + n; }
 
   function render(){
     stage.innerHTML = '';
