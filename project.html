@@ -155,41 +155,73 @@ body{
     // Helper: number → px, string → use as-is (supports vw/vh/rem/%)
     function u(v){ return typeof v === 'number' ? v + 'px' : v; }
 
-    // Render elements
+    // Recursive element renderer
+    function renderElement(elCfg, parentEl, offsetX, offsetY){
+      offsetX = offsetX || 0; offsetY = offsetY || 0;
+      var el = document.createElement('div');
+
+      if(elCfg.type === 'group'){
+        // Group: container with relative positioning for children
+        el.className = 'narrative-el group';
+        el.style.position = 'absolute';
+        el.style.left = u(elCfg.x ? (typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x) : u(offsetX));
+        el.style.top = u(elCfg.y ? (typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y) : u(offsetY));
+        if(elCfg.width) el.style.width = u(elCfg.width);
+        if(elCfg.height) el.style.height = u(elCfg.height);
+        if(elCfg.padding) el.style.padding = u(elCfg.padding);
+        if(elCfg.margin) el.style.margin = u(elCfg.margin);
+        if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
+        el.setAttribute('data-x', elCfg.x || offsetX);
+        el.setAttribute('data-w', elCfg.width || 100);
+
+        // Render children relative to group
+        if(elCfg.children){
+          elCfg.children.forEach(function(child){
+            renderElement(child, el, 0, 0); // children use their own x/y within group
+          });
+        }
+        parentEl.appendChild(el);
+        if(elCfg.animation) NarrativeEngine.register(el, elCfg.animation);
+        return;
+      }
+
+      // Leaf element
+      el.className = 'narrative-el ' + (elCfg.type || '');
+      el.setAttribute('data-x', (typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x));
+      el.setAttribute('data-w', elCfg.width || 300);
+      el.style.position = 'absolute';
+      el.style.left = u(typeof elCfg.x === 'number' ? elCfg.x + offsetX : elCfg.x);
+      el.style.top = u(typeof elCfg.y === 'number' ? elCfg.y + offsetY : elCfg.y);
+      if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
+      if(elCfg.margin) el.style.margin = u(elCfg.margin);
+
+      if(elCfg.type === 'image'){
+        el.style.width = u(elCfg.width);
+        el.style.height = u(elCfg.height);
+        el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:cover;display:block">';
+      } else if(elCfg.type === 'text'){
+        el.style.width = elCfg.width ? u(elCfg.width) : 'auto';
+        el.style.maxWidth = elCfg.maxWidth || 'none';
+        el.style.fontFamily = elCfg.fontFamily || "'Inter',sans-serif";
+        el.style.fontSize = elCfg.fontSize || '1rem';
+        el.style.fontWeight = elCfg.fontWeight || '400';
+        el.style.color = elCfg.color || '#fff';
+        el.style.lineHeight = elCfg.lineHeight || '1.5';
+        el.style.letterSpacing = elCfg.letterSpacing || 'normal';
+        el.innerHTML = elCfg.content;
+      } else {
+        el.style.width = u(elCfg.width||300);
+        el.style.height = u(elCfg.height||200);
+      }
+
+      parentEl.appendChild(el);
+      if(elCfg.animation) NarrativeEngine.register(el, elCfg.animation);
+    }
+
+    // Render all top-level elements
     narrative.scenes.forEach(function(scene){
       scene.elements.forEach(function(elCfg){
-        var el = document.createElement('div');
-        el.className = 'narrative-el ' + (elCfg.type || '');
-        el.setAttribute('data-x', elCfg.x);
-        el.setAttribute('data-w', elCfg.width || 300);
-        el.style.left = u(elCfg.x);
-        el.style.top = u(elCfg.y);
-        if(elCfg.zIndex) el.style.zIndex = elCfg.zIndex;
-        if(elCfg.margin) el.style.margin = u(elCfg.margin);
-
-        if(elCfg.type === 'image'){
-          el.style.width = u(elCfg.width);
-          el.style.height = u(elCfg.height);
-          el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:cover;display:block">';
-        } else if(elCfg.type === 'text'){
-          el.style.width = elCfg.width ? u(elCfg.width) : 'auto';
-          el.style.maxWidth = elCfg.maxWidth || 'none';
-          el.style.fontFamily = elCfg.fontFamily || "'Inter',sans-serif";
-          el.style.fontSize = elCfg.fontSize || '1rem';
-          el.style.fontWeight = elCfg.fontWeight || '400';
-          el.style.color = elCfg.color || '#fff';
-          el.style.lineHeight = elCfg.lineHeight || '1.5';
-          el.style.letterSpacing = elCfg.letterSpacing || 'normal';
-          el.innerHTML = elCfg.content;
-        } else {
-          el.style.width = (elCfg.width||300)+'px';
-          el.style.height = (elCfg.height||200)+'px';
-        }
-
-        inner.appendChild(el);
-        if(elCfg.animation){
-          NarrativeEngine.register(el, elCfg.animation);
-        }
+        renderElement(elCfg, inner, 0, 0);
       });
     });
 
