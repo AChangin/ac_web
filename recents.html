@@ -333,32 +333,27 @@ body{
   // ═══════════════════════════════════════
   //  INIT — load from JSON when possible, fallback to hardcoded data
   // ═══════════════════════════════════════
-  var isFileProtocol = window.location.protocol === 'file:';
-  if(isFileProtocol){
-    recentsData = FALLBACK;
-    render();
-  } else {
-    var loaded = 0;
-    projectSlugs.forEach(function(slug, idx){
-      fetch('content/projects/' + slug + '/project.json')
-        .then(function(r){
-          if(!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
-        .then(function(data){
-          data.number = idx + 1;
-          recentsData[idx] = data;
-          loaded++;
-          if(loaded === projectSlugs.length) render();
-        })
-        .catch(function(err){
-          console.warn('Failed to fetch project JSON, using fallback for: ' + slug);
-          recentsData[idx] = FALLBACK[idx];
-          loaded++;
-          if(loaded === projectSlugs.length) render();
-        });
-    });
-  }
+  // Always try fetch first (works with local server), fallback to hardcoded data
+  var loaded = 0;
+  projectSlugs.forEach(function(slug, idx){
+    fetch('content/projects/' + slug + '/project.json')
+      .then(function(r){
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(data){
+        data.number = idx + 1;
+        recentsData[idx] = data;
+        loaded++;
+        if(loaded === projectSlugs.length) render();
+      })
+      .catch(function(err){
+        console.warn('Fetch failed for ' + slug + ' (run local server for live JSON): ' + err.message);
+        recentsData[idx] = FALLBACK[idx];
+        loaded++;
+        if(loaded === projectSlugs.length) render();
+      });
+  });
 
   // ── Mobile menu toggle ──
   var menuBtn = document.getElementById('nav-menu-btn');

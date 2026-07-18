@@ -186,28 +186,20 @@ body{
   // ═══════════════════════════════════════
   //  LOAD — use embedded data (file://) or fetch JSON (server)
   // ═══════════════════════════════════════
-  var isFileProtocol = window.location.protocol === 'file:';
-  if(isFileProtocol || EMBEDDED[slug]){
-    var project = EMBEDDED[slug];
-    if(project){
-      initProject(project.meta, project.narrative);
-    } else {
-      loading.textContent = 'Project not found: ' + slug;
-    }
-  } else {
-    var base = 'content/projects/' + slug + '/';
-    Promise.all([
-      fetch(base + 'project.json').then(function(r){ return r.json(); }),
-      fetch(base + 'scenes.json').then(function(r){ return r.json(); })
-    ]).then(function(results){
-      initProject(results[0], results[1]);
-    }).catch(function(err){
-      // Fallback to embedded
-      var fb = EMBEDDED[slug];
-      if(fb){ initProject(fb.meta, fb.narrative); }
-      else { loading.textContent = 'Failed to load project. ' + err.message; }
-    });
-  }
+  // Always try to load from JSON (works with local server).
+  // Falls back to embedded data if fetch fails (e.g. file:// direct open).
+  var base = 'content/projects/' + slug + '/';
+  Promise.all([
+    fetch(base + 'project.json').then(function(r){ return r.json(); }),
+    fetch(base + 'scenes.json').then(function(r){ return r.json(); })
+  ]).then(function(results){
+    initProject(results[0], results[1]);
+  }).catch(function(err){
+    console.warn('Fetch failed (run a local server for live JSON): ' + err.message);
+    var fb = EMBEDDED[slug];
+    if(fb){ initProject(fb.meta, fb.narrative); }
+    else { loading.textContent = 'Project not found: ' + slug; }
+  });
 
   // ═══════════════════════════════════════
   //  HORIZONTAL SCROLL — same principle as index.html
@@ -235,13 +227,13 @@ body{
 
     window.addEventListener('wheel', function(e){
       e.preventDefault();
-      velX += e.deltaY * 0.35;
-      targetX = clampX(targetX + e.deltaY * 0.35);
+      velX += e.deltaY * 0.05;
+      targetX = clampX(targetX + e.deltaY * 0.05);
     }, { passive: false });
 
     (function scrollLoop(){
       if(!isMobileDevice && Math.abs(velX) > 0.05){
-        velX *= 0.95;
+        velX *= 0.98;
         targetX = clampX(targetX + velX);
       }
       // Lerp current position toward target
