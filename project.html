@@ -21,8 +21,8 @@ body{
 
 /* ── Close button ── */
 .project-back{
-  position:fixed;top:2rem;right:3rem;z-index:100;
-  font-family:'Inter',sans-serif;font-size:6rem;font-weight:300;
+  position:fixed;top:2rem;right:5vw;z-index:100;
+  font-family:'Inter',sans-serif;font-size:6vw;font-weight:300;
   color:rgba(255,255,255,0.5);text-decoration:none;
   line-height:1;transition:color 0.3s ease;
   pointer-events:all;
@@ -59,7 +59,7 @@ body{
 
 @media(max-width:768px){
   html{font-size:clamp(9px,2vw,15px)}
-  .project-back{top:1.2rem;right:1rem;font-size:1.6rem}
+  .project-back{top:5vh;right:10vw;font-size:10vw}
 }
 </style>
 </head>
@@ -72,6 +72,7 @@ body{
   <div class="project-canvas-inner" id="project-canvas-inner"></div>
 </div>
 
+<script src="js/project-data.js"></script>
 <script>
 (function(){
   // ═══════════════════════════════════════
@@ -357,14 +358,11 @@ body{
   }
 
   // ═══════════════════════════════════════
-  //  LOAD — use embedded data (file://) or fetch JSON (server)
+  //  LOAD — use ACProjectData shared module, fallback to embedded data
   // ═══════════════════════════════════════
-  // Always try to load from JSON (works with local server).
-  // Falls back to embedded data if fetch fails (e.g. file:// direct open).
-  var base = 'content/projects/' + slug + '/';
   Promise.all([
-    fetch(base + 'project.json').then(function(r){ return r.json(); }),
-    fetch(base + 'scenes.json').then(function(r){ return r.json(); })
+    ACProjectData.loadProject(slug),
+    ACProjectData.loadScenes(slug)
   ]).then(function(results){
     initProject(results[0], results[1]);
   }).catch(function(err){

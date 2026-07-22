@@ -10,6 +10,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:clamp(8px,0.833vw,16px);-webkit-text-size-adjust:none}
@@ -17,9 +21,11 @@ body{
   font-family:'Inter',-apple-system,sans-serif;
   -webkit-font-smoothing:antialiased;
   background:#000;color:#fff;
+  overflow-x:hidden;
+  overscroll-behavior:none;
 }
 
-/* ── Nav (matching index.html dark theme) ── */
+/* ── Nav ── */
 .nav{
   position:fixed;top:0;left:0;
   width:7rem;height:100vh;
@@ -75,31 +81,91 @@ body{
 .mobile-menu__link:hover{ opacity:0.6; }
 .mobile-menu__link.active{ text-decoration:underline;text-underline-offset:8px;text-decoration-thickness:1px; }
 
-/* ── Recents page ── */
-.recents-page{
-  margin-left:7rem;
-  padding:5rem 8rem;
-  min-height:100vh;
+/* ═════════════════════════════════════════════════════════════
+   HORIZONTAL SCROLL
+   ═════════════════════════════════════════════════════════════ */
+.scroll-container{
+  position:fixed;
+  top:0;left:0;
+  width:auto;
+  height:100vh;
+  display:flex;
+  flex-direction:row;
+  backface-visibility:hidden;
+  z-index:2;
+}
+.section{
+  width:100vw;
+  height:100vh;
+  flex-shrink:0;
+  position:relative;
   display:flex;
   flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
 }
-.recents-heading{
+
+/* ── Scroll hint ── */
+.scroll-hint{
+  position:fixed;
+  bottom:3rem;
+  left:calc(100vw - 10rem);
+  z-index:101;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:0.6rem;
+  pointer-events:none;
+  transition:opacity 0.4s ease;
+}
+.scroll-hint span{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;font-weight:400;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.35);
+}
+.scroll-hint-arrow{
+  display:flex;align-items:center;gap:0.4rem;
+  animation:arrowPulse 2s ease-in-out infinite;
+}
+.scroll-hint-arrow svg{
+  width:1.8rem;height:1.8rem;
+}
+@keyframes arrowPulse{
+  0%,100%{transform:translateX(0);opacity:0.4}
+  50%{transform:translateX(6px);opacity:1}
+}
+
+/* ── Section background variant ── */
+.section.recents-section{ background:#000; }
+.section.browse-section{ background:#0a0a0a; }
+
+/* ═════════════════════════════════════════════════════════════
+   RECENTS PANEL (Section 0)
+   ═════════════════════════════════════════════════════════════ */
+.recents-panel{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  padding:5rem 8rem;
+  padding-left:15rem; /* nav width + padding */
+}
+.recents-panel-heading{
   font-family:'Playfair Display',Georgia,serif;
   font-size:6rem;font-weight:600;
   letter-spacing:-0.03em;color:#fff;
   margin-bottom:3rem;
   flex-shrink:0;
 }
-
-/* ── Stage ── */
 .recents-stage{
   flex:1;
   display:flex;
   flex-direction:column;
   gap:1rem;
+  overflow:hidden;
 }
 
-/* ── Project card ── */
+/* ── Project card (same as before) ── */
 .recents-project{
   display:flex;
   align-items:stretch;
@@ -112,7 +178,6 @@ body{
 .recents-project.is-small{ flex:1; opacity:0.45; }
 .recents-project.is-small:hover{ opacity:0.8; }
 
-/* ── Image ── */
 .recents-project-image{
   position:relative;
   overflow:visible;
@@ -129,7 +194,6 @@ body{
 .is-small .recents-project-image{ width:24%; max-height:20vh; }
 .is-small:hover .recents-project-image img{ transform:scale(1.03); }
 
-/* ── Number ── */
 .recents-project-number{
   position:absolute;
   font-family:'Playfair Display',Georgia,serif;
@@ -146,7 +210,6 @@ body{
   font-size:8rem;top:50%;left:0.3rem;transform:translateY(-50%);
 }
 
-/* ── Info ── */
 .recents-project-info{
   display:flex;flex-direction:column;justify-content:flex-start;
   padding:0 2.5rem;flex:1;min-width:0;
@@ -183,27 +246,138 @@ body{
   max-width:34rem;
   transition:opacity 0.35s ease,max-height 0.55s cubic-bezier(0.22,1,0.36,1);
   overflow:hidden;
-  margin-top: 0.8rem;
+  margin-top:0.8rem;
 }
 .is-small .recents-project-desc{ opacity:0;max-height:0; }
 .is-large .recents-project-desc{ opacity:1;max-height:8rem; }
 
-/* ── Responsive ── */
+/* ═════════════════════════════════════════════════════════════
+   BROWSE PANEL (Section 1)
+   ═════════════════════════════════════════════════════════════ */
+.browse-panel{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  padding:5rem 8rem;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.browse-panel-heading{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:6rem;font-weight:600;
+  letter-spacing:-0.03em;color:#fff;
+  margin-bottom:0.75rem;
+  flex-shrink:0;
+}
+.browse-panel-count{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;font-weight:400;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+  margin-bottom:3.5rem;
+  flex-shrink:0;
+}
+.browse-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:3rem 2.5rem;
+  width:100%;
+  padding-bottom:4rem;
+}
+
+.browse-card{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+  position:relative;
+}
+.browse-card:hover{ opacity:0.85; }
+.browse-card:hover .browse-card-image img{ transform:scale(1.03); }
+.browse-card:hover .browse-card-line{ background:rgba(255,255,255,0.25); }
+
+.browse-card-image{
+  width:100%;
+  aspect-ratio:16/10;
+  background:#1a1a1a;
+  overflow:hidden;
+  position:relative;
+  margin-bottom:1.2rem;
+}
+.browse-card-image img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.browse-card-type{
+  display:flex;align-items:center;gap:0.45rem;margin-bottom:0.4rem;
+}
+.browse-card-type img{
+  width:0.9rem;height:0.9rem;filter:brightness(0) invert(1);
+}
+.browse-card-type span{
+  font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.06em;
+  color:rgba(255,255,255,0.35);
+}
+.browse-card-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:1.8rem;font-weight:600;
+  letter-spacing:-0.02em;color:#fff;
+  margin-bottom:0.3rem;line-height:1.15;
+}
+.browse-card-date{
+  font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:400;
+  color:rgba(255,255,255,0.35);
+  margin-bottom:0.5rem;
+}
+.browse-card-desc{
+  font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:400;
+  line-height:1.6;color:rgba(255,255,255,0.5);
+  max-width:34rem;
+}
+.browse-card-line{
+  width:100%;height:1px;
+  background:rgba(255,255,255,0.06);
+  margin-top:1.5rem;
+  transition:background 0.3s ease;
+}
+
+/* ── Progress bar ── */
+.scroll-progress-bar{
+  position:fixed;
+  bottom:0;left:0;
+  height:2px;
+  background:#fff;
+  z-index:60;
+  transform-origin:left center;
+  pointer-events:none;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═════════════════════════════════════════════════════════════ */
 @media(max-width:1024px){
-  .recents-page{padding:4rem 3rem}
-  .recents-heading{font-size:4.5rem}
+  .recents-panel{padding:4rem 3rem;padding-left:10rem}
+  .recents-panel-heading{font-size:4.5rem}
+  .browse-panel{padding:4rem 3rem}
+  .browse-panel-heading{font-size:4.5rem}
   .is-large .recents-project-title{font-size:2.4rem}
   .is-small .recents-project-title{font-size:1.1rem}
   .is-large .recents-project-number{font-size:10rem}
   .is-large .recents-project-image{width:48%}
+  .browse-grid{grid-template-columns:1fr 1fr;gap:2.5rem 2rem}
+  .browse-card-title{font-size:1.5rem}
+  .scroll-hint{left:calc(100vw - 8rem)}
 }
 @media(max-width:768px){
   html{font-size:clamp(9px,2vw,15px)}
   .nav{width:100%;height:4.8rem;flex-direction:row;padding:0 1.6rem;border-bottom:none}
   .nav-center{display:none}
   .nav-menu-btn{display:flex}
-  .recents-page{margin-left:0;margin-top:4.8rem;padding:2rem 1.2rem}
-  .recents-heading{font-size:3rem;margin-bottom:1.5rem}
+  .recents-panel{padding:2rem 1.2rem;padding-top:6rem}
+  .recents-panel-heading{font-size:3rem;margin-bottom:1.5rem}
+  .browse-panel{padding:2rem 1.2rem;padding-top:6rem}
+  .browse-panel-heading{font-size:3rem}
   .recents-project{flex-direction:column}
   .is-large .recents-project-image,
   .is-small .recents-project-image{width:100%;height:38vw}
@@ -212,11 +386,19 @@ body{
   .recents-project-info{padding:0.8rem 0.5rem}
   .is-large .recents-project-title{font-size:1.8rem}
   .is-small .recents-project-title{font-size:1.1rem}
+  .browse-grid{grid-template-columns:1fr;gap:2rem}
+  .browse-card-title{font-size:1.6rem}
+  .scroll-hint{display:none}
 }
+
+/* ── Scrollbar hide ── */
+::-webkit-scrollbar{display:none}
+html{-ms-overflow-style:none;scrollbar-width:none}
 </style>
 </head>
 <body>
 
+<!-- Navigation (Fixed) -->
 <nav class="nav">
   <div class="nav-left">
     <a href="index.html" class="nav-logo" aria-label="AC Home">
@@ -229,8 +411,8 @@ body{
       <a class="nav-link nav-child" href="index.html">Posts</a>
     </div>
     <div class="nav-group">
-      <a class="nav-link nav-parent active">Recents</a>
-      <a class="nav-link nav-child active">Browse</a>
+      <a class="nav-link nav-parent active" data-section="0">Recents</a>
+      <a class="nav-link nav-child active" data-section="1">Browse</a>
     </div>
   </div>
   <div class="nav-right">
@@ -240,35 +422,87 @@ body{
   </div>
 </nav>
 
+<!-- Mobile Menu Overlay -->
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu__inner">
     <a class="mobile-menu__link" href="index.html">Home</a>
     <a class="mobile-menu__link" href="index.html">Posts</a>
-    <a class="mobile-menu__link active">Recents</a>
+    <a class="mobile-menu__link active" data-section="0">Recents</a>
+    <a class="mobile-menu__link" data-section="1">Browse</a>
   </div>
 </div>
 
-<div class="recents-page">
-  <h1 class="recents-heading">Recents</h1>
-  <div class="recents-stage" id="recents-stage"></div>
+<!-- Horizontal Scroll Container -->
+<div class="scroll-container" id="scroll-container">
+
+  <!-- === SECTION 0: Recents === -->
+  <section class="section recents-section" data-index="0">
+    <div class="recents-panel">
+      <h1 class="recents-panel-heading">Recents</h1>
+      <div class="recents-stage" id="recents-stage"></div>
+    </div>
+  </section>
+
+  <!-- === SECTION 1: Browse === -->
+  <section class="section browse-section" data-index="1">
+    <div class="browse-panel">
+      <h1 class="browse-panel-heading">Browse</h1>
+      <div class="browse-panel-count" id="browse-count"></div>
+      <div class="browse-grid" id="browse-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(255,255,255,0.2);">Loading&hellip;</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /scroll-container -->
+
+<!-- Scroll Hint -->
+<div class="scroll-hint" id="scroll-hint">
+  <span>Scroll</span>
+  <div class="scroll-hint-arrow">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5">
+      <path d="M5 12h14M13 5l7 7-7 7"/>
+    </svg>
+  </div>
 </div>
 
+<!-- Progress Bar -->
+<div class="scroll-progress-bar" id="progress-bar"></div>
+
+<script src="js/project-data.js"></script>
 <script>
 (function(){
+  'use strict';
+
   // ═══════════════════════════════════════
-  //  DATA — add project slugs here, metadata loaded from content/projects/[slug]/project.json
+  //  STATE
   // ═══════════════════════════════════════
-  var projectSlugs = ["dusk-dawn", "shape-of-silence"];
+  var allProjects = [];
   var recentsData = [];
-
   var activeProject = 0;
-  var stage = document.getElementById('recents-stage');
-  if(!stage) return;
+  var scrollProgress = 0;
+  var totalSections = 2;
 
+  // ═══════════════════════════════════════
+  //  DOM REFS
+  // ═══════════════════════════════════════
+  var scrollContainer = document.getElementById('scroll-container');
+  var progressBar = document.getElementById('progress-bar');
+  var scrollHint = document.getElementById('scroll-hint');
+  var recentsStage = document.getElementById('recents-stage');
+  var browseGrid = document.getElementById('browse-grid');
+  var browseCount = document.getElementById('browse-count');
+  var navLinks = document.querySelectorAll('.nav-link');
+  var mobileMenuLinks = document.querySelectorAll('.mobile-menu__link');
+
+  // ═══════════════════════════════════════
+  //  RECENTS PANEL
+  // ═══════════════════════════════════════
   function pad(n){ return '' + n; }
 
-  function render(){
-    stage.innerHTML = '';
+  function renderRecents(){
+    if(!recentsStage) return;
+    recentsStage.innerHTML = '';
     if(!recentsData || !recentsData.length) return;
     recentsData.forEach(function(proj, idx){
       var isLarge = (idx === activeProject);
@@ -291,10 +525,10 @@ body{
           '<div class="recents-project-date">' + proj.date + '</div>' +
           '<p class="recents-project-desc">' + proj.description + '</p>' +
         '</div>';
-      stage.appendChild(el);
+      recentsStage.appendChild(el);
     });
 
-    stage.querySelectorAll('.recents-project').forEach(function(el){
+    recentsStage.querySelectorAll('.recents-project').forEach(function(el){
       var i = parseInt(el.getAttribute('data-index'));
       el.addEventListener('mouseenter', function(){ if(i !== activeProject) swapTo(i); });
       el.addEventListener('click', function(e){
@@ -302,11 +536,10 @@ body{
           e.preventDefault();
           swapTo(i);
         }
-        // if already active, let the <a href> navigate to project.html
       });
     });
 
-    stage.addEventListener('mouseleave', function(){
+    recentsStage.addEventListener('mouseleave', function(){
       if(activeProject !== 0) swapTo(0);
     });
   }
@@ -314,7 +547,7 @@ body{
   function swapTo(newActive){
     if(newActive === activeProject) return;
     activeProject = newActive;
-    stage.querySelectorAll('.recents-project').forEach(function(el){
+    recentsStage.querySelectorAll('.recents-project').forEach(function(el){
       var i = parseInt(el.getAttribute('data-index'));
       if(i === activeProject){ el.classList.remove('is-small'); el.classList.add('is-large'); }
       else { el.classList.remove('is-large'); el.classList.add('is-small'); }
@@ -322,8 +555,257 @@ body{
   }
 
   // ═══════════════════════════════════════
-  //  FALLBACK DATA — used when JSON can't be fetched (local file:// etc.)
-  //  Keep in sync with content/projects/*/project.json
+  //  BROWSE PANEL
+  // ═══════════════════════════════════════
+  function renderBrowse(projects){
+    if(!browseGrid) return;
+    if(!projects || !projects.length){
+      browseGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:4rem;color:rgba(255,255,255,0.2);">No projects yet.</div>';
+      if(browseCount) browseCount.textContent = '';
+      return;
+    }
+
+    if(browseCount) browseCount.textContent = projects.length + ' project' + (projects.length !== 1 ? 's' : '');
+
+    browseGrid.innerHTML = '';
+    projects.forEach(function(proj){
+      var card = document.createElement('a');
+      card.className = 'browse-card';
+      card.href = 'project.html?slug=' + proj.slug;
+      card.innerHTML =
+        '<div class="browse-card-image">' +
+          '<img src="' + proj.cover + '" alt="">' +
+        '</div>' +
+        '<div class="browse-card-type">' +
+          '<img src="' + proj.icon + '" alt=""><span>' + proj.type + '</span>' +
+        '</div>' +
+        '<h3 class="browse-card-title">' + proj.title + '</h3>' +
+        '<div class="browse-card-date">' + proj.date + '</div>' +
+        '<p class="browse-card-desc">' + proj.description + '</p>' +
+        '<div class="browse-card-line"></div>';
+      browseGrid.appendChild(card);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  //  GSAP HORIZONTAL SCROLL
+  // ═══════════════════════════════════════
+  gsap.registerPlugin(ScrollTrigger);
+
+  function setupHorizontalScroll(){
+    var totalDist = function(){
+      return scrollContainer.scrollWidth - window.innerWidth;
+    };
+
+    var setBodyHeight = function(){
+      if(isMobile) return;
+      var dist = totalDist();
+      document.body.style.height = Math.max(dist + window.innerHeight, window.innerHeight) + 'px';
+    };
+    setBodyHeight();
+
+    if(isMobile) return { setBodyHeight: setBodyHeight };
+
+    gsap.to(scrollContainer, {
+      x: function(){ return -totalDist(); },
+      ease: 'none',
+      scrollTrigger: {
+        trigger: 'body',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.2,
+        invalidateOnRefresh: true,
+        onUpdate: function(self){
+          scrollProgress = self.progress;
+          applyScrollUI(self.progress);
+        }
+      }
+    });
+
+    return { setBodyHeight: setBodyHeight };
+  }
+
+  function applyScrollUI(progress){
+    // Progress bar
+    if(progressBar) progressBar.style.transform = 'scaleX(' + progress + ')';
+
+    // Hide scroll hint after scrolling past ~8%
+    if(scrollHint && progress > 0.08){
+      scrollHint.style.opacity = '0';
+    } else if(scrollHint){
+      scrollHint.style.opacity = '1';
+    }
+
+    // Nav highlight
+    var activeIdx = Math.round(progress * (totalSections - 1));
+    navLinks.forEach(function(l){
+      var sec = l.getAttribute('data-section');
+      if(sec !== null) l.classList.toggle('active', parseInt(sec) === activeIdx);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  //  NAV CLICK → SCROLL TO SECTION
+  // ═══════════════════════════════════════
+  function scrollToSection(idx){
+    var vw = window.innerWidth;
+    var totalWidth = (totalSections - 1) * vw;
+    var targetX = idx * vw;
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    var targetScrollY = totalWidth > 0 ? (targetX / totalWidth) * docH : 0;
+    window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+  }
+
+  navLinks.forEach(function(link){
+    link.addEventListener('click', function(e){
+      var sec = link.getAttribute('data-section');
+      if(sec === null) return;
+      e.preventDefault();
+      scrollToSection(parseInt(sec));
+    });
+  });
+
+  mobileMenuLinks.forEach(function(link){
+    link.addEventListener('click', function(e){
+      var sec = link.getAttribute('data-section');
+      if(sec === null) return;
+      e.preventDefault();
+      scrollToSection(parseInt(sec));
+      closeMenu();
+    });
+  });
+
+  // ═══════════════════════════════════════
+  //  MOBILE MENU
+  // ═══════════════════════════════════════
+  var menuBtn = document.getElementById('nav-menu-btn');
+  var mobileMenuEl = document.getElementById('mobile-menu');
+  var menuOpen = false;
+
+  function closeMenu(){
+    if(!menuOpen) return;
+    menuOpen = false;
+    menuBtn.classList.remove('open');
+    mobileMenuEl.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  if(menuBtn && mobileMenuEl){
+    menuBtn.addEventListener('click', function(){
+      menuOpen = !menuOpen;
+      menuBtn.classList.toggle('open', menuOpen);
+      mobileMenuEl.classList.toggle('open', menuOpen);
+      document.body.style.overflow = menuOpen ? 'hidden' : '';
+    });
+  }
+
+  // ═══════════════════════════════════════
+  //  MOBILE SWIPE
+  // ═══════════════════════════════════════
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if(isTouch) document.body.classList.add('is-touch');
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if(isMobile){
+    document.body.classList.add('is-mobile');
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    var tx = 0, vx = 0, touching = false, lastX = 0, lastTime = 0;
+    var inertiaRaf = 0, snapRaf = 0, snapTimer = 0;
+    var SNAP = { THRESHOLD: 140, MAX_VELOCITY: 0.3, DURATION: 500, IDLE_DELAY: 100 };
+
+    function getDist(){ return scrollContainer.scrollWidth - window.innerWidth; }
+    function clamp(v){ var m = -getDist(); return Math.max(m, Math.min(0, v)); }
+
+    function trySnap(){
+      if(snapRaf){ cancelAnimationFrame(snapRaf); snapRaf = 0; }
+      clearTimeout(snapTimer);
+      var vw = window.innerWidth;
+      var absTx = -tx;
+      var nearest = Math.round(absTx / vw);
+      nearest = Math.max(0, Math.min(totalSections - 1, nearest));
+      var targetTx = -(nearest * vw);
+      var distance = Math.abs(tx - targetTx);
+      if(distance > SNAP.THRESHOLD || Math.abs(vx) > SNAP.MAX_VELOCITY) return;
+      if(distance < 1) return;
+      var startTx = tx, startTime = performance.now();
+      function step(now){
+        var elapsed = now - startTime;
+        var p = Math.min(elapsed / SNAP.DURATION, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        setTx(startTx + (targetTx - startTx) * eased);
+        if(p < 1){ snapRaf = requestAnimationFrame(step); }
+        else { snapRaf = 0; setTx(targetTx); }
+      }
+      snapRaf = requestAnimationFrame(step);
+    }
+
+    function setTx(x){
+      tx = x;
+      scrollContainer.style.transform = 'translateX('+x+'px)';
+      var d = getDist();
+      var progress = d > 0 ? -x / d : 0;
+      applyScrollUI(progress);
+    }
+
+    document.addEventListener('touchstart', function(e){
+      if(e.touches.length !== 1) return;
+      if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }
+      if(snapRaf){ cancelAnimationFrame(snapRaf); snapRaf = 0; }
+      clearTimeout(snapTimer);
+      lastX = e.touches[0].clientX;
+      lastTime = performance.now();
+      vx = 0;
+      var m = new DOMMatrixReadOnly(getComputedStyle(scrollContainer).transform);
+      tx = m.m41;
+      touching = true;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e){
+      if(!touching) return;
+      var x = e.touches[0].clientX;
+      var dx = x - lastX;
+      var dt = performance.now() - lastTime;
+      vx = dt > 0 ? dx / dt : 0;
+      setTx(clamp(tx + dx));
+      lastX = x;
+      lastTime = performance.now();
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(){
+      if(!touching) return;
+      touching = false;
+      if(snapRaf){ cancelAnimationFrame(snapRaf); snapRaf = 0; }
+      clearTimeout(snapTimer);
+      if(Math.abs(vx) > 0.1){
+        if(inertiaRaf){ cancelAnimationFrame(inertiaRaf); }
+        (function step(){
+          if(Math.abs(vx) < 0.03){ inertiaRaf = 0; snapTimer = setTimeout(trySnap, SNAP.IDLE_DELAY); return; }
+          vx *= 0.95;
+          setTx(clamp(tx + vx * 16));
+          inertiaRaf = requestAnimationFrame(step);
+        })();
+      } else {
+        snapTimer = setTimeout(trySnap, SNAP.IDLE_DELAY);
+      }
+    }, { passive: true });
+  }
+
+  // ═══════════════════════════════════════
+  //  RESIZE
+  // ═══════════════════════════════════════
+  var resizeTimeout;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function(){
+      if(scrollSetup && scrollSetup.setBodyHeight) scrollSetup.setBodyHeight();
+      ScrollTrigger.refresh();
+    }, 250);
+  });
+
+  // ═══════════════════════════════════════
+  //  FALLBACK DATA
   // ═══════════════════════════════════════
   var FALLBACK = [
     {number:1,slug:"dusk-dawn",type:"NOTE",icon:"icons/note.svg",title:"黄昏黎明融作一片",date:"2026 JUL",description:"A brief exploration of twilight and dawn dissolving into one another — where the boundaries between night and day become indistinguishable and the in-between emerges as its own form.",cover:"posts/tired_20260718.jpg"},
@@ -331,42 +813,39 @@ body{
   ];
 
   // ═══════════════════════════════════════
-  //  INIT — load from JSON when possible, fallback to hardcoded data
+  //  INIT
   // ═══════════════════════════════════════
-  // Always try fetch first (works with local server), fallback to hardcoded data
-  var loaded = 0;
-  projectSlugs.forEach(function(slug, idx){
-    fetch('content/projects/' + slug + '/project.json')
-      .then(function(r){
-        if(!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(function(data){
-        data.number = idx + 1;
-        recentsData[idx] = data;
-        loaded++;
-        if(loaded === projectSlugs.length) render();
-      })
-      .catch(function(err){
-        console.warn('Fetch failed for ' + slug + ' (run local server for live JSON): ' + err.message);
-        recentsData[idx] = FALLBACK[idx];
-        loaded++;
-        if(loaded === projectSlugs.length) render();
-      });
+  var scrollSetup = null;
+
+  ACProjectData.loadAllProjects()
+    .then(function(projects){
+      allProjects = ACProjectData.sortByDate(projects);
+
+      // Recents: 2 most recent
+      recentsData = allProjects.slice(0, 2);
+      recentsData.forEach(function(p, i){ p.number = i + 1; });
+      renderRecents();
+
+      // Browse: all projects
+      renderBrowse(allProjects);
+
+      // Setup horizontal scroll
+      scrollSetup = setupHorizontalScroll();
+    })
+    .catch(function(err){
+      console.warn('[Recents] Could not load from JSON (run a local server): ' + err.message);
+      console.warn('[Recents] Using fallback data.');
+
+      recentsData = FALLBACK;
+      renderRecents();
+      renderBrowse(FALLBACK);
+      scrollSetup = setupHorizontalScroll();
+    });
+
+  window.addEventListener('load', function(){
+    ScrollTrigger.refresh();
   });
 
-  // ── Mobile menu toggle ──
-  var menuBtn = document.getElementById('nav-menu-btn');
-  var mobileMenu = document.getElementById('mobile-menu');
-  var menuOpen = false;
-  if(menuBtn && mobileMenu){
-    menuBtn.addEventListener('click', function(){
-      menuOpen = !menuOpen;
-      menuBtn.classList.toggle('open', menuOpen);
-      mobileMenu.classList.toggle('open', menuOpen);
-      document.body.style.overflow = menuOpen ? 'hidden' : '';
-    });
-  }
 })();
 </script>
 
