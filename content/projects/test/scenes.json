@@ -1,0 +1,39 @@
+{
+  "canvasWidth": 12000,
+  "scenes": [
+    {
+      "id": "opening",
+      "x": 0,
+      "width": 3000,
+      "elements": [
+        {
+          "type": "text",
+          "content": "New text",
+          "x": "10vw",
+          "y": "20vh",
+          "width": "40vw",
+          "fontFamily": "'Inter',sans-serif",
+          "fontSize": "2vw",
+          "fontWeight": "400",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_unmz5ohn",
+          "_inspectorPushed": true
+        },
+        {
+          "type": "svg",
+          "src": "icons/note.svg",
+          "x": "15.4vw",
+          "y": "18.1vh",
+          "width": "50vw",
+          "height": "50vh",
+          "zIndex": 1,
+          "id": "el_hyw2h8z8",
+          "_inspectorPushed": true
+        }
+      ],
+      "height": "100vh",
+      "_inspectorPushed": true
+    }
+  ]
+}
