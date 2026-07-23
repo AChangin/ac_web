@@ -59,7 +59,8 @@
                   "marginBottom": "-1rem",
                   "color": "#fff",
                   "id": "el_1nex6ix6",
-                  "_inspectorPushed": true
+                  "_inspectorPushed": true,
+                  "maxWidth": "80vw"
                 },
                 {
                   "type": "text",
@@ -68,7 +69,8 @@
                   "fontWeight": "800",
                   "color": "rgba(255,255,255,0.5)",
                   "id": "el_45yxbgaw",
-                  "_inspectorPushed": true
+                  "_inspectorPushed": true,
+                  "maxWidth": "90vw"
                 }
               ],
               "id": "el_vq7tsv9s",
@@ -141,7 +143,7 @@
         {
           "type": "text",
           "content": "我们现今的状态没有灾难，但也没有一个可预见的未来。放早几年之前，可能还有人说这是危言耸听，可是现今的消费降级、劳工生存日益艰难以及全球保守主义抬头，更别说AI与人类劳动在将岗位上的愈演愈烈的争夺……",
-          "x": "182.7vw",
+          "x": "190vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
