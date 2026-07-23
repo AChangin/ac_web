@@ -1,0 +1,8 @@
+{
+  "id": "slide-left",
+  "name": "Slide Left",
+  "category": "animation",
+  "type": "slideLeft",
+  "description": "Slide leftward into position. distance in px.",
+  "defaults": { "type": "slideLeft", "distance": 80, "duration": 1.0, "delay": 0, "ease": "cubic" }
+}

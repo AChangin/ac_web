@@ -230,6 +230,7 @@ body{
 
     // Helper: number → px, string → use as-is (supports vw/vh/rem/%)
     function u(v){ return typeof v === 'number' ? v + 'px' : v; }
+    function resolvePX(v){ if(typeof v==='number')return v; var n=parseFloat(v); if(!isNaN(n)){if(v.indexOf('vw')>=0)return n*window.innerWidth/100;if(v.indexOf('vh')>=0)return n*window.innerHeight/100;if(v.indexOf('rem')>=0)return n*16;if(v.indexOf('px')>=0)return n;return n}return 0 }
 
     // Apply all common layout/visual properties from config to element
     function applyLayout(el, cfg, offsetX, offsetY){
@@ -272,8 +273,8 @@ body{
       if(cfg.letterSpacing) el.style.letterSpacing = cfg.letterSpacing;
       if(cfg.textAlign) el.style.textAlign = cfg.textAlign;
       var ax = cfg.x || cfg.left || 0;
-      el.setAttribute('data-x', typeof ax === 'number' ? ax + offsetX : ax);
-      el.setAttribute('data-w', cfg.width || 100);
+      el.setAttribute('data-x', typeof ax === 'number' ? ax + offsetX : resolvePX(ax));
+      el.setAttribute('data-w', typeof (cfg.width||100) === 'number' ? (cfg.width||100) : resolvePX(cfg.width) || 100);
     }
 
     // Recursive element renderer

@@ -1,0 +1,8 @@
+{
+  "id": "scale",
+  "name": "Scale Up",
+  "category": "animation",
+  "type": "scale",
+  "description": "Scale up from smaller size. from: starting scale (0-1).",
+  "defaults": { "type": "scale", "from": 0.5, "duration": 1.0, "delay": 0, "ease": "cubic" }
+}

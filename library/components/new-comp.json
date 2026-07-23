@@ -1,0 +1,20 @@
+{
+  "id": "new-comp",
+  "name": "New Component",
+  "category": "component",
+  "type": "text",
+  "icon": "?",
+  "description": "",
+  "defaults": {
+    "type": "text",
+    "content": "New text",
+    "x": "10vw",
+    "y": "10vh",
+    "width": "30vw",
+    "fontFamily": "'Inter',sans-serif",
+    "fontSize": "2vw",
+    "fontWeight": "400",
+    "color": "#fff",
+    "zIndex": 2
+  }
+}

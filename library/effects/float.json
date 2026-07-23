@@ -1,0 +1,8 @@
+{
+  "id": "float",
+  "name": "Float",
+  "category": "effect",
+  "type": "float",
+  "description": "Gentle floating vertical motion",
+  "defaults": { "amount": 20 }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "svg",
+  "name": "SVG",
+  "category": "component",
+  "type": "svg",
+  "icon": "◇",
+  "description": "SVG component (external src or inline content)",
+  "defaults": {
+    "type": "svg",
+    "src": "icons/note.svg",
+    "x": "10vw",
+    "y": "10vh",
+    "width": "8vw",
+    "height": "8vw",
+    "zIndex": 1
+  }
+}

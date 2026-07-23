@@ -1,0 +1,5 @@
+{
+  "components": ["text", "image", "svg", "group"],
+  "animations": ["fade", "slide-up", "slide-left", "slide-right", "scale", "blur", "rotate", "reveal"],
+  "effects": ["parallax", "float"]
+}

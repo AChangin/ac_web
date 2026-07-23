@@ -9,8 +9,8 @@
         {
           "type": "text",
           "content": "New text",
-          "x": "10vw",
-          "y": "20vh",
+          "x": "71.2vw",
+          "y": "17.8vh",
           "width": "40vw",
           "fontFamily": "'Inter',sans-serif",
           "fontSize": "2vw",
@@ -23,13 +23,81 @@
         {
           "type": "svg",
           "src": "icons/note.svg",
-          "x": "15.4vw",
-          "y": "18.1vh",
+          "x": "83.7vw",
+          "y": "28.1vh",
           "width": "50vw",
           "height": "50vh",
           "zIndex": 1,
           "id": "el_hyw2h8z8",
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ]
+        },
+        {
+          "type": "svg",
+          "src": "icons/note.svg",
+          "x": "130.7vw",
+          "y": "47.8vh",
+          "width": "50vw",
+          "height": "50vh",
+          "zIndex": 1,
+          "id": "el_us8sks3p",
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "rotate",
+              "amount": 10,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": "0.3"
+        },
+        {
+          "type": "text",
+          "content": "New text",
+          "x": "125.4vw",
+          "y": "24.9vh",
+          "width": "40vw",
+          "fontFamily": "'Inter',sans-serif",
+          "fontSize": "2vw",
+          "fontWeight": "400",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_ptutminh",
           "_inspectorPushed": true
+        },
+        {
+          "type": "text",
+          "content": "dsfdshakughfasjkahgjkdshjkfbewhjkbfhibhewujifb uiwhuehfkawehsf oiw foihwioefh wehfio weioafhiew eiw haioefhiowehfuio ",
+          "x": "132.9vw",
+          "y": "42.8vh",
+          "width": "40vw",
+          "fontFamily": "'Inter',sans-serif",
+          "fontSize": "2vw",
+          "fontWeight": "400",
+          "color": "#fff",
+          "zIndex": 1,
+          "id": "el_nzqxssoc",
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "fade",
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": "0.3",
+          "parallax": 0.3
         }
       ],
       "height": "100vh",

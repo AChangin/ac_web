@@ -1,0 +1,8 @@
+{
+  "id": "reveal",
+  "name": "Reveal",
+  "category": "animation",
+  "type": "reveal",
+  "description": "Clip-reveal from right edge as element scrolls in.",
+  "defaults": { "type": "reveal", "duration": 0.8, "delay": 0, "ease": "cubic" }
+}

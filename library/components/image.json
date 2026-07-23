@@ -1,0 +1,18 @@
+{
+  "id": "image",
+  "name": "Image",
+  "category": "component",
+  "type": "image",
+  "icon": "▣",
+  "description": "Image component with src and object-fit",
+  "defaults": {
+    "type": "image",
+    "src": "posts/tired_20260718.jpg",
+    "x": "10vw",
+    "y": "10vh",
+    "width": "40vw",
+    "height": "30vw",
+    "objectFit": "cover",
+    "zIndex": 1
+  }
+}

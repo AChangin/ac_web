@@ -1,0 +1,20 @@
+{
+  "id": "text",
+  "name": "Text",
+  "category": "component",
+  "type": "text",
+  "icon": "T",
+  "description": "Basic text component",
+  "defaults": {
+    "type": "text",
+    "content": "New text",
+    "x": "10vw",
+    "y": "20vh",
+    "width": "40vw",
+    "fontFamily": "'Inter', sans-serif",
+    "fontSize": "2vw",
+    "fontWeight": "400",
+    "color": "#fff",
+    "zIndex": 2
+  }
+}

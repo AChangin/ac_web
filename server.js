@@ -206,13 +206,63 @@ async function addToIndex(req, res) {
   } catch (e) { serverError(res, e); }
 }
 
+// POST /api/save-library-component  { id, data }
+async function saveLibraryComponent(req, res) {
+  try {
+    const body = await readBody(req);
+    const { id, data } = body;
+    if (!id || !data) return notFound(res, 'Missing id or data');
+    const dir = path.join(ROOT, 'library', 'components');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    writeJSON(path.join(dir, id + '.json'), data);
+    console.log('[OK] Saved library component:', id);
+    ok(res, { saved: id });
+  } catch (e) { serverError(res, e); }
+}
+
+// POST /api/save-library-index  { data }
+async function saveLibraryIndex(req, res) {
+  try {
+    const body = await readBody(req);
+    const { data } = body;
+    if (!data) return notFound(res, 'Missing data');
+    writeJSON(path.join(ROOT, 'library', 'index.json'), data);
+    console.log('[OK] Saved library index');
+    ok(res, { saved: 'index.json' });
+  } catch (e) { serverError(res, e); }
+}
+
+// DELETE /api/delete-library-component  (id in query string)
+async function deleteLibraryComponent(req, res) {
+  try {
+    const url = new URL(req.url, 'http://localhost');
+    const id = url.searchParams.get('id');
+    if (!id) return notFound(res, 'Missing id');
+    const fp = path.join(ROOT, 'library', 'components', id + '.json');
+    if (!fs.existsSync(fp)) return notFound(res, 'Component not found: ' + id);
+    fs.unlinkSync(fp);
+    // Also remove from index
+    const ip = path.join(ROOT, 'library', 'index.json');
+    if (fs.existsSync(ip)) {
+      const idx = readJSON(ip);
+      idx.components = (idx.components || []).filter(c => c !== id);
+      writeJSON(ip, idx);
+    }
+    console.log('[OK] Deleted library component:', id);
+    ok(res, { deleted: id });
+  } catch (e) { serverError(res, e); }
+}
+
 // ── ROUTER ────────────────────────────────────────────────────
 const API = {
-  'POST /api/save-scenes':     saveScenes,
-  'POST /api/save-project':    saveProject,
-  'POST /api/create-project':  createProject,
-  'DELETE /api/delete-project': deleteProject,
-  'POST /api/add-to-index':    addToIndex,
+  'POST /api/save-scenes':              saveScenes,
+  'POST /api/save-project':             saveProject,
+  'POST /api/create-project':           createProject,
+  'DELETE /api/delete-project':          deleteProject,
+  'POST /api/add-to-index':             addToIndex,
+  'POST /api/save-library-component':   saveLibraryComponent,
+  'POST /api/save-library-index':       saveLibraryIndex,
+  'DELETE /api/delete-library-component': deleteLibraryComponent,
 };
 
 const server = http.createServer((req, res) => {
