@@ -542,29 +542,29 @@ body{
   display:flex;
   flex-direction:column;
   text-align:left;
-  background:rgba(0,0,0,0.35);
+  background:#000;
 }
 .tl-cursor-card-category{
   font-family:'Inter',sans-serif;
-  font-size:0.65rem;font-weight:400;
+  font-size:1rem;font-weight:400;
   letter-spacing:0.1em;
   text-transform:uppercase;
   color:rgba(255,255,255,0.45);
 }
 .tl-cursor-card-title{
   font-family:'Playfair Display',Georgia,serif;
-  font-size:1.1rem;font-weight:600;
+  font-size:1.65rem;font-weight:600;
   color:#fff;
   margin:0.15rem 0 0.25rem;
 }
 .tl-cursor-card-date{
   font-family:'Inter',sans-serif;
-  font-size:0.7rem;font-weight:400;
+  font-size:1.05rem;font-weight:400;
   color:rgba(255,255,255,0.35);
 }
 .tl-cursor-card-desc{
   font-family:'Inter',sans-serif;
-  font-size:0.75rem;font-weight:400;
+  font-size:1.1rem;font-weight:400;
   line-height:1.4;
   color:rgba(255,255,255,0.55);
   margin-top:0.3rem;
@@ -573,6 +573,63 @@ body{
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
+
+/* --- Ghost / cascade cards (multi-project months) --- */
+.tl-cursor-card-ghost{
+  position:absolute;
+  top:50%;left:50%;
+  width:440px;height:250px;
+  background:#111;
+  border-radius:16px;
+  box-shadow:0 4px 28px rgba(0,0,0,0.4);
+  overflow:hidden;
+  opacity:0;
+  pointer-events:auto;
+  transform:translate(-50%,-50%) scale(0.4);
+  z-index:1;
+}
+.tl-cursor-card-ghost .tl-cursor-card-image{
+  position:absolute;inset:0;overflow:hidden;
+}
+.tl-cursor-card-ghost .tl-cursor-card-image img{
+  width:100%;height:100%;object-fit:cover;
+}
+.tl-cursor-card-ghost .tl-cursor-card-info{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:0.9rem 1.1rem;
+  display:flex;flex-direction:column;text-align:left;
+  background:#000;
+}
+.tl-cursor-card-ghost .tl-cursor-card-category{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;font-weight:400;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+}
+.tl-cursor-card-ghost .tl-cursor-card-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:1.65rem;font-weight:600;
+  color:#fff;margin:0.15rem 0 0.25rem;
+}
+.tl-cursor-card-ghost .tl-cursor-card-date{
+  font-family:'Inter',sans-serif;
+  font-size:1.05rem;font-weight:400;
+  color:rgba(255,255,255,0.35);
+}
+
+/* +N more indicator */
+.tl-cursor-card-more{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-size:1.2rem;font-weight:500;
+  pointer-events:none;
+}
+
+/* Clickable cursor cards */
+#tl-cursor-card{pointer-events:auto;cursor:pointer}
 
 /* ============================================================
    TIMELINE SECTION (Swiss Style) — responsive via clamp()
@@ -944,7 +1001,8 @@ body{
   .tl-title{font-size:7rem;left:12rem}
   .tl-year-label{font-size:clamp(0.75rem,1vw,0.95rem)}
   .tl-cursor-card{width:380px;height:220px}
-  .tl-cursor-card-title{font-size:1.15rem}
+  .tl-cursor-card-ghost{width:380px;height:220px}
+  .tl-cursor-card-title{font-size:1.7rem}
   .tl-cursor-card-info{padding:0.8rem 1.1rem}
   .hero-subtitle{font-size:2.8rem}
   .nav-center{gap:2.4rem}
@@ -988,7 +1046,8 @@ body{
   .tl-grid-outer{padding:3.5rem 1rem 3rem 1rem}
   .tl-year-label{position:relative;top:auto;left:auto;transform:none;text-align:center;margin-bottom:0.3rem;font-size:clamp(0.8rem,2vw,1.2rem)}
   .tl-cursor-card{width:320px;height:190px}
-  .tl-cursor-card-title{font-size:1.05rem}
+  .tl-cursor-card-ghost{width:320px;height:190px}
+  .tl-cursor-card-title{font-size:1.6rem}
   .tl-cursor-card-info{padding:0.7rem 0.9rem}
   .orbit-text-stack{left:4rem;top:40vh}
   .orbit-nav{gap:1.6rem}
@@ -1055,7 +1114,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 .mobile-project-card{
   display:flex;
   width:min(80vw,320px);
-  aspect-ratio:1/1;
+  height:auto;
+  max-height:72vh;
   background:#111;
   border-radius:16px;
   overflow:hidden;
@@ -1078,6 +1138,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   background:transparent;
   box-shadow:none;
   overflow:visible;
+  pointer-events:auto;
+  touch-action:none;
 }
 .mobile-project-card.card-pin .mobile-card-body,
 .mobile-project-card.card-pin .mobile-card-image,
@@ -1094,6 +1156,51 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   display:none;
 }
 
+/* --- Mobile fan cards (drag fan-out + dormant state) --- */
+.mobile-fan-card{
+  position:absolute;
+  left:0;top:0;
+  width:110px;
+  background:#1a1a1a;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  opacity:0;
+  pointer-events:auto;
+  transform-origin:center center;
+}
+.mobile-fan-card .fan-img{
+  width:100%;height:80px;overflow:hidden;background:#222;
+}
+.mobile-fan-card .fan-img img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.mobile-fan-card .fan-title{
+  display:block;
+  padding:0.4rem 0.5rem;
+  font-family:'Inter',sans-serif;
+  font-size:0.95rem;font-weight:500;
+  color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;
+}
+/* Dormant state: tiny, low opacity */
+.mobile-fan-card.fan-dormant{
+  width:80px;
+  border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+.mobile-fan-card.fan-dormant .fan-img{
+  height:60px;border-radius:8px 8px 0 0;
+}
+.mobile-fan-card.fan-dormant .fan-title{
+  display:block;
+  font-size:0.8rem;
+  padding:0.3rem 0.4rem;
+}
+.mobile-fan-card:active{
+  opacity:0.9;transform:scale(1.08);
+}
 .mobile-card-close{
   position:absolute;
   top:8px;right:8px;
@@ -1113,7 +1220,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 }
 .mobile-card-image{
   width:100%;
-  height:170px;
+  max-height:40vh;
   overflow:hidden;
   background:#1a1a1a;
   flex-shrink:0;
@@ -1149,6 +1256,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 }
 /* Hide desktop cursor on touch devices (iPad, etc.) */
 .is-touch .tl-cursor{display:none!important}
+.is-touch .tl-node-cluster{
+  left:0;right:0;
+  transform:translateY(-50%);
+  justify-content:space-evenly;
+  padding:0 15%;
+}
 /* Hide mobile card on non-touch desktop */
 body:not(.is-touch) .mobile-project-card{display:none!important}
 
@@ -1270,7 +1383,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
 
 /* State 4 */
 .mobile-project-card.card-dragging{
-  opacity:0.7;
+  opacity:0.5;
 }
 
 /* State 5 */
@@ -1467,7 +1580,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       </div>
     </div>
 
-    <div class="mobile-project-card card-pin" id="mobile-project-card" style="position:absolute;left:80%;top:50%;transform:translate(-50%,-50%);z-index:10;">
+    <div class="mobile-project-card card-pin" id="mobile-project-card" style="position:absolute;left:80%;top:50%;transform:translate(-50%,-50%);z-index:10001;">
       <img class="mobile-card-pin-icon" id="mobile-card-pin-icon" src="icons/pin.svg" alt="">
       <button class="mobile-card-close" id="mobile-card-close" aria-label="Close">×</button>
       <div class="mobile-card-image"><img id="mobile-card-img" src="" alt=""></div>
@@ -2166,13 +2279,19 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       <p class="tl-cursor-card-desc" id="tl-cursor-desc"></p>
     </div>
   </div>
+  <!-- Ghost card slots for multi-project cascading (max 4) -->
+  <div class="tl-cursor-card-ghost" id="tl-ghost-0"><div class="tl-cursor-card-image"><img src="" alt=""></div><div class="tl-cursor-card-info"><span class="tl-cursor-card-category"></span><h3 class="tl-cursor-card-title"></h3><span class="tl-cursor-card-date"></span></div></div>
+  <div class="tl-cursor-card-ghost" id="tl-ghost-1"><div class="tl-cursor-card-image"><img src="" alt=""></div><div class="tl-cursor-card-info"><span class="tl-cursor-card-category"></span><h3 class="tl-cursor-card-title"></h3><span class="tl-cursor-card-date"></span></div></div>
+  <div class="tl-cursor-card-ghost" id="tl-ghost-2"><div class="tl-cursor-card-image"><img src="" alt=""></div><div class="tl-cursor-card-info"><span class="tl-cursor-card-category"></span><h3 class="tl-cursor-card-title"></h3><span class="tl-cursor-card-date"></span></div></div>
+  <div class="tl-cursor-card-ghost" id="tl-ghost-3"><div class="tl-cursor-card-image"><img src="" alt=""></div><div class="tl-cursor-card-info"><span class="tl-cursor-card-category"></span><h3 class="tl-cursor-card-title"></h3><span class="tl-cursor-card-date"></span></div></div>
   <img class="tl-cursor-dot" id="tl-cursor-dot" src="icons/pin.svg" alt="">
 </div>
 
 <!-- ==========================================================
      TIMELINE INTERACTIVE MAP — Swiss Style
-     ★ Edit CONFIG + projects below to customize ★
+     Data source: ACProjectData → content/projects/*/project.json
      ========================================================== -->
+<script src="js/project-data.js"></script>
 <script>
 (function(){
   'use strict';
@@ -2183,9 +2302,9 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   // ============================================================
   var CONFIG = {
     // ---- Time Axis ----
-    // Change the order / count / values — the grid adapts automatically.
-    // e.g. [2026,2025,2024] → shows only 3 years, right to left.
-    years:  [2026, 2025, 2024, 2023, 2022, 2021],
+    // years are auto-computed from project data at init time.
+    // Override: set years manually here (e.g. [2026,2025,2024]) to force a specific range.
+    years: null,
 
     // Month labels — change language or shorten here.
     months: ['Jan','Feb','Mar','Apr','May','Jun',
@@ -2212,28 +2331,42 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   //  Each project auto-places on the grid by year + month.
   //  Add / remove / reorder freely.
   // ============================================================
-  var projects = [
-    { id:1,  title:'Neue Corporate Identity',  coverImage:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', year:2021, month:2,  category:'Brand Identity',     description:'A minimalist corporate identity system rooted in Swiss design principles.',                                            url:'#', color:'#e63946' },
-    { id:2,  title:'Archive Publishing',       coverImage:'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop', year:2021, month:5,  category:'Editorial Design',    description:'Book design series exploring the intersection of typography and archival photography.',                                url:'#', color:'#000' },
-    { id:3,  title:'Mono Type Specimen',       coverImage:'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop', year:2021, month:9,  category:'Typography',          description:'Experimental type specimen for a monospace family, built on a strict modular grid.',                                    url:'#', color:'#000' },
-    { id:4,  title:'Digital Archive',          coverImage:'https://images.unsplash.com/photo-1496150947138-7f21238d30c3?w=400&h=300&fit=crop', year:2022, month:1,  category:'Web Design',          description:'An immersive digital archive for a cultural institution, balancing depth with clarity.',                                url:'#', color:'#e63946' },
-    { id:5,  title:'Poster Series 02',         coverImage:'https://images.unsplash.com/photo-1554188248-986adbb73be4?w=400&h=300&fit=crop', year:2022, month:4,  category:'Poster Design',       description:'A series of typographic posters for an independent film festival.',                                                    url:'#', color:'#000' },
-    { id:6,  title:'Grid Systems Study',       coverImage:'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=300&fit=crop', year:2022, month:6,  category:'Research',            description:'An interactive study of modular grid systems and their application in contemporary UI.',                               url:'#', color:'#000' },
-    { id:7,  title:'Swiss Style Revisited',    coverImage:'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=300&fit=crop', year:2022, month:11, category:'Exhibition',           description:'Curated exhibition and catalog on the enduring legacy of Swiss graphic design.',                                         url:'#', color:'#e63946' },
-    { id:8,  title:'Data Landscapes',          coverImage:'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop', year:2023, month:2,  category:'Data Visualization',  description:'Turning complex datasets into readable, elegant visual narratives.',                                                     url:'#', color:'#000' },
-    { id:9,  title:'Modular Typeface',         coverImage:'https://images.unsplash.com/photo-1569511166180-5ab158f48772?w=400&h=300&fit=crop', year:2023, month:5,  category:'Type Design',         description:'A variable font family built on a strict 8×8 modular grid, exploring constraint as creativity.',                        url:'#', color:'#000' },
-    { id:10, title:'White Space',              coverImage:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop', year:2023, month:8,  category:'Art Direction',       description:'An exploration of absence and silence as active elements in visual communication.',                                      url:'#', color:'#e63946' },
-    { id:11, title:'Chronos Interface',        coverImage:'https://images.unsplash.com/photo-1581291518633-83b4efcf3e33?w=400&h=300&fit=crop', year:2023, month:12, category:'UI / UX',             description:'A timeline-based productivity tool — designing interfaces for temporal thinking.',                                       url:'#', color:'#000' },
-    { id:12, title:'Form Follows Function',    coverImage:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=300&fit=crop', year:2024, month:3,  category:'Essay',               description:'A visual essay examining the Bauhaus principle in the age of digital product design.',                                 url:'#', color:'#000' },
-    { id:13, title:'Negative Space',           coverImage:'https://images.unsplash.com/photo-1511818966892-d7d6716dcb1a?w=400&h=300&fit=crop', year:2024, month:7,  category:'Photography',         description:'A photo series studying the role of negative space in urban architecture and street photography.',                      url:'#', color:'#e63946' },
-    { id:14, title:'Red Accent',               coverImage:'https://images.unsplash.com/photo-1579541590648-0b5b58b0b64a?w=400&h=300&fit=crop', year:2024, month:9,  category:'Branding',            description:'How a single red element transforms a monochrome design system — a case study in restraint.',                          url:'#', color:'#e63946' },
-    { id:15, title:'Motion Studies',           coverImage:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop', year:2025, month:1,  category:'Motion Design',       description:'Frame-by-frame explorations of typography in motion — rhythm, weight, and temporal composition.',                       url:'#', color:'#000' },
-    { id:16, title:'Generative Posters',       coverImage:'https://images.unsplash.com/photo-1563207153-f403bf289096?w=400&h=300&fit=crop', year:2025, month:6,  category:'Creative Coding',     description:'Algorithmically generated poster designs exploring constrained randomness and emergent form.',                          url:'#', color:'#e63946' },
-    { id:17, title:'System UI Kit',            coverImage:'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', year:2025, month:9,  category:'Design System',       description:'A comprehensive UI component library built entirely on an 8px baseline grid.',                                           url:'#', color:'#000' },
-    { id:18, title:'Typography As Architecture',coverImage:'https://images.unsplash.com/photo-1524055988636-436cfa46e59e?w=400&h=300&fit=crop', year:2025, month:12, category:'Publication',         description:'A book examining the spatial and structural qualities of letterforms across scales.',                                    url:'#', color:'#000' },
-    { id:19, title:'Micro Interactions',       coverImage:'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=400&h=300&fit=crop', year:2026, month:2,  category:'Interaction Design',  description:'A curated library of subtle interface micro-interactions — feedback as punctuation.',                                   url:'#', color:'#e63946' },
-    { id:20, title:'The Grid',                 coverImage:'https://images.unsplash.com/photo-1461344577544-4e5dc9487184?w=400&h=300&fit=crop', year:2026, month:5,  category:'Research',            description:'A deep dive into grid-based composition across print, screen, and environmental graphic design.',                      url:'#', color:'#000' }
-  ];
+  //  PROJECT DATA — loaded from ACProjectData at init
+  //  Each project auto-places on the grid by year + month.
+  //  Field mapping: project.json to timeline format
+  //    date "2026 JUL" -> year + month
+  //    cover           -> cover image path
+  //    type            -> category label
+  //    slug            -> project.html?slug=xxx
+  // ============================================================
+  var projects = [];
+
+  function mapProject(p){
+    var d = ACProjectData.parseDate(p.date);
+    if (!d) return null;
+    return {
+      slug:        p.slug,
+      title:       p.title,
+      cover:       p.cover || '',
+      type:        p.type || 'PROJECT',
+      year:        d.year,
+      month:       d.month,
+      date:        p.date,
+      description: p.description || '',
+      color:       '#000'
+    };
+  }
+
+  function computeYears(projList){
+    if (CONFIG.years && CONFIG.years.length) return CONFIG.years;
+    var years = {};
+    projList.forEach(function(p){
+      if (p.year) years[p.year] = true;
+    });
+    var result = Object.keys(years).map(Number).sort(function(a,b){ return b - a; });
+    if (!result.length) result = [new Date().getFullYear()];
+    return result;
+  };
 
   // ============================================================
   //  DERIVED — computed from CONFIG, do not edit below here
@@ -2246,6 +2379,11 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   var cursorDot    = document.getElementById('tl-cursor-dot');
   var cursorCard   = document.getElementById('tl-cursor-card');
   var cursorImg    = document.getElementById('tl-cursor-img');
+  // Ghost card slots for multi-project cascading
+  var ghostCards = [];
+  for (var gi = 0; gi < 4; gi++) {
+    ghostCards.push(document.getElementById('tl-ghost-' + gi));
+  }
   var cursorCat    = document.getElementById('tl-cursor-cat');
   var cursorTitle  = document.getElementById('tl-cursor-title');
   var cursorDate   = document.getElementById('tl-cursor-date');
@@ -2336,8 +2474,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       projs.forEach(function(p){
         var dot = document.createElement('div');
         dot.className = 'tl-node' + (p.color === CONFIG.accentColor ? ' accent' : '');
-        dot.setAttribute('data-id', p.id);
-        dot.id = 'tl-node-' + p.id;
+        dot.setAttribute('data-id', p.slug);
+        dot.id = 'tl-node-' + p.slug;
         cluster.appendChild(dot);
       });
       row.appendChild(cluster);
@@ -2410,8 +2548,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   //  CURSOR CARD — update content
   // ============================================================
   function setCard(proj){
-    cursorImg.src = proj.coverImage;
-    cursorCat.textContent = proj.category;
+    cursorImg.src = proj.cover;
+    cursorCat.textContent = proj.type;
     cursorTitle.textContent = proj.title;
     cursorDate.textContent = proj.year + ' · ' + CONFIG.months[proj.month - 1];
     cursorDesc.textContent = proj.description;
@@ -2481,6 +2619,175 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   }
 
   // ============================================================
+  //  CASCADING CARDS — multi-project months
+  // ============================================================
+  function getSiblings(proj){
+    return projects.filter(function(p){
+      return p.year === proj.year && p.month === proj.month;
+    });
+  }
+
+  function setGhostCard(ghostEl, proj){
+    var img = ghostEl.querySelector('img');
+    var cat = ghostEl.querySelector('.tl-cursor-card-category');
+    var title = ghostEl.querySelector('.tl-cursor-card-title');
+    var date = ghostEl.querySelector('.tl-cursor-card-date');
+    if(img) img.src = proj.cover;
+    if(cat) cat.textContent = proj.type;
+    if(title) title.textContent = proj.title;
+    if(date) date.textContent = proj.year + ' · ' + CONFIG.months[proj.month - 1];
+    ghostEl.setAttribute('data-slug', proj.slug);
+  }
+
+  function hideAllGhosts(){
+    for (var i = 0; i < 4; i++){
+      if(!ghostCards[i]) continue;
+      gsap.to(ghostCards[i], {
+        opacity: 0, scale: 0.4, x: 0, y: 0,
+        duration: 0.2, ease: 'power2.in', overwrite: 'auto'
+      });
+      ghostCards[i].style.pointerEvents = 'none';
+    }
+  }
+
+  // ── Single-point perspective cascade state ──
+  var hysteresisPrimary = null;  // slug of the hysteresis-locked primary
+  var hysteresisNodeX = 0;       // node X position of locked primary (for dead-zone calc)
+
+  function getNodeX(proj){
+    // Find the viewport X of a project's grid node
+    for (var i = 0; i < nodeTargets.length; i++){
+      if (nodeTargets[i].project.slug === proj.slug) return nodeTargets[i].cx;
+    }
+    return 0;
+  }
+
+  function resolvePrimary(nearestProj, mx){
+    // Returns the slug that should be primary, with hysteresis
+    if (!hysteresisPrimary) {
+      hysteresisPrimary = nearestProj.slug;
+      hysteresisNodeX = getNodeX(nearestProj);
+      return hysteresisPrimary;
+    }
+    var siblings = getSiblings(nearestProj);
+    // If nearest is in a different month, switch immediately
+    var sameMonth = false;
+    for (var si = 0; si < siblings.length; si++){
+      if (siblings[si].slug === hysteresisPrimary) { sameMonth = true; break; }
+    }
+    if (!sameMonth){
+      hysteresisPrimary = nearestProj.slug;
+      hysteresisNodeX = getNodeX(nearestProj);
+      return hysteresisPrimary;
+    }
+    // Same month: only switch if mouse has moved past the next/prev node + dead zone
+    var currentNodeX = getNodeX(hysteresisPrimary);
+    var targetNodeX = getNodeX(nearestProj);
+    var deadZone = 30; // px — must move this far past the sibling node to trigger switch
+    if (nearestProj.slug !== hysteresisPrimary){
+      if (mx > currentNodeX + deadZone && targetNodeX > currentNodeX){
+        // Mouse moved right past dead zone → switch to right sibling
+        hysteresisPrimary = nearestProj.slug;
+        hysteresisNodeX = targetNodeX;
+      } else if (mx < currentNodeX - deadZone && targetNodeX < currentNodeX){
+        // Mouse moved left past dead zone → switch to left sibling
+        hysteresisPrimary = nearestProj.slug;
+        hysteresisNodeX = targetNodeX;
+      }
+    }
+    return hysteresisPrimary;
+  }
+
+  // ── Single-point perspective cascade ──
+  // Cards fan out symmetrically from primary, with scale+depth falloff.
+  // All cards fully opaque. Primary = largest + front. Distant cards = smaller + behind.
+  function updateCascadingCards(proj, mx){
+    var siblings = getSiblings(proj);
+    if (siblings.length <= 1){
+      hideAllGhosts();
+      hysteresisPrimary = null;
+      return;
+    }
+
+    // Determine primary with hysteresis
+    var primarySlug = resolvePrimary(proj, mx || mouseX);
+
+    // Sort siblings by node X so left-to-right order is preserved
+    var sorted = siblings.slice().sort(function(a, b){
+      return getNodeX(a) - getNodeX(b);
+    });
+
+    // Find primary index in sorted array
+    var pIdx = 0;
+    for (var si = 0; si < sorted.length; si++){
+      if (sorted[si].slug === primarySlug) { pIdx = si; break; }
+    }
+
+    var total = sorted.length;
+    var maxVisible = Math.min(total, 4); // max 4 cards visible (1 primary + 3 ghosts)
+    // Perspective parameters
+    var baseGap = 42;       // px — base horizontal gap between adjacent cards
+    var depthPow = 1.4;     // exponent for perspective depth compression
+    var scaleDecay = 0.12;  // scale reduction per step from primary
+    var minScale = 0.62;
+    var yStep = 6;          // px vertical offset per step (depth cue)
+
+    // Animate the main cursor card (always shows the primary)
+    if (cursorCard.getAttribute('data-slug') !== primarySlug){
+      var primaryProj = sorted[pIdx];
+      setCard(primaryProj);
+      cursorCard.setAttribute('data-slug', primarySlug);
+    }
+    // Keep main card centered + front (z-index set immediately, position animated)
+    gsap.set(cursorCard, { zIndex: total + 2 });
+    gsap.to(cursorCard, {
+      x: 0, y: 0, scale: 1, opacity: 1,
+      duration: 0.35, ease: 'power3.out', overwrite: 'auto'
+    });
+    cursorCard.style.pointerEvents = 'auto';
+
+    // Position ghost cards
+    var ghostIdx = 0;
+    for (var i = 0; i < total; i++){
+      if (i === pIdx) continue; // skip primary
+      if (ghostIdx >= maxVisible - 1) break;
+
+      var ghost = ghostCards[ghostIdx];
+      if (!ghost) continue;
+      setGhostCard(ghost, sorted[i]);
+      ghost.setAttribute('data-slug', sorted[i].slug);
+
+      var dist = i - pIdx;              // negative = left, positive = right
+      var absDist = Math.abs(dist);
+      var dir = dist > 0 ? 1 : -1;
+
+      // Perspective offset: cards further from primary accelerate away
+      var xOffset = dir * (baseGap * absDist + 6 * Math.pow(absDist, depthPow));
+      var yOffset = absDist * yStep;
+      var cardScale = Math.max(minScale, 1.0 - scaleDecay * absDist);
+      var z = total - absDist;          // further = behind
+
+      gsap.set(ghost, { zIndex: z });   // applied immediately, not tweened
+      gsap.to(ghost, {
+        x: xOffset, y: yOffset, scale: cardScale, opacity: 1,
+        duration: 0.35, ease: 'power3.out', overwrite: 'auto'
+      });
+      ghost.style.pointerEvents = 'auto';
+      ghostIdx++;
+    }
+
+    // Hide unused ghost slots
+    for (var j = ghostIdx; j < 4; j++){
+      if(!ghostCards[j]) continue;
+      gsap.to(ghostCards[j], {
+        opacity: 0, scale: 0.4, x: 0, y: 0,
+        duration: 0.15, ease: 'power2.in', overwrite: 'auto'
+      });
+      ghostCards[j].style.pointerEvents = 'none';
+    }
+  }
+
+  // ============================================================
   //  MAIN LOOP — requestAnimationFrame @ 60fps (section-aware)
   // ============================================================
   var tlLoopRunning = false;
@@ -2499,6 +2806,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     gsap.to(crosshair, { opacity: 0, duration: 0.25, overwrite: 'auto' });
     if(activeProject !== null){
       activeProject = null;
+      hysteresisPrimary = null;
+      hideAllGhosts();
       cursorLeave();
     }
     isInSection = false;
@@ -2540,22 +2849,39 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
 
     // ---- State machine ----
     if(result && activeProject === null){
-      // → Enter hover
+      // Enter hover
       activeProject = result.project;
+      hysteresisPrimary = null; // reset hysteresis on new month
       setCard(activeProject);
+      updateCascadingCards(activeProject, mouseX);
       cursorEnter(activeProject, result.distance);
       gsap.to(crosshair, { opacity: 0.6, duration: 0.2 });
     } else if(result && activeProject === result.project){
-      // → Stay (distance may change)
+      // Stay — update perspective cascade every frame for smooth following
       cursorUpdateDistance(result.distance);
+      updateCascadingCards(activeProject, mouseX);
     } else if(result && activeProject !== result.project){
-      // → Switch to different project
+      // Switch to a different project (could be same month or different month)
+      var prevSiblings = getSiblings(activeProject);
+      var newSiblings = getSiblings(result.project);
+      var sameMonthSwitch = false;
+      for (var si = 0; si < prevSiblings.length; si++){
+        if (prevSiblings[si].slug === result.project.slug) { sameMonthSwitch = true; break; }
+      }
       activeProject = result.project;
+      if (!sameMonthSwitch){
+        // Different month — reset hysteresis
+        hysteresisPrimary = null;
+        cursorEnter(activeProject, result.distance);
+      }
       setCard(activeProject);
-      cursorEnter(activeProject, result.distance);
+      updateCascadingCards(activeProject, mouseX);
+      gsap.to(crosshair, { opacity: 0.6, duration: 0.2 });
     } else if(!result && activeProject !== null){
-      // → Leave
+      // Leave
       activeProject = null;
+      hysteresisPrimary = null;
+      hideAllGhosts();
       cursorLeave();
       gsap.to(crosshair, { opacity: 1, duration: 0.25 });
     }
@@ -2591,7 +2917,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
   // ============================================================
   //  INIT — runs when DOM is fully parsed
   // ============================================================
-  function init(){
+  function initTimeline(){
     buildGrid();
     placeNodes();
     updateNodeTargets();
@@ -2606,11 +2932,45 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       updateNodeTargets();
     });
 
+    // Click-to-navigate on cursor cards
+    function navigateToProject(slug){
+      if (slug) window.location.href = 'project.html?slug=' + slug;
+    }
+    cursorCard.addEventListener('click', function(e){
+      if (activeProject) navigateToProject(activeProject.slug);
+    });
+    for (var gk = 0; gk < ghostCards.length; gk++){
+      if(!ghostCards[gk]) continue;
+      ghostCards[gk].addEventListener('click', function(e){
+        var slug = this.getAttribute('data-slug');
+        if (slug) navigateToProject(slug);
+      });
+    }
+
     // RAF starts on demand (when mouse enters timeline section)
     console.log(
       '%c Timeline Map %c Active %c— ' + CONFIG.years.length + 'yr · ' + projects.length + ' projects',
       'font-weight:600;','color:#666;','color:#999;'
     );
+  }
+
+  function init(){
+    ACProjectData.loadAllProjects()
+      .then(function(loaded){
+        projects = loaded.map(mapProject).filter(Boolean);
+        CONFIG.years = computeYears(projects);
+        window.__tlProjects = projects;
+        window.__tlMonths = CONFIG.months;
+        initTimeline();
+      })
+      .catch(function(err){
+        console.warn('[Timeline] Failed to load projects:', err.message);
+        CONFIG.years = [new Date().getFullYear()];
+        projects = [];
+        window.__tlProjects = [];
+        window.__tlMonths = CONFIG.months;
+        initTimeline();
+      });
   }
 
   if(document.readyState === 'loading'){
@@ -3000,7 +3360,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     if(!mCard || !mImg) { setTimeout(initMobileCard, 200); return; }
     var mActiveProj = null;
 
-    var projects = window.__tlProjects || [];
+    function getProjects(){ return window.__tlProjects || []; }
     var nodeTargets = window.__tlNodeTargets || [];
     var months = window.__tlMonths || [];
     var isPin = true; // start as pin icon
@@ -3015,29 +3375,37 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     };
 
     // Switch to card mode — CSS transition handles the animation
+    // Get siblings for the current month (multi-project detection)
+    function getMonthSiblings(proj){
+      var all = getProjects();
+      return all.filter(function(p){
+        return p.year === proj.year && p.month === proj.month;
+      });
+    }
+
+
     function toCard(proj){
       wasPin = isPin;
       isPin = false;
-      mCard.classList.remove('card-closing','card-dragging'); // abort close anim, allow morph transitions
-      mCard.style.transition = ''; // enable CSS transitions for pin→card morph
+      mCard.classList.remove('card-closing','card-dragging');
+      mCard.style.transition = '';
       mActiveProj = proj;
-      mImg.src = proj.coverImage;
-      mCat.textContent = proj.category;
+      mImg.src = proj.cover;
+      mCat.textContent = proj.type;
       mTitle.textContent = proj.title;
       mDate.textContent = proj.year + ' · ' + (months[proj.month-1] || '');
       mDesc.textContent = proj.description;
-      // Let CSS transition animate pin→card
+      // CSS transition animate pin to card
       var r = mCard.getBoundingClientRect();
       var cx = r.left + r.width/2, cy = r.top + r.height/2;
       var finalW = Math.min(window.innerWidth * 0.8, 320);
       mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-      mCard.style.transform = 'translate('+(cx - finalW/2)+'px,'+(cy - finalW/2)+'px) scale(1)';
+        mCard.style.transform = 'translate('+(cx - finalW/2)+'px,'+(cy - finalW/2)+'px) scale(1)';
       mCard.classList.remove('card-pin');
       document.getElementById('mobile-card-close').style.display = '';
       mCard.querySelector('.mobile-card-body').style.display = '';
       mCard.querySelector('.mobile-card-image').style.display = '';
       _prevActiveProj = proj;
-      // Trigger card-expand border-radius animation
       mCard.classList.add('card-expanding');
       setTimeout(function(){
         mCard.classList.remove('card-expanding');
@@ -3061,7 +3429,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         _animState.snapNode = null;
       }
       if(nearest && minD <= ANIM.MAGNETIC_RADIUS){
-        var nodeEl = document.getElementById('tl-node-' + nearest.project.id);
+        var nodeEl = document.getElementById('tl-node-' + nearest.project.slug);
         if(nodeEl){
           nodeEl.classList.add('magnetically-near');
           _animState.snapNode = nodeEl;
@@ -3125,6 +3493,11 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     function toPin(){
       isPin = true;
       _clearMagneticSnap();
+
+      // Reset GSAP inline styles (don't touch zIndex — keep CSS value)
+      gsap.set(mCard, { clearProps: 'x,y' });
+      mCard.style.transform = '';
+      mCard.style.removeProperty('transform');
       // Apply closing animation class — content fades out first
       mCard.classList.add('card-closing');
       mCard.classList.remove('card-lifting','card-dragging','card-settling');
@@ -3137,12 +3510,11 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         mCard.classList.remove('card-closing');
         mCard.style.transition = 'none';
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+(savedX-mCard.offsetWidth/2)+'px,'+(savedY-mCard.offsetHeight/2)+'px) scale(1)';
-        // Force reflow then animate
-        mCard.offsetHeight;
-        mCard.style.transition = '';
-        mCard.classList.add('card-pin');
-        mCard.style.transform = 'translate('+(savedX-30)+'px,'+(savedY-30)+'px) scale(1)';
+          mCard.style.transform = 'translate('+(savedX-mCard.offsetWidth/2)+'px,'+(savedY-mCard.offsetHeight/2)+'px) scale(1)';
+          mCard.offsetHeight;
+          mCard.style.transition = '';
+          mCard.classList.add('card-pin');
+          mCard.style.transform = 'translate('+(savedX-30)+'px,'+(savedY-30)+'px) scale(1)';
         document.getElementById('mobile-card-close').style.display = 'none';
       }, 180);
     }
@@ -3165,7 +3537,12 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     }
 
     mCard.addEventListener('touchstart', function(e){
-      if(e.target.closest('.mobile-card-close')) return;
+      // Skip if touching the close button
+      var el = e.target;
+      while(el && el !== mCard){
+        if(el.classList && el.classList.contains('mobile-card-close')) return;
+        el = el.parentElement;
+      }
       e.preventDefault();
       dsX = e.touches[0].clientX; dsY = e.touches[0].clientY;
       lastX = dsX; lastY = dsY; lastT = performance.now(); vx = 0; vy = 0;
@@ -3178,7 +3555,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         // Shrink card
         var hw = r.width/2, hh = r.height/2;
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+(dsX-hw)+'px,'+(dsY-hh)+'px) scale('+SHRINK+')';
+          mCard.style.transform = 'translate('+(dsX-hw)+'px,'+(dsY-hh)+'px) scale('+SHRINK+')';
         _dragTx = dsX - hw; _dragTy = dsY - hh;
       } else {
         setPos(dragStartL - 30, dragStartT - 30, 1);
@@ -3216,7 +3593,9 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         // Check if near a project node → switch to card
         var nearest=null, minD=Infinity;
         for(var i=0; i<nodeTargets.length; i++){
-          var d = Math.abs(cx - nodeTargets[i].cx);
+          var dx0 = cx - nodeTargets[i].cx;
+          var dy0 = cy - nodeTargets[i].cy;
+          var d = Math.sqrt(dx0*dx0 + dy0*dy0);
           if(d < minD){ minD = d; nearest = nodeTargets[i]; }
         }
         if(nearest && minD < 80){
@@ -3229,20 +3608,23 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         }
       } else {
         // Move shrunken card
+        // Check for multi-project month -> fan-out
         var hw2 = mCard.offsetWidth*SHRINK/2, hh2 = mCard.offsetHeight*SHRINK/2;
         var vw = window.innerWidth, vh = window.innerHeight;
         var tx = Math.max(hw2, Math.min(vw-hw2, cx));
         var ty = Math.max(hh2, Math.min(vh-hh2, cy));
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+(tx-mCard.offsetWidth/2)+'px,'+(ty-mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
+          mCard.style.transform = 'translate('+(tx-mCard.offsetWidth/2)+'px,'+(ty-mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
         _dragTx = tx - mCard.offsetWidth/2; _dragTy = ty - mCard.offsetHeight/2;
         // Match project
         var nearest2=null, minD2=Infinity;
         for(var j=0; j<nodeTargets.length; j++){
-          var d2 = Math.abs(cx - nodeTargets[j].cx);
+          var dx1 = cx - nodeTargets[j].cx;
+          var dy1 = cy - nodeTargets[j].cy;
+          var d2 = Math.sqrt(dx1*dx1 + dy1*dy1);
           if(d2 < minD2){ minD2 = d2; nearest2 = nodeTargets[j]; }
         }
-        if(nearest2 && nearest2.project !== mActiveProj && minD2 < 100){
+        if(nearest2 && nearest2.project.slug !== mActiveProj.slug && minD2 < 100){
           var prevProj = mActiveProj;
           mActiveProj = nearest2.project;
           // Content swap animation: old content exits, then new content enters
@@ -3252,11 +3634,12 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
             if(body) body.classList.add('content-swapping-out');
             if(image) image.classList.add('content-swapping-out');
             // Update content immediately (visually hidden during swap-out)
-            mImg.src = nearest2.project.coverImage;
-            mCat.textContent = nearest2.project.category;
+            mImg.src = nearest2.project.cover;
+            mCat.textContent = nearest2.project.type;
             mTitle.textContent = nearest2.project.title;
             mDate.textContent = nearest2.project.year + ' · ' + (months[nearest2.project.month-1] || '');
             mDesc.textContent = nearest2.project.description;
+            // Immediately update dormant cards to match new primary
             // After out animation, trigger in animation
             setTimeout(function(){
               if(body){ body.classList.remove('content-swapping-out'); body.classList.add('content-swapping-in'); }
@@ -3268,8 +3651,8 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
             }, 130);
           } else {
             // First project assignment (no animation needed)
-            mImg.src = nearest2.project.coverImage;
-            mCat.textContent = nearest2.project.category;
+            mImg.src = nearest2.project.cover;
+            mCat.textContent = nearest2.project.type;
             mTitle.textContent = nearest2.project.title;
             mDate.textContent = nearest2.project.year + ' · ' + (months[nearest2.project.month-1] || '');
             mDesc.textContent = nearest2.project.description;
@@ -3309,7 +3692,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
             setPos(curLeft - 30, curTop - 30, 1);
           } else {
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-            mCard.style.transform = 'translate('+(curLeft-mCard.offsetWidth/2)+'px,'+(curTop-mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
+              mCard.style.transform = 'translate('+(curLeft-mCard.offsetWidth/2)+'px,'+(curTop-mCard.offsetHeight/2)+'px) scale('+SHRINK+')';
             _dragTx = curLeft - mCard.offsetWidth/2; _dragTy = curTop - mCard.offsetHeight/2;
           }
           inertiaRaf = requestAnimationFrame(step);
@@ -3324,7 +3707,7 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
             var r2 = mCard.getBoundingClientRect();
             var pos = _smartPosition(r2.left + r2.width/2, r2.top + r2.height/2, cw, ch);
             mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-            mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
+              mCard.style.transform = 'translate('+pos.tx+'px,'+pos.ty+'px) scale(1)';
             _dragTx = pos.tx; _dragTy = pos.ty;
           }, 400);
         }
@@ -3359,8 +3742,9 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
         var r3 = mCard.getBoundingClientRect();
         var pos2 = _smartPosition(r3.left + r3.width/2, r3.top + r3.height/2, cw2, ch2);
         mCard.style.left = '0px'; mCard.style.top = '0px'; mCard.style.bottom = 'auto';
-        mCard.style.transform = 'translate('+pos2.tx+'px,'+pos2.ty+'px) scale(1)';
+          mCard.style.transform = 'translate('+pos2.tx+'px,'+pos2.ty+'px) scale(1)';
         _dragTx = pos2.tx; _dragTy = pos2.ty;
+        // Recreate fan/dormant cards after settling
       }
     });
   }
