@@ -86,7 +86,7 @@
         {
           "type": "text",
           "content": "一切都还在运转，只是它有些旧了",
-          "x": "85vw",
+          "x": "120vw",
           "y": "0vh",
           "width": "75vw",
           "fontFamily": "'Playfair Display', Georgia, serif",
@@ -117,7 +117,7 @@
         {
           "type": "text",
           "content": "嘎吱作响的齿轮预示着某天会迎来彻底的瘫痪。“永动机”式的社会发展变得不再可能，未来不会像小时候流行的Aero美学里描绘的那样完美，历史在除了那一两句消费主义编织的口号外也从未想要去兑现那个美好的承诺。",
-          "x": "138.8vw",
+          "x": "200vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -143,7 +143,7 @@
         {
           "type": "text",
           "content": "我们现今的状态没有灾难，但也没有一个可预见的未来。放早几年之前，可能还有人说这是危言耸听，可是现今的消费降级、劳工生存日益艰难以及全球保守主义抬头，更别说AI与人类劳动在将岗位上的愈演愈烈的争夺……",
-          "x": "190vw",
+          "x": "250vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
