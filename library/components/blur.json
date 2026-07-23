@@ -1,0 +1,14 @@
+{
+  "id": "blur",
+  "name": "Blur",
+  "category": "animation",
+  "type": "blur",
+  "description": "Transition from blurred to sharp. amount in px blur.",
+  "defaults": {
+    "type": "blur",
+    "amount": 20,
+    "duration": 1,
+    "delay": 0,
+    "ease": "cubic"
+  }
+}

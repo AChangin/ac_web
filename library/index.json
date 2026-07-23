@@ -1,5 +1,23 @@
 {
-  "components": ["text", "image", "svg", "group"],
-  "animations": ["fade", "slide-up", "slide-left", "slide-right", "scale", "blur", "rotate", "reveal"],
-  "effects": ["parallax", "float"]
+  "components": [
+    "text",
+    "image",
+    "svg",
+    "group",
+    "hero"
+  ],
+  "animations": [
+    "fade",
+    "slide-up",
+    "slide-left",
+    "slide-right",
+    "scale",
+    "blur",
+    "rotate",
+    "reveal"
+  ],
+  "effects": [
+    "parallax",
+    "float"
+  ]
 }

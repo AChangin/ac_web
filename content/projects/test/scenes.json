@@ -7,29 +7,127 @@
       "width": 3000,
       "elements": [
         {
-          "type": "text",
-          "content": "New text",
-          "x": "71.2vw",
-          "y": "17.8vh",
+          "type": "group",
           "width": "40vw",
-          "fontFamily": "'Inter',sans-serif",
-          "fontSize": "2vw",
-          "fontWeight": "400",
-          "color": "#fff",
-          "zIndex": 2,
-          "id": "el_unmz5ohn",
-          "_inspectorPushed": true
+          "height": "100vh",
+          "zIndex": 1,
+          "children": [
+            {
+              "type": "group",
+              "padding": "2rem",
+              "children": [
+                {
+                  "type": "svg",
+                  "src": "icons/note.svg",
+                  "width": "3rem",
+                  "height": "3rem",
+                  "svgColor": "brightness(0) invert(1)",
+                  "id": "el_aqd5e5i0",
+                  "_inspectorPushed": true
+                },
+                {
+                  "type": "text",
+                  "content": "NOTE",
+                  "fontSize": "3rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Inter', sans-serif",
+                  "marginBottom": "-1rem",
+                  "color": "rgba(255,255,255,0.5)",
+                  "marginTop": "1rem",
+                  "id": "el_47h8vkf1",
+                  "_inspectorPushed": true
+                }
+              ],
+              "id": "el_wzqix59p",
+              "_inspectorPushed": true,
+              "name": "info",
+              "marginTop": "5vh",
+              "left": "5vw"
+            },
+            {
+              "type": "group",
+              "bottom": "5vh",
+              "padding": "2rem",
+              "marginBottom": "20",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "在沉默下坠的世界里",
+                  "fontSize": "6rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Playfair Display', Georgia, serif",
+                  "marginBottom": "-1rem",
+                  "color": "#fff",
+                  "id": "el_1nex6ix6",
+                  "_inspectorPushed": true
+                },
+                {
+                  "type": "text",
+                  "content": "2026 JUL",
+                  "fontSize": "12rem",
+                  "fontWeight": "800",
+                  "color": "rgba(255,255,255,0.5)",
+                  "id": "el_45yxbgaw",
+                  "_inspectorPushed": true
+                }
+              ],
+              "id": "el_vq7tsv9s",
+              "_inspectorPushed": true,
+              "name": "title",
+              "left": "5vw"
+            }
+          ],
+          "_inspectorPushed": true,
+          "name": "hero",
+          "id": "el_qjunuw5w"
         },
         {
-          "type": "svg",
-          "src": "icons/note.svg",
-          "x": "83.7vw",
-          "y": "28.1vh",
-          "width": "50vw",
-          "height": "50vh",
-          "zIndex": 1,
-          "id": "el_hyw2h8z8",
+          "type": "text",
+          "content": "一切都还在运转，只是它有些旧了",
+          "x": "85vw",
+          "y": "0vh",
+          "width": "75vw",
+          "fontFamily": "'Playfair Display', Georgia, serif",
+          "fontSize": "6vw",
+          "fontWeight": "900",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_st4wtd19",
           "_inspectorPushed": true,
+          "marginTop": "40vh",
+          "enterAnimation": [
+            {
+              "type": "fade",
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "scale",
+              "from": 0.1,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": ".1"
+        },
+        {
+          "type": "text",
+          "content": "嘎吱作响的齿轮预示着某天会迎来彻底的瘫痪。“永动机”式的社会发展变得不再可能，未来不会像小时候流行的Aero美学里描绘的那样完美，历史在除了那一两句消费主义编织的口号外也从未想要去兑现那个美好的承诺。",
+          "x": "138.8vw",
+          "width": "50vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.5vw",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_150u9p8h",
+          "_inspectorPushed": true,
+          "marginTop": "20vh",
+          "lineHeight": 1.4,
+          "parallax": 0.1,
+          "null": "0.1",
           "enterAnimation": [
             {
               "type": "blur",
@@ -41,63 +139,31 @@
           ]
         },
         {
-          "type": "svg",
-          "src": "icons/note.svg",
-          "x": "130.7vw",
-          "y": "47.8vh",
-          "width": "50vw",
-          "height": "50vh",
-          "zIndex": 1,
-          "id": "el_us8sks3p",
-          "_inspectorPushed": true,
-          "enterAnimation": [
-            {
-              "type": "rotate",
-              "amount": 10,
-              "duration": 1,
-              "delay": 0,
-              "ease": "cubic"
-            }
-          ],
-          "null": "0.3"
-        },
-        {
           "type": "text",
-          "content": "New text",
-          "x": "125.4vw",
-          "y": "24.9vh",
-          "width": "40vw",
-          "fontFamily": "'Inter',sans-serif",
-          "fontSize": "2vw",
-          "fontWeight": "400",
+          "content": "我们现今的状态没有灾难，但也没有一个可预见的未来。放早几年之前，可能还有人说这是危言耸听，可是现今的消费降级、劳工生存日益艰难以及全球保守主义抬头，更别说AI与人类劳动在将岗位上的愈演愈烈的争夺……",
+          "x": "182.7vw",
+          "width": "50vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.5vw",
+          "fontWeight": "300",
           "color": "#fff",
           "zIndex": 2,
-          "id": "el_ptutminh",
-          "_inspectorPushed": true
-        },
-        {
-          "type": "text",
-          "content": "dsfdshakughfasjkahgjkdshjkfbewhjkbfhibhewujifb uiwhuehfkawehsf oiw foihwioefh wehfio weioafhiew eiw haioefhiowehfuio ",
-          "x": "132.9vw",
-          "y": "42.8vh",
-          "width": "40vw",
-          "fontFamily": "'Inter',sans-serif",
-          "fontSize": "2vw",
-          "fontWeight": "400",
-          "color": "#fff",
-          "zIndex": 1,
-          "id": "el_nzqxssoc",
+          "id": "el_o7ebser3",
           "_inspectorPushed": true,
+          "marginTop": "30vh",
+          "lineHeight": 1.4,
+          "parallax": 0.2,
+          "null": "0.2",
           "enterAnimation": [
             {
-              "type": "fade",
+              "type": "blur",
+              "amount": 20,
               "duration": 1,
               "delay": 0,
               "ease": "cubic"
             }
           ],
-          "null": "0.3",
-          "parallax": 0.3
+          "y": "0vh"
         }
       ],
       "height": "100vh",

@@ -1,19 +1,19 @@
 {
-  "id": "text",
-  "name": "Text",
+  "id": "a",
+  "name": "a",
   "category": "component",
   "type": "text",
-  "description": "Basic text component",
+  "icon": "T",
+  "description": "Custom component",
   "defaults": {
     "type": "text",
     "content": "New text",
-    "x": "10vw",
-    "y": "20vh",
     "width": "40vw",
-    "fontFamily": "'Inter', sans-serif",
+    "fontFamily": "'Inter',sans-serif",
     "fontSize": "2vw",
     "fontWeight": "400",
     "color": "#fff",
-    "zIndex": 2
+    "zIndex": 2,
+    "_inspectorPushed": true
   }
 }

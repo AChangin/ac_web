@@ -6,78 +6,112 @@
       "x": 0,
       "width": 3000,
       "elements": [
-        
-
         {
           "type": "group",
-          "x": 50, "bottom": "50px",
-          "padding": "2rem",
-          "marginBottom": "20",
+          "id": "el_ktfhd69h",
+          "width": "40vw",
+          "height": "100vh",
+          "zIndex": 1,
           "children": [
             {
-              "type": "text",
-              "content": "黄昏黎明融作一片",
-              "fontSize": "6rem",
-              "fontWeight": "800",
-              "fontFamily": "'Playfair Display', Georgia, serif",
-              "marginBottom": "-1rem",
-              "color": "#fff"
+              "type": "group",
+              "padding": "2rem",
+              "children": [
+                {
+                  "type": "svg",
+                  "src": "icons/note.svg",
+                  "width": "3rem",
+                  "height": "3rem",
+                  "svgColor": "brightness(0) invert(1)",
+                  "id": "el_aqd5e5i0"
+                },
+                {
+                  "type": "text",
+                  "content": "NOTE",
+                  "fontSize": "3rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Inter', sans-serif",
+                  "marginBottom": "-1rem",
+                  "color": "rgba(255,255,255,0.5)",
+                  "marginTop": "1rem",
+                  "id": "el_47h8vkf1"
+                }
+              ],
+              "id": "el_wzqix59p",
+              "_inspectorPushed": true,
+              "name": "info",
+              "marginTop": "5vh",
+              "left": "5vw"
             },
             {
-              "type": "text",
-              "content": "2026 JUL",
-              "fontSize": "12rem",
-              "fontWeight": "800",
-              "color": "rgba(255,255,255,0.5)"
+              "type": "group",
+              "bottom": "5vh",
+              "padding": "2rem",
+              "marginBottom": "20",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "黄昏黎明融作一片",
+                  "fontSize": "6rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Playfair Display', Georgia, serif",
+                  "marginBottom": "-1rem",
+                  "color": "#fff",
+                  "id": "el_1nex6ix6",
+                  "_inspectorPushed": true
+                },
+                {
+                  "type": "text",
+                  "content": "2026 JUL",
+                  "fontSize": "12rem",
+                  "fontWeight": "800",
+                  "color": "rgba(255,255,255,0.5)",
+                  "id": "el_45yxbgaw",
+                  "_inspectorPushed": true
+                }
+              ],
+              "id": "el_vq7tsv9s",
+              "_inspectorPushed": true,
+              "name": "title",
+              "left": "5vw"
             }
-          ]
+          ],
+          "_inspectorPushed": true,
+          "name": "hero"
         },
-
-        {
-          "type": "group",
-          "x": 50, "y": "50px",
-          "padding": "2rem",
-          "marginBottom": "20",
-          "children": [
-            {
-              "type": "svg",
-              "src": "icons/note.svg",
-              "width": "3rem", "height": "3rem",
-              "svgColor": "brightness(0) invert(1)"
-            },
-            {
-              "type": "text",
-              "content": "NOTE",
-              "fontSize": "3rem",
-              "fontWeight": "800",
-              "fontFamily": "'Inter', sans-serif",
-              "marginBottom": "-1rem",
-              "color": "rgba(255,255,255,0.5)",
-              "marginTop": "1rem"
-            }
-            
-          ]
-        },
-
         {
           "type": "text",
           "content": "马克思主义政治经济学而且对于社会主义国家，官僚资本主义比资本主义更恐怖。因为社会主义国家的集体思想与集中制，更容易形成权力的垄断与独裁。资本主义制度下的制度，始终披着自由与民主的外衣，资本家之间相互扶持，但又相互竞争，就像美国的共和党和民主党，其中无法有一方能彻底掌握政治话语权。但如苏联的官僚特权阶级为例子，大量腐败的官员铁板一块，相互包庇进行钱权交换，一党独大，人民也缺乏有效监督与管理，就像报警了，结果敌人的电话响了，法官还是他亲戚……这就是苏联修正主义下官僚腐败的特征之一。",
-          "x": 700, "y": "40%",
+          "x": "80vw",
           "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1.3rem", "fontWeight": "300",
-          "color": "rgba(255,255,255,0.55)", "lineHeight": 1.8,
+          "fontSize": "1.3rem",
+          "fontWeight": "300",
+          "color": "rgba(255,255,255,0.55)",
+          "lineHeight": 1.8,
           "maxWidth": "500px",
           "zIndex": 2,
           "enterAnimation": [
-                { "type": "fade", "duration": 1.5 },
-                { "type": "scale", "from": 0.1, "delay": 0.1 }
-              ],
-          "animation": { "parallax": 0.25, "fadeIn": true }
+            {
+              "type": "fade",
+              "duration": 1.5
+            },
+            {
+              "type": "scale",
+              "from": 0.1,
+              "delay": 0.1
+            }
+          ],
+          "animation": {
+            "parallax": 0.25,
+            "fadeIn": true
+          },
+          "id": "el_ht01n6sc",
+          "_inspectorPushed": true,
+          "top": "40vh"
         }
-      ]
+      ],
+      "height": "100vh"
     },
-
-
     {
       "id": "middle",
       "x": 3000,
@@ -86,35 +120,66 @@
         {
           "type": "image",
           "src": "posts/test_20260718.jpg",
-          "x": 3200, "y": 80, "width": 600, "height": 450,
+          "x": 3200,
+          "y": 80,
+          "width": 600,
+          "height": 450,
           "zIndex": 1,
           "enterAnimation": [
-                { "type": "fade", "duration": 0.3 },
-                { "type": "slideUp", "distance": 80, "ease": "cubic", "delay": 0.05 }
-              ],
-          "animation": { "parallax": 0.15, "float": true, "floatAmount": 15 }
+            {
+              "type": "fade",
+              "duration": 0.3
+            },
+            {
+              "type": "slideUp",
+              "distance": 80,
+              "ease": "cubic",
+              "delay": 0.05
+            }
+          ],
+          "animation": {
+            "parallax": 0.15,
+            "float": true,
+            "floatAmount": 15
+          },
+          "id": "el_5zahrij1"
         },
         {
           "type": "text",
           "content": "The space between light and shadow<br>defines everything we see.",
-          "x": 4000, "y": 200,
+          "x": 4000,
+          "y": 200,
           "fontFamily": "'Playfair Display', Georgia, serif",
-          "fontSize": "4rem", "fontWeight": "600",
-          "color": "#fff", "lineHeight": 1.2,
+          "fontSize": "4rem",
+          "fontWeight": "600",
+          "color": "#fff",
+          "lineHeight": 1.2,
           "zIndex": 2,
-          "animation": { "parallax": 0.35, "fadeIn": true }
+          "animation": {
+            "parallax": 0.35,
+            "fadeIn": true
+          },
+          "id": "el_1xe428sl"
         },
         {
           "type": "text",
           "content": "Form emerges not from what we add,<br>but from what we choose to reveal.",
-          "x": 4000, "y": 420,
+          "x": 4000,
+          "y": 420,
           "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1.4rem", "fontWeight": "300",
-          "color": "rgba(255,255,255,0.5)", "lineHeight": 1.8,
+          "fontSize": "1.4rem",
+          "fontWeight": "300",
+          "color": "rgba(255,255,255,0.5)",
+          "lineHeight": 1.8,
           "zIndex": 2,
-          "animation": { "parallax": 0.2, "fadeIn": true }
+          "animation": {
+            "parallax": 0.2,
+            "fadeIn": true
+          },
+          "id": "el_jr7elgn4"
         }
-      ]
+      ],
+      "height": "100vh"
     },
     {
       "id": "closing",
@@ -124,31 +189,53 @@
         {
           "type": "image",
           "src": "posts/tired_20260718.jpg",
-          "x": 7300, "y": 50, "width": 800, "height": 550,
+          "x": 7300,
+          "y": 50,
+          "width": 800,
+          "height": 550,
           "zIndex": 1,
-          "animation": { "parallax": 0.1, "fadeIn": true }
+          "animation": {
+            "parallax": 0.1,
+            "fadeIn": true
+          },
+          "id": "el_h1o3msrf"
         },
         {
           "type": "text",
           "content": "Every surface holds a story<br>waiting for the right angle of light.",
-          "x": 8300, "y": 180,
+          "x": 8300,
+          "y": 180,
           "fontFamily": "'Playfair Display', Georgia, serif",
-          "fontSize": "4.5rem", "fontWeight": "600",
-          "color": "#fff", "lineHeight": 1.2,
+          "fontSize": "4.5rem",
+          "fontWeight": "600",
+          "color": "#fff",
+          "lineHeight": 1.2,
           "zIndex": 2,
-          "animation": { "parallax": 0.3, "fadeIn": true }
+          "animation": {
+            "parallax": 0.3,
+            "fadeIn": true
+          },
+          "id": "el_yh4hgcz0"
         },
         {
           "type": "text",
           "content": "Clarity is not about brightness.<br>It is about direction.",
-          "x": 8300, "y": 400,
+          "x": 8300,
+          "y": 400,
           "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1.3rem", "fontWeight": "300",
-          "color": "rgba(255,255,255,0.5)", "lineHeight": 1.8,
+          "fontSize": "1.3rem",
+          "fontWeight": "300",
+          "color": "rgba(255,255,255,0.5)",
+          "lineHeight": 1.8,
           "zIndex": 2,
-          "animation": { "parallax": 0.15, "fadeIn": true }
+          "animation": {
+            "parallax": 0.15,
+            "fadeIn": true
+          },
+          "id": "el_4feq5i6i"
         }
-      ]
+      ],
+      "height": "100vh"
     }
   ]
 }

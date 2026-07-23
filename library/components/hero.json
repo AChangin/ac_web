@@ -1,0 +1,80 @@
+{
+  "id": "hero",
+  "name": "hero",
+  "category": "component",
+  "type": "group",
+  "icon": "?",
+  "description": "Custom component",
+  "defaults": {
+    "type": "group",
+    "width": "40vw",
+    "height": "100vh",
+    "zIndex": 1,
+    "children": [
+      {
+        "type": "group",
+        "padding": "2rem",
+        "children": [
+          {
+            "type": "svg",
+            "src": "icons/note.svg",
+            "width": "3rem",
+            "height": "3rem",
+            "svgColor": "brightness(0) invert(1)",
+            "id": "el_aqd5e5i0"
+          },
+          {
+            "type": "text",
+            "content": "NOTE",
+            "fontSize": "3rem",
+            "fontWeight": "800",
+            "fontFamily": "'Inter', sans-serif",
+            "marginBottom": "-1rem",
+            "color": "rgba(255,255,255,0.5)",
+            "marginTop": "1rem",
+            "id": "el_47h8vkf1"
+          }
+        ],
+        "id": "el_wzqix59p",
+        "_inspectorPushed": true,
+        "name": "info",
+        "marginTop": "5vh",
+        "left": "5vw"
+      },
+      {
+        "type": "group",
+        "bottom": "5vh",
+        "padding": "2rem",
+        "marginBottom": "20",
+        "children": [
+          {
+            "type": "text",
+            "content": "黄昏黎明融作一片",
+            "fontSize": "6rem",
+            "fontWeight": "800",
+            "fontFamily": "'Playfair Display', Georgia, serif",
+            "marginBottom": "-1rem",
+            "color": "#fff",
+            "id": "el_1nex6ix6",
+            "_inspectorPushed": true
+          },
+          {
+            "type": "text",
+            "content": "2026 JUL",
+            "fontSize": "12rem",
+            "fontWeight": "800",
+            "color": "rgba(255,255,255,0.5)",
+            "id": "el_45yxbgaw",
+            "_inspectorPushed": true
+          }
+        ],
+        "id": "el_vq7tsv9s",
+        "_inspectorPushed": true,
+        "name": "title",
+        "left": "5vw"
+      }
+    ],
+    "_inspectorPushed": true,
+    "name": "hero"
+  }
+}

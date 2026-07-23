@@ -1,0 +1,14 @@
+{
+  "id": "rotate",
+  "name": "Rotate",
+  "category": "animation",
+  "type": "rotate",
+  "description": "Rotate into position. amount in degrees.",
+  "defaults": {
+    "type": "rotate",
+    "amount": 10,
+    "duration": 1,
+    "delay": 0,
+    "ease": "cubic"
+  }
+}

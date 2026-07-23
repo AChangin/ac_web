@@ -1,0 +1,10 @@
+{
+  "id": "parallax",
+  "name": "Parallax",
+  "category": "effect",
+  "type": "parallax",
+  "description": "Horizontal parallax scroll effect",
+  "defaults": {
+    "speed": 0.2
+  }
+}

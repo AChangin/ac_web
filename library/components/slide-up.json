@@ -1,0 +1,14 @@
+{
+  "id": "slide-up",
+  "name": "Slide Up",
+  "category": "animation",
+  "type": "slideUp",
+  "description": "Slide upward into position. distance in px.",
+  "defaults": {
+    "type": "slideUp",
+    "distance": 120,
+    "duration": 1,
+    "delay": 0,
+    "ease": "cubic"
+  }
+}

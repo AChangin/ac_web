@@ -6,69 +6,104 @@
       "x": 0,
       "width": 4000,
       "elements": [
-        
         {
           "type": "group",
-          "x": 50, "bottom": "50px",
-          "padding": "2rem",
-          "marginBottom": "20",
+          "id": "el_vnzz6xep",
+          "x": "3.7vw",
+          "y": "0vh",
+          "width": "40vw",
+          "height": "30vw",
+          "zIndex": 1,
           "children": [
             {
-              "type": "text",
-              "content": "黄昏黎明融作一片",
-              "fontSize": "6rem",
-              "fontWeight": "800",
-              "fontFamily": "'Playfair Display', Georgia, serif",
-              "marginBottom": "-1rem",
-              "color": "#fff"
+              "type": "group",
+              "x": "0vw",
+              "y": "100vh",
+              "padding": "2rem",
+              "marginBottom": "20",
+              "children": [
+                {
+                  "type": "svg",
+                  "src": "icons/note.svg",
+                  "width": "6rem",
+                  "height": "6rem",
+                  "svgColor": "brightness(0) invert(1)",
+                  "id": "el_mqhwnblk",
+                  "_inspectorPushed": true
+                },
+                {
+                  "type": "text",
+                  "content": "NOTE",
+                  "fontSize": "6rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Inter', sans-serif",
+                  "marginBottom": "-1rem",
+                  "color": "rgba(255,255,255,0.5)",
+                  "marginTop": "1rem",
+                  "id": "el_xmncwcn5",
+                  "_inspectorPushed": true
+                }
+              ],
+              "id": "el_harkrbj1",
+              "_inspectorPushed": true,
+              "name": "info"
             },
             {
-              "type": "text",
-              "content": "2026 JUL",
-              "fontSize": "12rem",
-              "fontWeight": "800",
-              "color": "rgba(255,255,255,0.5)"
+              "type": "group",
+              "x": "0vw",
+              "padding": "2rem",
+              "marginBottom": "20",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "黄昏黎明融作一片",
+                  "fontSize": "6rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Playfair Display', Georgia, serif",
+                  "marginBottom": "-1rem",
+                  "color": "#fff",
+                  "id": "el_tg7qhcjw",
+                  "_inspectorPushed": true
+                },
+                {
+                  "type": "text",
+                  "content": "2026 JUL",
+                  "fontSize": "12rem",
+                  "fontWeight": "800",
+                  "color": "rgba(255,255,255,0.5)",
+                  "id": "el_09ypj8ys",
+                  "_inspectorPushed": true
+                }
+              ],
+              "id": "el_3xkzeyhl",
+              "_inspectorPushed": true,
+              "y": "100vh",
+              "name": "title",
+              "top": "20vh"
             }
-          ]
-        },
-
-        {
-          "type": "group",
-          "x": 50, "y": "50px",
-          "padding": "2rem",
-          "marginBottom": "20",
-          "children": [
-            {
-              "type": "svg",
-              "src": "icons/note.svg",
-              "width": "6rem", "height": "6rem",
-              "svgColor": "brightness(0) invert(1)"
-            },
-            {
-              "type": "text",
-              "content": "NOTE",
-              "fontSize": "6rem",
-              "fontWeight": "800",
-              "fontFamily": "'Inter', sans-serif",
-              "marginBottom": "-1rem",
-              "color": "rgba(255,255,255,0.5)",
-              "marginTop": "1rem"
-            }
-            
-          ]
+          ],
+          "_inspectorPushed": true
         },
         {
           "type": "text",
           "content": "How absence shapes presence<br>in visual communication and<br>editorial composition.",
-          "x": 1200, "y": 410,
+          "x": 1200,
+          "y": 410,
           "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1.3rem", "fontWeight": "300",
-          "color": "rgba(255,255,255,0.55)", "lineHeight": 1.8,
+          "fontSize": "1.3rem",
+          "fontWeight": "300",
+          "color": "rgba(255,255,255,0.55)",
+          "lineHeight": 1.8,
           "maxWidth": "480px",
           "zIndex": 2,
-          "animation": { "parallax": 0.2, "fadeIn": true }
+          "animation": {
+            "parallax": 0.2,
+            "fadeIn": true
+          },
+          "id": "el_fo4buymk"
         }
-      ]
+      ],
+      "height": "100vh"
     },
     {
       "id": "development",
@@ -78,38 +113,68 @@
         {
           "type": "image",
           "src": "posts/tired_20260718.jpg",
-          "x": 4300, "y": 60, "width": 550, "height": 420,
+          "x": 4300,
+          "y": 60,
+          "width": 550,
+          "height": 420,
           "zIndex": 1,
-          "animation": { "parallax": 0.18, "float": true, "floatAmount": 20 }
+          "animation": {
+            "parallax": 0.18,
+            "float": true,
+            "floatAmount": 20
+          },
+          "id": "el_smmccgu2"
         },
         {
           "type": "text",
           "content": "Negative space is not empty.<br>It is active, breathing, alive.",
-          "x": 5100, "y": 180,
+          "x": 5100,
+          "y": 180,
           "fontFamily": "'Playfair Display', Georgia, serif",
-          "fontSize": "4rem", "fontWeight": "600",
-          "color": "#fff", "lineHeight": 1.2,
+          "fontSize": "4rem",
+          "fontWeight": "600",
+          "color": "#fff",
+          "lineHeight": 1.2,
           "zIndex": 2,
-          "animation": { "parallax": 0.35, "fadeIn": true }
+          "animation": {
+            "parallax": 0.35,
+            "fadeIn": true
+          },
+          "id": "el_kzgkneze"
         },
         {
           "type": "image",
           "src": "posts/test_20260718.jpg",
-          "x": 7000, "y": 100, "width": 500, "height": 380,
+          "x": 7000,
+          "y": 100,
+          "width": 500,
+          "height": 380,
           "zIndex": 1,
-          "animation": { "parallax": 0.12, "fadeIn": true }
+          "animation": {
+            "parallax": 0.12,
+            "fadeIn": true
+          },
+          "id": "el_358e1cp3"
         },
         {
           "type": "text",
           "content": "What you remove is just as important<br>as what you leave behind.",
-          "x": 7800, "y": 520,
+          "x": 7800,
+          "y": 520,
           "fontFamily": "'Inter', sans-serif",
-          "fontSize": "1.5rem", "fontWeight": "300",
-          "color": "rgba(255,255,255,0.5)", "lineHeight": 1.7,
+          "fontSize": "1.5rem",
+          "fontWeight": "300",
+          "color": "rgba(255,255,255,0.5)",
+          "lineHeight": 1.7,
           "zIndex": 2,
-          "animation": { "parallax": 0.2, "fadeIn": true }
+          "animation": {
+            "parallax": 0.2,
+            "fadeIn": true
+          },
+          "id": "el_cdjlcbfb"
         }
-      ]
+      ],
+      "height": "100vh"
     },
     {
       "id": "conclusion",
@@ -119,21 +184,36 @@
         {
           "type": "image",
           "src": "posts/tired_20260718.jpg",
-          "x": 9300, "y": 40, "width": 850, "height": 560,
+          "x": 9300,
+          "y": 40,
+          "width": 850,
+          "height": 560,
           "zIndex": 1,
-          "animation": { "parallax": 0.1, "fadeIn": true }
+          "animation": {
+            "parallax": 0.1,
+            "fadeIn": true
+          },
+          "id": "el_c327ivt9"
         },
         {
           "type": "text",
           "content": "Silence is not the absence<br>of sound. It is the presence<br>of space.",
-          "x": 10400, "y": 150,
+          "x": 10400,
+          "y": 150,
           "fontFamily": "'Playfair Display', Georgia, serif",
-          "fontSize": "5rem", "fontWeight": "600",
-          "color": "#fff", "lineHeight": 1.15,
+          "fontSize": "5rem",
+          "fontWeight": "600",
+          "color": "#fff",
+          "lineHeight": 1.15,
           "zIndex": 2,
-          "animation": { "parallax": 0.3, "fadeIn": true }
+          "animation": {
+            "parallax": 0.3,
+            "fadeIn": true
+          },
+          "id": "el_dwm492k8"
         }
-      ]
+      ],
+      "height": "100vh"
     }
   ]
 }

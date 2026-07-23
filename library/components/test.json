@@ -1,0 +1,50 @@
+{
+  "id": "test",
+  "name": "test",
+  "category": "component",
+  "type": "group",
+  "icon": "⊞",
+  "description": "Custom component",
+  "defaults": {
+    "type": "group",
+    "x": "10vw",
+    "y": "10vh",
+    "width": "40vw",
+    "height": "30vw",
+    "zIndex": 1,
+    "children": [
+      {
+        "type": "text",
+        "content": "New text",
+        "x": "0vw",
+        "y": "0vh",
+        "width": "40vw",
+        "fontFamily": "'Inter',sans-serif",
+        "fontSize": "2vw",
+        "fontWeight": "400",
+        "color": "#fff",
+        "zIndex": 2,
+        "_inspectorPushed": true
+      },
+      {
+        "type": "svg",
+        "src": "icons/note.svg",
+        "x": "12.5vw",
+        "y": "10.3vh",
+        "width": "50vw",
+        "height": "50vh",
+        "zIndex": 1,
+        "_inspectorPushed": true,
+        "enterAnimation": [
+          {
+            "type": "blur",
+            "amount": 20,
+            "duration": 1,
+            "delay": 0,
+            "ease": "cubic"
+          }
+        ]
+      }
+    ]
+  }
+}

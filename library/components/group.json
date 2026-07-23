@@ -3,7 +3,6 @@
   "name": "Group",
   "category": "component",
   "type": "group",
-  "icon": "⊞",
   "description": "Container group for nesting elements",
   "defaults": {
     "type": "group",
