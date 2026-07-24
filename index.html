@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#8b0000">
+<meta name="theme-color" content="#000000">
 <title>AC — Portfolio</title>
 
 <!-- Google Fonts: Playfair Display (serif) + Inter (sans) -->
@@ -27,7 +27,7 @@ body{
   -moz-osx-font-smoothing:grayscale;
   text-rendering:optimizeLegibility;
   font-variant-ligatures:none;
-  background:#8b0000;
+  background:#000;
   color:#000;
   overflow-x:hidden;
   overscroll-behavior:none;
@@ -54,7 +54,7 @@ body{
   position:fixed;
   inset:0;
   z-index:-1;
-  background:#8b0000;
+  background:#000;
   pointer-events:none;
 }
 
@@ -116,9 +116,9 @@ body{
   justify-content:space-between;
   padding:2rem 0;
   z-index:50;
-  background:rgba(139,0,0,0.8);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   pointer-events:all;
 }
 .nav-left{
@@ -182,6 +182,22 @@ body{
   align-items:center;
   justify-content:center;
 }
+
+/* ── Nav light state (for light-section backgrounds) ── */
+.nav.nav-light .nav-logo img{filter:none}
+.nav.nav-light .nav-link{color:rgba(0,0,0,0.75)}
+.nav.nav-light .nav-link:hover{color:#000}
+.nav.nav-light .nav-link.active{color:#000}
+.nav.nav-light .nav-parent{color:rgba(0,0,0,0.85)}
+.nav.nav-light .nav-child{color:rgba(0,0,0,0.5)}
+.nav.nav-light .nav-child:hover{color:#000}
+.nav.nav-light .nav-child.active{color:#000}
+.nav.nav-light .nav-menu-btn span{background:#000}
+.nav.nav-light .nav-brand{color:#000}
+/* light mobile menu */
+.mobile-menu.menu-light{background:rgba(255,255,255,0.96)}
+.mobile-menu.menu-light .mobile-menu__link{color:#111}
+.mobile-menu.menu-light .mobile-menu__link.active{color:#000}
 
 /* Hamburger menu button */
 .nav-menu-btn{
@@ -1938,10 +1954,43 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
     }
   }
 
+  // ── Nav dynamic color per section ──
+  var SECTION_COLORS = [
+    {r:0,g:0,b:0,a:0.75},        // Section 0: Hero (dark)
+    {r:0,g:0,b:0,a:0.75},        // Section 1: Logo (dark)
+    {r:255,g:255,b:255,a:0.7},   // Section 2: Timeline (light)
+    {r:0,g:0,b:0,a:0.75}         // Section 3: Orbit (dark)
+  ];
+
+  function updateNavColor(progress){
+    var navEl = document.getElementById('nav');
+    var mobileMenuEl = document.getElementById('mobile-menu');
+    if(!navEl) return;
+
+    var totalColors = SECTION_COLORS.length;
+    var seg = progress * (totalColors - 1);
+    var idx = Math.min(Math.floor(seg), totalColors - 2);
+    var t = Math.max(0, Math.min(1, seg - idx));
+    var c1 = SECTION_COLORS[idx];
+    var c2 = SECTION_COLORS[idx + 1];
+    var r = Math.round(c1.r + (c2.r - c1.r) * t);
+    var g = Math.round(c1.g + (c2.g - c1.g) * t);
+    var b = Math.round(c1.b + (c2.b - c1.b) * t);
+    var a = c1.a + (c2.a - c1.a) * t;
+
+    navEl.style.background = 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(2) + ')';
+
+    var isLight = (r + g + b) / 3 > 128;
+    navEl.classList.toggle('nav-light', isLight);
+
+    if(mobileMenuEl){
+      mobileMenuEl.style.background = 'rgba(' + r + ',' + g + ',' + b + ',0.96)';
+      mobileMenuEl.classList.toggle('menu-light', isLight);
+    }
+  }
+
   function applyParallax(progress){
     scrollProgress = progress;
-
-    var vw = window.innerWidth;
 
     var vw = window.innerWidth;
 
@@ -2005,6 +2054,9 @@ body:not(.is-touch) .mobile-project-card{display:none!important}
       var idx = parseInt(l.getAttribute('data-section'));
       l.classList.toggle('active', idx === activeIndex);
     });
+
+    // ── Dynamic nav color ──
+    updateNavColor(progress);
 
     // Fade-in reveals
     fadeEls.forEach(function(el){

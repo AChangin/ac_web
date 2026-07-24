@@ -51,6 +51,21 @@ body{
 .nav-child:hover{color:#fff}
 .nav-right{display:flex;align-items:center;justify-content:center}
 
+/* ── Nav light state (for light-section backgrounds) ── */
+.nav.nav-light .nav-logo img{filter:none}
+.nav.nav-light .nav-link{color:rgba(0,0,0,0.75)}
+.nav.nav-light .nav-link:hover{color:#000}
+.nav.nav-light .nav-link.active{color:#000}
+.nav.nav-light .nav-parent{color:rgba(0,0,0,0.85)}
+.nav.nav-light .nav-child{color:rgba(0,0,0,0.5)}
+.nav.nav-light .nav-child:hover{color:#000}
+.nav.nav-light .nav-child.active{color:#000}
+.nav.nav-light .nav-menu-btn span{background:#000}
+/* light mobile menu */
+.mobile-menu.menu-light{background:rgba(255,255,255,0.96)}
+.mobile-menu.menu-light .mobile-menu__link{color:#111}
+.mobile-menu.menu-light .mobile-menu__link.active{color:#000}
+
 /* ── Hamburger menu ── */
 .nav-menu-btn{
   display:none;
@@ -681,6 +696,42 @@ html{-ms-overflow-style:none;scrollbar-width:none}
     return { setBodyHeight: setBodyHeight };
   }
 
+  // ── Nav dynamic color per section ──
+  var SECTION_COLORS = [
+    {r:0,g:0,b:0,a:0.75},        // Section 0: Recents (dark)
+    {r:255,g:255,b:255,a:0.7}    // Section 1: Browse (light)
+  ];
+
+  function updateNavColor(progress){
+    var nav = document.querySelector('.nav');
+    var mobileMenu = document.getElementById('mobile-menu');
+    if(!nav) return;
+
+    // Interpolate color between sections
+    var totalColors = SECTION_COLORS.length;
+    var seg = progress * (totalColors - 1);
+    var idx = Math.min(Math.floor(seg), totalColors - 2);
+    var t = Math.max(0, Math.min(1, seg - idx));
+    var c1 = SECTION_COLORS[idx];
+    var c2 = SECTION_COLORS[idx + 1];
+    var r = Math.round(c1.r + (c2.r - c1.r) * t);
+    var g = Math.round(c1.g + (c2.g - c1.g) * t);
+    var b = Math.round(c1.b + (c2.b - c1.b) * t);
+    var a = c1.a + (c2.a - c1.a) * t;
+
+    nav.style.background = 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(2) + ')';
+
+    // Toggle light class based on brightness
+    var isLight = (r + g + b) / 3 > 128;
+    nav.classList.toggle('nav-light', isLight);
+
+    // Mobile menu overlay follows nav color
+    if(mobileMenu){
+      mobileMenu.style.background = 'rgba(' + r + ',' + g + ',' + b + ',0.96)';
+      mobileMenu.classList.toggle('menu-light', isLight);
+    }
+  }
+
   function applyScrollUI(progress){
     // Progress bar
     if(progressBar) progressBar.style.transform = 'scaleX(' + progress + ')';
@@ -698,6 +749,9 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       var sec = l.getAttribute('data-section');
       if(sec !== null) l.classList.toggle('active', parseInt(sec) === activeIdx);
     });
+
+    // ── Dynamic nav color ──
+    updateNavColor(progress);
 
     // ── Desktop: nav transformation + browse scroll lock ──
     if(!isMobile){
