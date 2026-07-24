@@ -1,0 +1,23 @@
+{
+  "id": "gradient-mask",
+  "name": "Gradient Mask Image",
+  "category": "component",
+  "type": "gradient-mask",
+  "icon": "🌓",
+  "description": "Image container with alpha gradient mask. Control direction, endpoint positions, and alpha values for smooth fade transitions.",
+  "defaults": {
+    "type": "gradient-mask",
+    "src": "posts/tired_20260718.jpg",
+    "x": "10vw",
+    "y": "10vh",
+    "width": "40vw",
+    "height": "30vw",
+    "objectFit": "cover",
+    "direction": "to right",
+    "startAlpha": 0,
+    "startPos": "0%",
+    "endAlpha": 1,
+    "endPos": "100%",
+    "zIndex": 1
+  }
+}

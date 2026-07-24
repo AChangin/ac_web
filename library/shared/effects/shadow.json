@@ -1,0 +1,13 @@
+{
+  "id": "shadow",
+  "name": "Drop Shadow",
+  "category": "effect",
+  "type": "shadow",
+  "description": "Adds a drop shadow behind the element",
+  "defaults": {
+    "color": "rgba(0,0,0,0.5)",
+    "offsetX": "4px",
+    "offsetY": "4px",
+    "blur": "8px"
+  }
+}

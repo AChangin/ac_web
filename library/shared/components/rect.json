@@ -1,0 +1,19 @@
+{
+  "id": "rect",
+  "name": "Rectangle",
+  "category": "component",
+  "type": "rect",
+  "icon": "▬",
+  "description": "A resizable rectangle with customizable color, opacity, and dimensions.",
+  "defaults": {
+    "type": "rect",
+    "x": "20vw",
+    "y": "20vh",
+    "width": "30vw",
+    "height": "20vw",
+    "background": "#8b0000",
+    "opacity": 1,
+    "borderRadius": "0px",
+    "zIndex": 1
+  }
+}

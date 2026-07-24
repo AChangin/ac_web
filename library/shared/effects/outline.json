@@ -1,0 +1,11 @@
+{
+  "id": "outline",
+  "name": "Text Outline",
+  "category": "effect",
+  "type": "outline",
+  "description": "Adds an outline/stroke around text or containers",
+  "defaults": {
+    "color": "#fff",
+    "width": "2px"
+  }
+}

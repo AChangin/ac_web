@@ -155,6 +155,10 @@
         return { parallax: def.speed || 0.2 };
       } else if (effectDef.type === 'float') {
         return { float: true, floatAmount: def.amount || 20 };
+      } else if (effectDef.type === 'outline') {
+        return { outline: { color: def.color || '#fff', width: def.width || '2px' } };
+      } else if (effectDef.type === 'shadow') {
+        return { shadow: { color: def.color || 'rgba(0,0,0,0.5)', offsetX: def.offsetX || '4px', offsetY: def.offsetY || '4px', blur: def.blur || '8px' } };
       }
       return {};
     },

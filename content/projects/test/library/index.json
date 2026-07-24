@@ -5,7 +5,8 @@
     "svg",
     "group",
     "hero",
-    "intro"
+    "intro",
+    "text-bodyparagraph"
   ],
   "animations": [],
   "effects": []

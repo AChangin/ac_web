@@ -1,0 +1,19 @@
+{
+  "id": "glass",
+  "name": "Glass Rectangle",
+  "category": "component",
+  "type": "glass",
+  "icon": "🫧",
+  "description": "Frosted glass rectangle with customizable color, opacity, and blur. Uses backdrop-filter for the glassmorphism effect.",
+  "defaults": {
+    "type": "glass",
+    "x": "20vw",
+    "y": "20vh",
+    "width": "30vw",
+    "height": "25vw",
+    "background": "rgba(255,255,255,0.15)",
+    "blur": "12px",
+    "borderRadius": "8px",
+    "zIndex": 10
+  }
+}
