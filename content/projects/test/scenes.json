@@ -462,7 +462,8 @@
             }
           ],
           "parallax": 0.1,
-          "null": "0.1"
+          "null": "0.1",
+          "maxWidth": "40vw"
         }
       ],
       "height": "100vh",
