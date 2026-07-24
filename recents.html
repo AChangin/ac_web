@@ -212,7 +212,7 @@ body{
 
 .recents-project-info{
   display:flex;flex-direction:column;justify-content:flex-start;
-  padding:0 2.5rem;flex:1;min-width:0;
+  padding:0 2.5rem;flex:1;min-width:0;margin-bottom: 3rem;
 }
 .is-small .recents-project-info{ padding:0 1.2rem; }
 .recents-project-type{
@@ -374,21 +374,29 @@ body{
   .nav{width:100%;height:4.8rem;flex-direction:row;padding:0 1.6rem;border-bottom:none}
   .nav-center{display:none}
   .nav-menu-btn{display:flex}
-  .recents-panel{padding:2rem 1.2rem;padding-top:6rem}
-  .recents-panel-heading{font-size:3rem;margin-bottom:1.5rem}
+  .recents-panel{padding:4rem 2rem;padding-top:6rem}
+  .recents-panel-heading{font-size:6rem;margin-bottom:3rem}
   .browse-panel{padding:2rem 1.2rem;padding-top:6rem}
-  .browse-panel-heading{font-size:3rem}
+  .browse-panel-heading{font-size:6rem;margin-bottom:1rem}
   .recents-project{flex-direction:column}
-  .is-large .recents-project-image,
-  .is-small .recents-project-image{width:100%;height:38vw}
-  .is-large .recents-project-number{font-size:5rem;top:-0.5rem;left:0.5rem}
-  .is-small .recents-project-number{font-size:2.5rem;top:0.3rem;left:0.5rem;transform:none}
-  .recents-project-info{padding:0.8rem 0.5rem}
+  .recents-project.is-large,
+  .recents-project.is-small{flex:0 0 auto}
+  .recents-stage{gap:0.5rem;justify-content:flex-start}
+  .is-large .recents-project-image{width:100%;height:50vw;margin-bottom: 2rem;}
+  .is-small .recents-project-image{width:60%;height:30vw;max-height:none}
+  .is-large .recents-project-number{font-size:10rem;top:-0.5rem;left:0.5rem;}
+  .is-small .recents-project-number{font-size:5rem;top:0.2rem;left:0.3rem;transform:none}
+  .recents-project-info{padding:0.3rem 0.5rem}
+  .is-small .recents-project-info{padding:0.3rem 0.4rem}
   .is-large .recents-project-title{font-size:1.8rem}
-  .is-small .recents-project-title{font-size:1.1rem}
+  .is-small .recents-project-title{font-size:0.9rem}
+  .is-small .recents-project-date{font-size:0.85rem}
+  .is-small .recents-project-type{margin-bottom:0.2rem}
+  .is-small .recents-project-type span{font-size:0.85rem}
+  .is-small .recents-project-type img{width:0.8rem;height:0.8rem}
   .browse-grid{grid-template-columns:1fr;gap:2rem}
   .browse-card-title{font-size:1.6rem}
-  .scroll-hint{display:none}
+  .scroll-hint{display:1;margin-bottom: 5vh;}
 }
 
 /* ── Scrollbar hide ── */
@@ -530,7 +538,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     recentsStage.querySelectorAll('.recents-project').forEach(function(el){
       var i = parseInt(el.getAttribute('data-index'));
-      el.addEventListener('mouseenter', function(){ if(i !== activeProject) swapTo(i); });
+      // Desktop only: hover to swap
+      if(!isMobile){
+        el.addEventListener('mouseenter', function(){ if(i !== activeProject) swapTo(i); });
+      }
+      // Both: click non-active → swap; click active → navigate (default <a>)
       el.addEventListener('click', function(e){
         if(i !== activeProject){
           e.preventDefault();
@@ -539,9 +551,12 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       });
     });
 
-    recentsStage.addEventListener('mouseleave', function(){
-      if(activeProject !== 0) swapTo(0);
-    });
+    // Desktop only: mouseleave resets to first project
+    if(!isMobile){
+      recentsStage.addEventListener('mouseleave', function(){
+        if(activeProject !== 0) swapTo(0);
+      });
+    }
   }
 
   function swapTo(newActive){
