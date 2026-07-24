@@ -4,7 +4,5 @@
   "category": "effect",
   "type": "parallax",
   "description": "Horizontal parallax scroll effect",
-  "defaults": {
-    "speed": 0.2
-  }
+  "defaults": { "speed": 0.2 }
 }

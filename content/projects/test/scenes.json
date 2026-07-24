@@ -1,5 +1,5 @@
 {
-  "canvasWidth": 12000,
+  "canvasWidth": "800vw",
   "scenes": [
     {
       "id": "opening",
@@ -168,10 +168,130 @@
             }
           ],
           "y": "0vh"
+        },
+        {
+          "type": "text",
+          "content": "认为有上升就有下降，历史在进行自己的循环……可是，但凡我们究其根本就会发现，它不仅表现为某种循环——一种循环只是某种特定时期、特定社会制度的危机-破坏-重建的外在表象——还表现为一种上升。当生产关系发生彻底的变化，制度演化为另外一种牢靠的体系的时候，源于其自身的结构性矛盾，由于变革与体系之间的张力，它从旧的循环会演变成一种新的循环。",
+          "x": "428.2vw",
+          "width": "75vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_jb4us1kp",
+          "_inspectorPushed": true,
+          "lineHeight": 1.4,
+          "parallax": 0.2,
+          "null": "0.2",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "y": "51.3vh"
+        },
+        {
+          "type": "group",
+          "id": "el_zeojgwe6",
+          "x": "443.6vw",
+          "y": "39.8vh",
+          "width": "40vw",
+          "height": "30vw",
+          "zIndex": 2,
+          "children": [
+            {
+              "type": "text",
+              "content": "垃圾时间",
+              "width": "50vw",
+              "fontFamily": "'Inter', sans-serif",
+              "fontSize": "10vw",
+              "fontWeight": "900",
+              "color": "#fff",
+              "zIndex": 2,
+              "id": "el_cw88vejw",
+              "_inspectorPushed": true,
+              "null": "0.2",
+              "enterAnimation": [],
+              "y": "0vh",
+              "left": "0vw",
+              "marginTop": "2rem"
+            },
+            {
+              "type": "text",
+              "content": "有的人说，这是历史上的",
+              "x": "0vw",
+              "width": "75vw",
+              "fontFamily": "'Inter', sans-serif",
+              "fontSize": "2rem",
+              "fontWeight": "300",
+              "color": "#fff",
+              "zIndex": 2,
+              "id": "el_5jp15nwb",
+              "_inspectorPushed": true,
+              "lineHeight": 1.4,
+              "null": "0.2",
+              "enterAnimation": [
+                {
+                  "type": "slideLeft",
+                  "distance": 80,
+                  "duration": 1,
+                  "delay": 0,
+                  "ease": "cubic"
+                }
+              ],
+              "y": "0vh",
+              "paddingRight": "20vw"
+            }
+          ],
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "marginBottom": "20vh"
+        },
+        {
+          "type": "image",
+          "src": "content/projects/test/frutigue-aero.png",
+          "x": "224.6vw",
+          "width": "40vw",
+          "height": "30vw",
+          "objectFit": "cover",
+          "zIndex": 0,
+          "id": "el_bfh2bvid",
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "fade",
+              "duration": 2,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": "2",
+          "marginTop": "40vh"
         }
       ],
       "height": "100vh",
       "_inspectorPushed": true
     }
-  ]
+  ],
+  "pageBackground": "#000000"
 }

@@ -1,0 +1,16 @@
+{
+  "id": "group",
+  "name": "Group",
+  "category": "component",
+  "type": "group",
+  "description": "Container group for nesting elements",
+  "defaults": {
+    "type": "group",
+    "x": "10vw",
+    "y": "10vh",
+    "width": "40vw",
+    "height": "30vw",
+    "zIndex": 1,
+    "children": []
+  }
+}

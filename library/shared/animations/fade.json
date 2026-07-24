@@ -4,10 +4,5 @@
   "category": "animation",
   "type": "fade",
   "description": "Fade in from transparent to opaque. Duration is in viewport widths — larger = slower reveal.",
-  "defaults": {
-    "type": "fade",
-    "duration": 1,
-    "delay": 0,
-    "ease": "cubic"
-  }
+  "defaults": { "type": "fade", "duration": 1.0, "delay": 0, "ease": "cubic" }
 }

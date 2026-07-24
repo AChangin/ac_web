@@ -4,7 +4,5 @@
   "category": "effect",
   "type": "float",
   "description": "Gentle floating vertical motion",
-  "defaults": {
-    "amount": 20
-  }
+  "defaults": { "amount": 20 }
 }

@@ -59,6 +59,67 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#1a1
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+
+/* ═══ JSON CODE EDITOR ═══ */
+.editor-mode-toggle{display:flex;gap:2px}
+.editor-mode-toggle button{font-size:9px;background:#2a2a2a;color:#888;border:1px solid #333;padding:3px 10px;cursor:pointer;font-family:inherit}
+.editor-mode-toggle button:first-child{border-radius:3px 0 0 3px}
+.editor-mode-toggle button:last-child{border-radius:0 3px 3px 0}
+.editor-mode-toggle button.active{background:#8b0000;color:#fff;border-color:#8b0000}
+.json-editor-wrap{padding:0 12px 16px;display:none;flex-direction:column;gap:6px}
+.json-editor-wrap.show{display:flex}
+.json-editor{width:100%;min-height:320px;background:#111;border:1px solid #333;color:#ccc;padding:8px 10px;border-radius:4px;font-size:11px;font-family:'Cascadia Code','Fira Code','JetBrains Mono','SF Mono',Consolas,monospace;resize:vertical;line-height:1.5;tab-size:2;white-space:pre;overflow:auto}
+.json-editor:focus{outline:none;border-color:#8b0000}
+.json-toolbar{display:flex;gap:5px}
+.json-toolbar button{padding:4px 10px;border-radius:3px;font-size:10px;cursor:pointer;font-family:inherit;background:#2a2a2a;color:#aaa;border:1px solid #333}
+.json-toolbar button:hover{background:#333;color:#fff}
+.json-toolbar button.warn{background:#3a2a00;color:#da0;border-color:#543}
+.json-toolbar button.warn:hover{background:#4a3a00;color:#fc3}
+.json-msg{font-size:10px;padding:2px 0;min-height:16px}
+.json-msg.ok{color:#6a6}
+.json-msg.err{color:#c55}
+
+/* ═══ COLOR PICKER ═══ */
+.cp-swatch{width:22px;height:22px;border:1px solid #444;border-radius:3px;cursor:pointer;flex-shrink:0;padding:0;background:transparent}
+.cp-swatch::-webkit-color-swatch-wrapper{padding:0}
+.cp-swatch::-webkit-color-swatch{border:none;border-radius:2px}
+.cp-wrap{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+
+/* ═══ AI CREATE MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#252525;border:1px solid #444;border-radius:8px;padding:20px 24px;width:880px;max-width:95vw;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column}
+.modal-box h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:#fff;margin-bottom:12px;font-weight:600;flex-shrink:0}
+.modal-box .ai-body{display:flex;gap:0;flex:1;min-height:0}
+.modal-box .ai-left{flex:1;min-width:260px;display:flex;flex-direction:column;gap:0;padding-right:8px}
+.modal-box .ai-right{width:280px;min-width:160px;flex-shrink:0;display:flex;flex-direction:column;position:relative}
+.modal-box .ai-resize-handle{width:6px;cursor:ew-resize;flex-shrink:0;background:#333;border-radius:2px;position:relative;margin:0 4px;transition:background 0.15s}
+.modal-box .ai-resize-handle:hover{background:#555}
+.modal-box .ai-resize-handle::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:2px;height:32px;border-radius:2px;background:#666}
+.modal-box .ai-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.modal-box .ai-row label{width:40px;flex-shrink:0;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#888}
+.modal-box .ai-row select,.modal-box .ai-row input{flex:1;background:#1a1a1a;border:1px solid #333;color:#ccc;padding:5px 8px;border-radius:4px;font-size:11px;font-family:inherit}
+.modal-box .ai-row select{appearance:none;cursor:pointer}
+.modal-box .ai-row input:focus,.modal-box .ai-row select:focus{outline:none;border-color:#8b0000}
+.modal-box .ai-label{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#888;margin-bottom:4px;margin-top:8px}
+.modal-box .ai-desc{width:100%;min-height:56px;background:#1a1a1a;border:1px solid #333;color:#ccc;padding:6px 8px;border-radius:4px;font-size:11px;font-family:inherit;resize:vertical}
+.modal-box .ai-desc:focus{outline:none;border-color:#8b0000}
+.modal-box .ai-json{width:100%;min-height:180px;flex:1;background:#111;border:1px solid #333;color:#ccc;padding:8px 10px;border-radius:4px;font-size:11px;font-family:'Cascadia Code','Fira Code','JetBrains Mono','SF Mono',Consolas,monospace;resize:vertical;line-height:1.5;tab-size:2;white-space:pre}
+.modal-box .ai-json:focus{outline:none;border-color:#8b0000}
+.modal-box .ai-btns{display:flex;gap:6px;margin-top:6px;margin-bottom:2px}
+.modal-box .ai-btns button{padding:4px 10px;border-radius:3px;font-size:10px;cursor:pointer;font-family:inherit;background:#2a2a2a;color:#aaa;border:1px solid #333}
+.modal-box .ai-btns button:hover{background:#333;color:#fff}
+.modal-box .ai-btns button.accent{background:#1a3a1a;border-color:#2a5a2a;color:#8c8}
+.modal-box .ai-btns button.accent:hover{background:#2a4a2a;color:#afa}
+.modal-box .ai-preview-label{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#666;margin-bottom:4px;flex-shrink:0}
+.modal-box .ai-preview-stage{flex:1;min-height:120px;background:#000;border:1px solid #333;border-radius:4px;position:relative;overflow:hidden}
+.modal-box .ai-preview-stage .preview-el{position:absolute}
+.modal-box .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-shrink:0}
+.modal-box .modal-btns button{padding:6px 16px;border-radius:4px;font-size:11px;cursor:pointer;font-family:inherit}
+.modal-box .modal-btns .btn-cancel{background:#333;color:#ccc;border:1px solid #444}
+.modal-box .modal-btns .btn-create{background:#8b0000;color:#fff;border:1px solid #8b0000}
+.modal-box .modal-note{font-size:10px;color:#666;margin-top:10px;line-height:1.5;flex-shrink:0}
+.resize-active{cursor:ew-resize!important;user-select:none}
 </style>
 </head>
 <body>
@@ -66,7 +127,7 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#1a1
 <div class="toolbar">
   <span>Library Manager</span>
   <div class="sep"></div>
-  <button id="btn-new-comp" class="green">+ New Component</button>
+  <button id="btn-ai-create" style="background:#1a3a1a;border-color:#2a5a2a;color:#8c8">&#x2726; Create</button>
   <button id="btn-export-all">Export All</button>
   <button id="btn-save-all" class="primary" title="Save all library files to disk via Node.js server">Save to Disk</button>
   <span style="flex:1"></span>
@@ -76,7 +137,7 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#1a1
 <div class="main">
   <!-- LEFT: Asset Browser -->
   <div class="panel-left">
-    <h3>Components <button id="btn-new-comp2">+</button></h3>
+    <h3>Components</h3>
     <div id="comp-list"><div class="asset-empty">Loading...</div></div>
     <div class="asset-section">Animations</div>
     <div id="anim-list"><div class="asset-empty">Loading...</div></div>
@@ -86,15 +147,65 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#1a1
 
   <!-- CENTER: Definition Editor -->
   <div class="panel-center">
-    <h3>Definition Editor</h3>
+    <h3>Definition Editor <span class="editor-mode-toggle" style="float:right"><button id="btn-mode-form" class="active">Form</button><button id="btn-mode-json">JSON</button></span></h3>
     <div class="editor-empty" id="editor-empty">Select a component to edit</div>
     <div class="editor-form" id="editor-form" style="display:none"></div>
+    <div class="json-editor-wrap" id="json-editor-wrap">
+      <textarea class="json-editor" id="json-editor" spellcheck="false"></textarea>
+      <div class="json-toolbar">
+        <button id="btn-json-format">Format</button>
+        <button id="btn-json-validate">Validate</button>
+        <button id="btn-json-apply" class="warn">Apply Changes</button>
+      </div>
+      <div class="json-msg" id="json-msg"></div>
+    </div>
   </div>
 
   <!-- RIGHT: Preview -->
   <div class="panel-right">
     <h3>Preview</h3>
     <div class="preview-stage" id="preview-stage"></div>
+  </div>
+</div>
+
+<!-- AI Create Modal -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="modal-box">
+    <h2>&#x2726; AI Create Component</h2>
+    <div class="ai-row">
+      <label>Type</label>
+      <input id="ai-type" list="ai-type-list" value="text" placeholder="text">
+      <datalist id="ai-type-list">
+        <option value="text">
+        <option value="image">
+        <option value="svg">
+        <option value="video">
+        <option value="gif">
+        <option value="model3d">
+        <option value="group">
+      </datalist>
+      <label style="width:44px">Name</label>
+      <input id="ai-name" placeholder="My Component">
+    </div>
+    <div class="ai-body">
+      <div class="ai-left" id="ai-left">
+        <div class="ai-label">Description (describe what you want in natural language)</div>
+        <textarea class="ai-desc" id="ai-desc" placeholder="e.g. A bold hero title with large white font, centered, dark background.&#10;Or: A full-width cover image with parallax effect and rounded corners.&#10;Or: A small SVG icon, gold colored, positioned top-right."></textarea>
+        <div class="ai-btns">
+          <button id="btn-ai-generate" class="accent">&#x2726; Generate Template</button>
+          <button id="btn-ai-format">Format JSON</button>
+        </div>
+        <div class="ai-label">Definition JSON <span style="font-weight:400;color:#555;text-transform:none">— edit or paste from AI</span></div>
+        <textarea class="ai-json" id="ai-json" spellcheck="false"></textarea>
+      </div>
+      <div class="ai-resize-handle" id="ai-resize-handle" title="Drag to resize"></div>
+      <div class="ai-right" id="ai-right">
+        <div class="ai-preview-label">Preview</div>
+        <div class="ai-preview-stage" id="ai-preview-stage"></div>
+      </div>
+    </div>
+    <div class="modal-note">You can also paste component JSON directly from any AI assistant (Claude, ChatGPT, etc.). Just describe the component, copy the JSON here, and hit Create.</div>
+    <div class="modal-btns"><button class="btn-cancel" id="ai-cancel">Cancel</button><button class="btn-create" id="ai-create-btn">Create Component</button></div>
   </div>
 </div>
 
@@ -107,6 +218,7 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#1a1
 var components=[],animations=[],effects=[];
 var selectedId=null,selectedCategory='component';
 var editingData=null;
+var editorMode='form'; // 'form' | 'json'
 
 // ═══ DOM ═══
 var compList=document.getElementById('comp-list');
@@ -169,8 +281,13 @@ function selectComponent(id){
 
 // ═══ EDITOR ═══
 function renderEditor(){
-  if(!editingData){editorEmpty.style.display='';editorForm.style.display='none';return}
+  if(!editingData){editorEmpty.style.display='';editorForm.style.display='none';document.getElementById('json-editor-wrap').classList.remove('show');return}
+  if(editorMode==='json'){
+    renderJsonEditor();
+    return;
+  }
   editorEmpty.style.display='none';editorForm.style.display='';
+  document.getElementById('json-editor-wrap').classList.remove('show');
   var d=editingData;
   var defs=d.defaults||{};
   var h='';
@@ -210,6 +327,25 @@ function renderEditor(){
     h+=row('svgFill',defs.svgFill,'text');
     h+=row('svgStroke',defs.svgStroke,'text');
   }
+  // Video
+  if(d.type==='video'){
+    h+=row('src',defs.src,'text');
+    h+=row('objectFit',defs.objectFit,'text');
+    h+=row('autoplay',defs.autoplay,'text');
+    h+=row('loop',defs.loop,'text');
+    h+=row('muted',defs.muted,'text');
+    h+=row('controls',defs.controls,'text');
+  }
+  // GIF
+  if(d.type==='gif'){
+    h+=row('src',defs.src,'text');
+    h+=row('objectFit',defs.objectFit,'text');
+  }
+  // 3D Model
+  if(d.type==='model3d'){
+    h+=row('src',defs.src,'text');
+    h+=row('wireframe',defs.wireframe,'text');
+  }
   h+=row('background',defs.background,'text');
   h+=row('borderRadius',defs.borderRadius,'text');
   h+='<div class="editor-btns"><button class="btn-save" id="btn-save-comp">Save to Disk</button><button class="btn-del" id="btn-del-comp">Delete</button></div>';
@@ -231,11 +367,302 @@ function renderEditor(){
       }
     });
   });
+  injectColorPickers(editorForm);
+}
+
+// ═══ JSON CODE EDITOR ═══
+function renderJsonEditor(){
+  editorEmpty.style.display='none';editorForm.style.display='none';
+  var wrap=document.getElementById('json-editor-wrap');
+  wrap.classList.add('show');
+  document.getElementById('json-editor').value=JSON.stringify(editingData,null,2);
+  document.getElementById('json-msg').textContent='';
+  document.getElementById('json-msg').className='json-msg';
+}
+function toggleEditorMode(mode){
+  editorMode=mode;
+  document.getElementById('btn-mode-form').classList.toggle('active',mode==='form');
+  document.getElementById('btn-mode-json').classList.toggle('active',mode==='json');
+  if(mode==='form'){
+    applyJsonChanges(false); // switch back without alert on failure
+  }
+  if(!editingData)return;
+  renderEditor();
+  renderPreview();
+}
+function formatJson(){
+  var ta=document.getElementById('json-editor');
+  try{
+    var obj=JSON.parse(ta.value);
+    ta.value=JSON.stringify(obj,null,2);
+    document.getElementById('json-msg').textContent='Formatted ✓';
+    document.getElementById('json-msg').className='json-msg ok';
+  }catch(e){
+    document.getElementById('json-msg').textContent='Invalid JSON: '+e.message;
+    document.getElementById('json-msg').className='json-msg err';
+  }
+}
+function validateJson(){
+  var ta=document.getElementById('json-editor');
+  try{
+    var obj=JSON.parse(ta.value);
+    if(!obj.id){document.getElementById('json-msg').textContent='Missing required field: id';document.getElementById('json-msg').className='json-msg err';return}
+    if(!obj.type){document.getElementById('json-msg').textContent='Missing required field: type';document.getElementById('json-msg').className='json-msg err';return}
+    if(!obj.defaults||typeof obj.defaults!=='object'){document.getElementById('json-msg').textContent='Missing required field: defaults';document.getElementById('json-msg').className='json-msg err';return}
+    document.getElementById('json-msg').textContent='Valid JSON ✓ (id: '+obj.id+', type: '+obj.type+')';
+    document.getElementById('json-msg').className='json-msg ok';
+  }catch(e){
+    document.getElementById('json-msg').textContent='Invalid JSON: '+e.message;
+    document.getElementById('json-msg').className='json-msg err';
+  }
+}
+function applyJsonChanges(showAlert){
+  var ta=document.getElementById('json-editor');
+  try{
+    var obj=JSON.parse(ta.value);
+    if(!obj.id){alert('Missing required field: id');return false}
+    if(!obj.type){alert('Missing required field: type');return false}
+    if(!obj.defaults||typeof obj.defaults!=='object'){alert('Missing required field: defaults');return false}
+    editingData=obj;
+    selectedId=obj.id;
+    selectedCategory=obj.category||'component';
+    editorMode='form';
+    document.getElementById('btn-mode-form').classList.add('active');
+    document.getElementById('btn-mode-json').classList.remove('active');
+    renderEditor();
+    renderPreview();
+    renderAllLists();
+    return true;
+  }catch(e){
+    if(showAlert!==false)alert('Invalid JSON: '+e.message);
+    return false;
+  }
+}
+
+// ═══ AI CREATE MODAL ═══
+function openAiCreate(){
+  document.getElementById('ai-modal').classList.add('show');
+  document.getElementById('ai-right').style.width='280px'; // reset resize
+  document.getElementById('ai-name').value='';
+  document.getElementById('ai-desc').value='';
+  document.getElementById('ai-json').value='';
+  document.getElementById('ai-preview-stage').innerHTML='';
+  document.getElementById('ai-type').value='text';
+  setTimeout(function(){document.getElementById('ai-desc').focus()},100);
+}
+function closeAiCreate(){
+  document.getElementById('ai-modal').classList.remove('show');
+}
+function slugify(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'custom-comp'}
+function generateAiTemplate(){
+  var type=document.getElementById('ai-type').value;
+  var name=document.getElementById('ai-name').value.trim()||'My Component';
+  var desc=document.getElementById('ai-desc').value.trim();
+  var id=slugify(name);
+  var def={
+    id:id,name:name,category:'component',type:type,icon:type==='text'?'T':type==='image'?'▣':type==='svg'?'◇':'⊞',
+    description:desc||'Custom '+type+' component',
+    defaults:{type:type}
+  };
+  // Parse hints from description
+  var d=desc.toLowerCase();
+  var defs=def.defaults;
+  // Sizing
+  if(/full.width|fullwidth|full-width/i.test(d)){defs.width='100vw'}
+  else if(/half.width|half/i.test(d)){defs.width='50vw'}
+  else if(/narrow|small/i.test(d)){defs.width='20vw'}
+  else{defs.width='40vw'}
+  if(/tall|large height|big height/i.test(d)){defs.height='40vw'}
+  else if(/short/i.test(d)){defs.height='10vw'}
+  // Position
+  if(/center|centered|middle/i.test(d)){defs.x='30vw'}
+  else if(/right/i.test(d)){defs.x='60vw'}
+  else{defs.x='10vw'}
+  defs.y=/bottom/i.test(d)?'60vh':'20vh';
+  // Colors
+  if(/#[0-9a-fA-F]{3,6}/.test(desc)){var m=desc.match(/#[0-9a-fA-F]{3,6}/);defs.color=m[0]}
+  else if(/white/i.test(d))defs.color='#fff';
+  else if(/gold|golden/i.test(d))defs.color='#daa520';
+  else if(/red/i.test(d))defs.color='#c44';
+  else defs.color='#fff';
+  if(/dark.bg|dark background|black bg|black background/i.test(d))defs.background='#000';
+  else if(/transparent/i.test(d))defs.background='transparent';
+  // Font
+  if(/bold/i.test(d))defs.fontWeight='700';
+  else if(/light/i.test(d))defs.fontWeight='300';
+  else defs.fontWeight='400';
+  if(/large|big|huge/i.test(d))defs.fontSize='4vw';
+  else if(/small|tiny/i.test(d))defs.fontSize='1.2vw';
+  else defs.fontSize='2vw';
+  // Text align
+  if(/center|centered/i.test(d))defs.textAlign='center';
+  else if(/right/i.test(d))defs.textAlign='right';
+  else defs.textAlign='left';
+  // Z-index
+  if(/on.top|top layer|foreground/i.test(d))defs.zIndex=10;
+  else if(/back|behind|background layer/i.test(d))defs.zIndex=0;
+  else defs.zIndex=2;
+  // Opacity
+  if(/transparent|faint|ghost/i.test(d))defs.opacity=0.5;
+  // Border radius
+  if(/round|rounded/i.test(d))defs.borderRadius='12px';
+  // Type-specific
+  switch(type){
+    case'text':
+      defs.fontFamily="'Inter',sans-serif";
+      defs.content=name;
+      if(/hero|title|headline/i.test(d)){defs.content='Hero Title';defs.fontWeight='700';defs.fontSize='5vw'}
+      if(/subtitle|sub text|subhead/i.test(d)){defs.content='Subtitle';defs.fontSize='1.5vw';defs.fontWeight='300'}
+      if(/body|paragraph|description/i.test(d)){defs.content='Lorem ipsum dolor sit amet, consectetur adipiscing elit.';defs.fontSize='1vw';defs.lineHeight=1.6}
+      break;
+    case'image':
+      defs.src='posts/tired_20260718.jpg';defs.objectFit='cover';
+      if(/contain/i.test(d))defs.objectFit='contain';
+      break;
+    case'svg':
+      defs.src='icons/note.svg';
+      if(/gold|golden/i.test(d)){defs.svgColor='invert(67%) sepia(37%) saturate(658%) hue-rotate(5deg) brightness(91%) contrast(87%)'}
+      if(/white/i.test(d))defs.svgColor='brightness(0) invert(1)';
+      break;
+    case'group':
+      defs.children=[];
+      if(/flex|row/i.test(d))defs.display='flex';
+      break;
+    case'video':
+      defs.src='bg_alpha_desktop.webm';defs.objectFit='cover';
+      defs.autoplay=true;defs.loop=true;defs.muted=true;defs.controls=false;
+      if(/control/i.test(d))defs.controls=true;
+      if(/contain/i.test(d))defs.objectFit='contain';
+      if(/no.loop|once/i.test(d))defs.loop=false;
+      defs.width=defs.width||'60vw';defs.height=defs.height||'40vw';
+      break;
+    case'gif':
+      defs.src='posts/tired_20260718.jpg';defs.objectFit='cover';
+      defs.width=defs.width||'30vw';defs.height=defs.height||'30vw';
+      if(/contain/i.test(d))defs.objectFit='contain';
+      break;
+    case'model3d':
+      defs.src='models/scene.glb';defs.background='transparent';
+      defs.width=defs.width||'50vw';defs.height=defs.height||'50vw';
+      defs.zIndex=defs.zIndex||5;
+      if(/dark.bg|black bg|dark background/i.test(d))defs.background='#111';
+      if(/wireframe/i.test(d))defs.wireframe=true;
+      break;
+  }
+  document.getElementById('ai-json').value=JSON.stringify(def,null,2);
+  aiPreviewUpdate();
+}
+function aiPreviewUpdate(){
+  var stage=document.getElementById('ai-preview-stage');
+  if(!stage)return;
+  stage.innerHTML='';
+  try{
+    var def=JSON.parse(document.getElementById('ai-json').value);
+    var defs=def.defaults||{};
+    var el=document.createElement('div');el.className='preview-el';
+    var sw=stage.clientWidth||280,sh=stage.clientHeight||200;
+    el.style.left=numVal(defs.x||0,sw,sh)+'px';
+    el.style.top=numVal(defs.y||0,sw,sh)+'px';
+    el.style.width=numVal(defs.width||200,sw,sh)+'px';
+    el.style.height=numVal(defs.height||40,sw,sh)+'px';
+    el.style.zIndex=defs.zIndex||1;
+    if(defs.opacity!==undefined)el.style.opacity=defs.opacity;
+    if(defs.background)el.style.background=defs.background;
+    if(defs.borderRadius)el.style.borderRadius=typeof defs.borderRadius==='number'?defs.borderRadius+'px':defs.borderRadius;
+    if(defs.type==='text'){
+      if(defs.fontFamily)el.style.fontFamily=defs.fontFamily;
+      if(defs.fontSize)el.style.fontSize=typeof defs.fontSize==='number'?defs.fontSize+'px':defs.fontSize;
+      if(defs.fontWeight)el.style.fontWeight=defs.fontWeight;
+      if(defs.color)el.style.color=defs.color;
+      if(defs.textAlign)el.style.textAlign=defs.textAlign;
+      el.textContent=defs.content||'';
+    }else if(defs.type==='image'){
+      el.style.background='rgba(144,238,144,0.2)';
+      el.textContent='▣ Image';
+      el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+      el.style.fontSize='10px';el.style.color='rgba(144,238,144,0.5)';
+    }else if(defs.type==='svg'){
+      el.style.background='rgba(255,215,0,0.2)';
+      el.textContent='◇ SVG';
+      el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+      el.style.fontSize='10px';el.style.color='rgba(255,215,0,0.5)';
+    }else if(defs.type==='group'){
+      el.style.border='2px dashed rgba(218,165,32,0.5)';
+      el.style.background='rgba(218,165,32,0.1)';
+      el.textContent='⊞ Group';
+      el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+      el.style.fontSize='10px';el.style.color='rgba(218,165,32,0.5)';
+    }else if(defs.type==='video'){
+      el.style.background='rgba(100,149,237,0.2)';
+      el.style.border='1px dashed rgba(100,149,237,0.4)';
+      el.textContent='▶ Video'+(defs.src?' ('+defs.src+')':'');
+      el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+      el.style.fontSize='10px';el.style.color='rgba(100,149,237,0.6)';
+    }else if(defs.type==='gif'){
+      el.style.background='rgba(255,105,180,0.2)';
+      el.style.border='1px dashed rgba(255,105,180,0.4)';
+      el.textContent='🎞 GIF'+(defs.src?' ('+defs.src+')':'');
+      el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+      el.style.fontSize='10px';el.style.color='rgba(255,105,180,0.6)';
+    }else if(defs.type==='model3d'){
+      el.style.background='rgba(0,255,255,0.1)';
+      el.style.border='2px dashed rgba(0,255,255,0.3)';
+      el.innerHTML='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:rgba(0,255,255,0.5);font-size:10px">◇ 3D<br><span style="font-size:8px">'+(defs.src||'model')+'</span></div>';
+    }
+    stage.appendChild(el);
+  }catch(e){}
+}
+function createFromAiJson(){
+  var ta=document.getElementById('ai-json');
+  try{
+    var obj=JSON.parse(ta.value);
+    if(!obj.id){alert('Missing required field: id');return}
+    if(!obj.type){alert('Missing required field: type');return}
+    if(!obj.defaults||typeof obj.defaults!=='object'){alert('Missing required field: defaults');return}
+    if(components.find(function(c){return c.id===obj.id})){alert('Component id "'+obj.id+'" already exists. Choose a different id.');return}
+    components.push(obj);
+    selectedId=obj.id;
+    selectedCategory='component';
+    editingData=JSON.parse(JSON.stringify(obj));
+    editorMode='form';
+    document.getElementById('btn-mode-form').classList.add('active');
+    document.getElementById('btn-mode-json').classList.remove('active');
+    closeAiCreate();
+    renderAllLists();
+    renderEditor();
+    renderPreview();
+  }catch(e){alert('Invalid JSON: '+e.message)}
+}
+function formatAiJson(){
+  var ta=document.getElementById('ai-json');
+  try{var obj=JSON.parse(ta.value);ta.value=JSON.stringify(obj,null,2)}catch(e){}
 }
 
 function row(l,v,t){var val=v!==undefined&&v!==null?String(v):'';return'<div class="editor-row"><label>'+l+'</label><input data-key="'+l+'" type="'+(t||'text')+'" value="'+esc(val)+'"></div>'}
 function rowArea(l,v){return'<div class="editor-row"><label>'+l+'</label><textarea data-key="'+l+'">'+esc(v||'')+'</textarea></div>'}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// ═══ COLOR PICKER ═══
+function syncColorSwatch(swatchEl,hexEl){
+  function swToHex(){hexEl.value=swatchEl.value;hexEl.dispatchEvent(new Event('input',{bubbles:true}))}
+  function hexToSw(){if(/^#[0-9a-fA-F]{6}$/.test(hexEl.value))swatchEl.value=hexEl.value;else if(/^#[0-9a-fA-F]{3}$/.test(hexEl.value))swatchEl.value=hexEl.value}
+  swatchEl.addEventListener('input',swToHex);
+  hexEl.addEventListener('input',hexToSw);
+  if(hexEl.value&&/^#/.test(hexEl.value))swatchEl.value=hexEl.value;
+}
+function injectColorPickers(container){
+  container.querySelectorAll('input[data-key]').forEach(function(inp){
+    var key=inp.getAttribute('data-key');
+    if((key==='color'||key==='background'||key==='svgColor'||key==='svgFill'||key==='svgStroke')&&!inp.parentElement.querySelector('.cp-swatch')){
+      var wrap=document.createElement('span');wrap.className='cp-wrap';
+      var swatch=document.createElement('input');swatch.type='color';swatch.className='cp-swatch';
+      inp.parentElement.insertBefore(wrap,inp);
+      wrap.appendChild(swatch);wrap.appendChild(inp);
+      inp.style.flex='1';inp.style.minWidth='0';
+      syncColorSwatch(swatch,inp);
+    }
+  });
+}
 
 function getList(){return selectedCategory==='component'?components:selectedCategory==='animation'?animations:effects}
 function saveComponent(){
@@ -254,19 +681,45 @@ function deleteComponent(){
   selectedId=null;editingData=null;renderAllLists();editorEmpty.style.display='';editorForm.style.display='none';previewStage.innerHTML='';
 }
 
-// ═══ NEW COMPONENT ═══
-function newComponent(){
-  var id=prompt('Component id (unique):','new-comp');if(!id)return;
-  if(components.find(function(c){return c.id===id})){alert('id already exists.');return}
-  var nc={id:id,name:'New Component',category:'component',type:'text',icon:'?',description:'',defaults:{type:'text',content:'New text',x:'10vw',y:'10vh',width:'30vw',fontFamily:"'Inter',sans-serif",fontSize:'2vw',fontWeight:'400',color:'#fff',zIndex:2}};
-  components.push(nc);selectedId=id;editingData=JSON.parse(JSON.stringify(nc));renderBrowser();renderEditor();renderPreview();
-}
-document.getElementById('btn-new-comp').addEventListener('click',newComponent);
-document.getElementById('btn-new-comp2').addEventListener('click',newComponent);
+// ═══ JSON EDITOR BINDINGS ═══
+document.getElementById('btn-mode-form').addEventListener('click',function(){if(editorMode!=='form')toggleEditorMode('form')});
+document.getElementById('btn-mode-json').addEventListener('click',function(){if(editorMode!=='json')toggleEditorMode('json')});
+document.getElementById('btn-json-format').addEventListener('click',formatJson);
+document.getElementById('btn-json-validate').addEventListener('click',validateJson);
+document.getElementById('btn-json-apply').addEventListener('click',function(){applyJsonChanges(true)});
+
+// ═══ AI CREATE BINDINGS ═══
+document.getElementById('btn-ai-create').addEventListener('click',openAiCreate);
+document.getElementById('ai-cancel').addEventListener('click',closeAiCreate);
+document.getElementById('ai-modal').addEventListener('click',function(e){if(e.target===document.getElementById('ai-modal'))closeAiCreate()});
+document.getElementById('ai-create-btn').addEventListener('click',createFromAiJson);
+document.getElementById('btn-ai-generate').addEventListener('click',generateAiTemplate);
+document.getElementById('btn-ai-format').addEventListener('click',formatAiJson);
+document.getElementById('ai-type').addEventListener('input',function(){generateAiTemplate()});
+document.getElementById('ai-json').addEventListener('input',function(){aiPreviewUpdate()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(document.getElementById('ai-modal').classList.contains('show'))closeAiCreate()}});
+
+// ═══ AI MODAL RESIZE ═══
+var _aiResize=null;
+document.getElementById('ai-resize-handle').addEventListener('mousedown',function(e){
+  _aiResize={startX:e.clientX,startW:document.getElementById('ai-right').offsetWidth};
+  document.body.classList.add('resize-active');
+  e.preventDefault();
+});
+document.addEventListener('mousemove',function(e){
+  if(!_aiResize)return;
+  var dx=e.clientX-_aiResize.startX;
+  var newW=Math.max(160,Math.min(500,_aiResize.startW-dx));
+  document.getElementById('ai-right').style.width=newW+'px';
+  aiPreviewUpdate();
+});
+document.addEventListener('mouseup',function(){
+  if(_aiResize){_aiResize=null;document.body.classList.remove('resize-active')}
+});
 
 // ═══ PREVIEW ═══
 function u(v){return typeof v==='number'?v+'px':v}
-function numVal(v){if(typeof v==='number')return v;if(typeof v==='string'){var n=parseFloat(v);if(!isNaN(n)){if(v.endsWith('vw'))return n*window.innerWidth/100;if(v.endsWith('vh'))return n*window.innerHeight/100;if(v.endsWith('rem'))return n*16;if(v.endsWith('px'))return n;return n}}return 0}
+function numVal(v,refW,refH){refW=refW||window.innerWidth;refH=refH||window.innerHeight;if(typeof v==='number')return v;if(typeof v==='string'){var n=parseFloat(v);if(!isNaN(n)){if(v.endsWith('vw'))return n*refW/100;if(v.endsWith('vh'))return n*refH/100;if(v.endsWith('rem'))return n*16;if(v.endsWith('px'))return n;return n}}return 0}
 function renderPreview(){
   previewStage.innerHTML='';
   if(!editingData)return;
@@ -295,6 +748,16 @@ function renderPreview(){
     el.style.border='2px dashed rgba(218,165,32,0.5)';
     el.style.background='rgba(218,165,32,0.1)';
     el.innerHTML='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(218,165,32,0.6);font-size:12px">Group</div>';
+  }else if(defs.type==='video'){
+    var attrs=(defs.autoplay!==false?' autoplay':'')+(defs.loop!==false?' loop':'')+(defs.muted!==false?' muted':'')+(defs.controls?' controls':'');
+    el.innerHTML='<video src="'+defs.src+'" style="width:100%;height:100%;object-fit:'+(defs.objectFit||'cover')+';display:block"'+attrs+'></video>';
+    el.style.background='#000';
+  }else if(defs.type==='gif'){
+    el.innerHTML='<img src="'+defs.src+'" style="width:100%;height:100%;object-fit:'+(defs.objectFit||'cover')+';display:block">';
+  }else if(defs.type==='model3d'){
+    el.style.border='2px dashed rgba(0,255,255,0.3)';
+    el.style.background=defs.background||'rgba(0,255,255,0.05)';
+    el.innerHTML='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:rgba(0,255,255,0.5);font-size:11px">◇ 3D Model<br><span style="font-size:9px">'+(defs.src||'model')+'</span></div>';
   }
   previewStage.appendChild(el);
 }

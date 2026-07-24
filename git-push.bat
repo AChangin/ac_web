@@ -3,11 +3,11 @@ cd /d "%~dp0"
 
 echo.
 echo   === Changed files ===
-git status --short
+git --no-pager status --short
 
 echo.
 echo   === Detailed changes ===
-git diff --stat
+git --no-pager diff --stat
 
 echo.
 echo   --------------------------------------

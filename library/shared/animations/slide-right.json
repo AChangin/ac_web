@@ -4,11 +4,5 @@
   "category": "animation",
   "type": "slideRight",
   "description": "Slide rightward into position. distance in px.",
-  "defaults": {
-    "type": "slideRight",
-    "distance": 80,
-    "duration": 1,
-    "delay": 0,
-    "ease": "cubic"
-  }
+  "defaults": { "type": "slideRight", "distance": 80, "duration": 1.0, "delay": 0, "ease": "cubic" }
 }

@@ -145,10 +145,15 @@ async function createProject(req, res) {
 
     // scenes.json
     const scenesData = {
-      canvasWidth: 12000,
-      scenes: [{ id: 'opening', x: 0, width: 3000, elements: [] }]
+      canvasWidth: '200vw',
+      scenes: [{ id: 'opening', x: 0, width: '100vw', elements: [] }]
     };
     writeJSON(path.join(dir, 'scenes.json'), scenesData);
+
+    // project library folder
+    const libDir = path.join(dir, 'library', 'components');
+    fs.mkdirSync(libDir, { recursive: true });
+    writeJSON(path.join(dir, 'library', 'index.json'), { components: [], animations: [], effects: [] });
 
     // Update index.json
     let index;
@@ -207,49 +212,144 @@ async function addToIndex(req, res) {
 }
 
 // POST /api/save-library-component  { id, data }
+// ── Shared library ─────────────────────────────────────────
+
 async function saveLibraryComponent(req, res) {
   try {
     const body = await readBody(req);
     const { id, data } = body;
     if (!id || !data) return notFound(res, 'Missing id or data');
-    const dir = path.join(ROOT, 'library', 'components');
+    const dir = path.join(ROOT, 'library', 'shared', 'components');
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     writeJSON(path.join(dir, id + '.json'), data);
-    console.log('[OK] Saved library component:', id);
+    console.log('[OK] Saved shared component:', id);
     ok(res, { saved: id });
   } catch (e) { serverError(res, e); }
 }
 
-// POST /api/save-library-index  { data }
 async function saveLibraryIndex(req, res) {
   try {
     const body = await readBody(req);
     const { data } = body;
     if (!data) return notFound(res, 'Missing data');
-    writeJSON(path.join(ROOT, 'library', 'index.json'), data);
-    console.log('[OK] Saved library index');
+    writeJSON(path.join(ROOT, 'library', 'shared', 'index.json'), data);
+    console.log('[OK] Saved shared library index');
     ok(res, { saved: 'index.json' });
   } catch (e) { serverError(res, e); }
 }
 
-// DELETE /api/delete-library-component  (id in query string)
 async function deleteLibraryComponent(req, res) {
   try {
     const url = new URL(req.url, 'http://localhost');
     const id = url.searchParams.get('id');
     if (!id) return notFound(res, 'Missing id');
-    const fp = path.join(ROOT, 'library', 'components', id + '.json');
+    const fp = path.join(ROOT, 'library', 'shared', 'components', id + '.json');
     if (!fs.existsSync(fp)) return notFound(res, 'Component not found: ' + id);
     fs.unlinkSync(fp);
-    // Also remove from index
-    const ip = path.join(ROOT, 'library', 'index.json');
+    const ip = path.join(ROOT, 'library', 'shared', 'index.json');
     if (fs.existsSync(ip)) {
       const idx = readJSON(ip);
       idx.components = (idx.components || []).filter(c => c !== id);
       writeJSON(ip, idx);
     }
-    console.log('[OK] Deleted library component:', id);
+    console.log('[OK] Deleted shared component:', id);
     ok(res, { deleted: id });
+  } catch (e) { serverError(res, e); }
+}
+
+// ── Project-scoped library ─────────────────────────────────
+
+async function saveProjectComponent(req, res) {
+  try {
+    const body = await readBody(req);
+    const { slug, id, data } = body;
+    if (!slug || !id || !data) return notFound(res, 'Missing slug, id, or data');
+    const dir = path.join(PROJECTS_DIR, slug, 'library', 'components');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    writeJSON(path.join(dir, id + '.json'), data);
+    const ip = path.join(PROJECTS_DIR, slug, 'library', 'index.json');
+    let idx = { components: [], animations: [], effects: [] };
+    try { idx = readJSON(ip); } catch(e) {}
+    if (idx.components.indexOf(id) < 0) {
+      idx.components.push(id);
+      writeJSON(ip, idx);
+    }
+    console.log('[OK] Saved project component: ' + id + ' for ' + slug);
+    ok(res, { saved: id, slug: slug });
+  } catch (e) { serverError(res, e); }
+}
+
+async function saveProjectIndex(req, res) {
+  try {
+    const body = await readBody(req);
+    const { slug, data } = body;
+    if (!slug || !data) return notFound(res, 'Missing slug or data');
+    writeJSON(path.join(PROJECTS_DIR, slug, 'library', 'index.json'), data);
+    console.log('[OK] Saved project library index for ' + slug);
+    ok(res, { saved: 'index.json', slug: slug });
+  } catch (e) { serverError(res, e); }
+}
+
+// GET /api/open-project-folder?slug=...
+async function openProjectFolder(req, res) {
+  try {
+    const url = new URL(req.url, 'http://localhost');
+    const slug = url.searchParams.get('slug');
+    if (!slug) return notFound(res, 'Missing slug');
+    const dir = path.join(PROJECTS_DIR, slug);
+    if (!fs.existsSync(dir)) return notFound(res, 'Project not found: ' + slug);
+    const { exec } = require('child_process');
+    if (process.platform === 'win32') {
+      exec('explorer "' + dir + '"');
+    } else if (process.platform === 'darwin') {
+      exec('open "' + dir + '"');
+    } else {
+      exec('xdg-open "' + dir + '"');
+    }
+    console.log('[OK] Opened project folder: ' + dir);
+    ok(res, { opened: dir });
+  } catch (e) { serverError(res, e); }
+}
+
+// GET /api/list-project-files?slug=...&type=image,video
+async function listProjectFiles(req, res) {
+  try {
+    const url = new URL(req.url, 'http://localhost');
+    const slug = url.searchParams.get('slug');
+    if (!slug) return notFound(res, 'Missing slug');
+    const dir = path.join(PROJECTS_DIR, slug);
+    if (!fs.existsSync(dir)) return notFound(res, 'Project not found: ' + slug);
+
+    const types = (url.searchParams.get('type') || 'image,video,gif,svg,model').split(',');
+    const imageExts = ['.jpg','.jpeg','.png','.gif','.webp','.svg','.webm','.mp4','.mov','.glb','.gltf','.json'];
+    const allowedExts = types.includes('all') ? null : imageExts;
+
+    function scanDir(d, basePath) {
+      let results = [];
+      try {
+        const entries = fs.readdirSync(d, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.name.startsWith('.') || entry.name === 'library' || entry.name === 'node_modules') continue;
+          const full = path.join(d, entry.name);
+          const rel = path.relative(dir, full).replace(/\\/g, '/');
+          if (entry.isDirectory()) {
+            results = results.concat(scanDir(full, basePath));
+          } else if (entry.isFile()) {
+            const ext = path.extname(entry.name).toLowerCase();
+            if (!allowedExts || allowedExts.includes(ext)) {
+              results.push({
+                name: entry.name,
+                path: 'content/projects/' + slug + '/' + rel,
+                ext: ext
+              });
+            }
+          }
+        }
+      } catch(e) {}
+      return results;
+    }
+    const files = scanDir(dir, dir);
+    ok(res, { files: files, projectSlug: slug });
   } catch (e) { serverError(res, e); }
 }
 
@@ -263,6 +363,10 @@ const API = {
   'POST /api/save-library-component':   saveLibraryComponent,
   'POST /api/save-library-index':       saveLibraryIndex,
   'DELETE /api/delete-library-component': deleteLibraryComponent,
+  'POST /api/save-project-component':   saveProjectComponent,
+  'POST /api/save-project-index':       saveProjectIndex,
+  'GET /api/open-project-folder':        openProjectFolder,
+  'GET /api/list-project-files':         listProjectFiles,
 };
 
 const server = http.createServer((req, res) => {

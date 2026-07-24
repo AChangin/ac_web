@@ -1,8 +1,6 @@
 {
   "projects": [
-    "dusk-dawn",
     "shape-of-silence",
-    "test",
-    "mar"
+    "test"
   ]
 }

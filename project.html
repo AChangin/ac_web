@@ -224,9 +224,11 @@ body{
 
     // Set canvas width + enable native horizontal scroll
     var canvasW = narrative.canvasWidth || 10000;
-    canvas.style.width = canvasW + 'px';
-    inner.style.width = canvasW + 'px';
-    setupDesktopScroll(canvasW);
+    canvas.style.width = (typeof canvasW === 'number' ? canvasW + 'px' : canvasW);
+    inner.style.width = (typeof canvasW === 'number' ? canvasW + 'px' : canvasW);
+    setupDesktopScroll(typeof canvasW === 'number' ? canvasW : resolvePX(canvasW));
+    // Apply page background
+    if(narrative.pageBackground) document.body.style.background = narrative.pageBackground;
 
     // Helper: number → px, string → use as-is (supports vw/vh/rem/%)
     function u(v){ return typeof v === 'number' ? v + 'px' : v; }
@@ -333,6 +335,16 @@ body{
             if(elCfg.svgColor){ svgEl.style.fill = elCfg.svgColor; svgEl.style.stroke = elCfg.svgColor; }
           }
         }
+      } else if(elCfg.type === 'video'){
+        var vattrs = (elCfg.autoplay !== false ? ' autoplay' : '') + (elCfg.loop !== false ? ' loop' : '') + (elCfg.muted !== false ? ' muted' : '') + (elCfg.controls ? ' controls' : '');
+        el.innerHTML = '<video src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:'+(elCfg.objectFit||'cover')+';display:block"'+vattrs+'></video>';
+      } else if(elCfg.type === 'gif'){
+        el.innerHTML = '<img src="'+elCfg.src+'" style="width:100%;height:100%;object-fit:'+(elCfg.objectFit||'cover')+';display:block">';
+      } else if(elCfg.type === 'model3d'){
+        el.setAttribute('data-model-src', elCfg.src || '');
+        el.setAttribute('data-model-wireframe', elCfg.wireframe ? '1' : '0');
+        el.style.background = elCfg.background || 'transparent';
+        el.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:rgba(0,255,255,0.4);font-size:12px;pointer-events:none">◇ 3D<br><span style="font-size:9px">'+(elCfg.src||'model.glb')+'</span></div>';
       }
 
       parentEl.appendChild(el);
@@ -382,7 +394,8 @@ body{
   var isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   function clampX(v){
-    var maxScroll = Math.max(0, parseFloat(canvas.style.width || 0) - window.innerWidth);
+    var cwPx = canvas.offsetWidth || resolvePX(String(canvas.style.width||'100vw'));
+    var maxScroll = Math.max(0, cwPx - window.innerWidth);
     return Math.max(0, Math.min(maxScroll, v));
   }
 

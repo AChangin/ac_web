@@ -1,0 +1,25 @@
+{
+  "id": "video-loop",
+  "name": "Video-Loop",
+  "category": "component",
+  "type": "video",
+  "description": "Custom video component",
+  "defaults": {
+    "type": "video",
+    "width": "40vw",
+    "x": "10vw",
+    "y": "20vh",
+    "color": "#fff",
+    "fontWeight": "400",
+    "fontSize": "2vw",
+    "textAlign": "left",
+    "zIndex": 2,
+    "src": "bg_alpha_desktop.webm",
+    "objectFit": "cover",
+    "autoplay": true,
+    "loop": true,
+    "muted": true,
+    "controls": "true",
+    "height": "40vw"
+  }
+}
