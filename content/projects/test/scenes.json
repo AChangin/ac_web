@@ -129,7 +129,7 @@
           "id": "el_150u9p8h",
           "_inspectorPushed": true,
           "marginTop": "20vh",
-          "lineHeight": 1.4,
+          "lineHeight": 1.6,
           "parallax": 0.1,
           "null": "0.1",
           "enterAnimation": [
@@ -140,7 +140,8 @@
               "delay": 0,
               "ease": "cubic"
             }
-          ]
+          ],
+          "letterSpacing": "0.2rem"
         },
         {
           "type": "text",
@@ -155,7 +156,7 @@
           "id": "el_o7ebser3",
           "_inspectorPushed": true,
           "marginTop": "35vh",
-          "lineHeight": 1.4,
+          "lineHeight": 1.6,
           "parallax": 0.2,
           "null": "0.2",
           "enterAnimation": [
@@ -167,7 +168,8 @@
               "ease": "cubic"
             }
           ],
-          "y": "0vh"
+          "y": "0vh",
+          "letterSpacing": "0.2rem"
         },
         {
           "type": "text",
@@ -181,7 +183,7 @@
           "zIndex": 2,
           "id": "el_jb4us1kp",
           "_inspectorPushed": true,
-          "lineHeight": 1.4,
+          "lineHeight": 1.6,
           "parallax": 0.2,
           "null": "0.2",
           "enterAnimation": [
@@ -193,7 +195,8 @@
               "ease": "cubic"
             }
           ],
-          "y": "52.6vh"
+          "y": "52.6vh",
+          "letterSpacing": "0.2rem"
         },
         {
           "type": "group",
@@ -318,6 +321,33 @@
           "null": "0.3",
           "marginTop": "60vh",
           "parallax": 0.3
+        },
+        {
+          "type": "text",
+          "content": "不过不同的是，作为基底的物质基础与生产关系已然发生变化。正如我们已经度过的二十一世纪前1/4，世界仍处于全球资本主义主导的状态，我们仍面临资本主义自身不可调和的内生矛盾，在外就会体现为即将到来的经济危机。我们要历史唯物主义拨开各路意识形态的迷雾包括自称马克思主义和各路左翼的大帐篷，睁开眼睛好好看看世界的变与不变。",
+          "x": "500.7vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_thmfjtwz",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.2,
+          "null": "0.2",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "y": "26vh",
+          "letterSpacing": "0.2rem"
         }
       ],
       "height": "100vh",
