@@ -1,0 +1,70 @@
+{
+  "id": "intro",
+  "name": "intro",
+  "category": "component",
+  "type": "group",
+  "icon": "?",
+  "description": "Custom component",
+  "defaults": {
+    "type": "group",
+    "width": "40vw",
+    "height": "30vw",
+    "zIndex": 2,
+    "children": [
+      {
+        "type": "text",
+        "content": "垃圾时间",
+        "width": "50vw",
+        "fontFamily": "'Inter', sans-serif",
+        "fontSize": "10vw",
+        "fontWeight": "900",
+        "color": "#fff",
+        "zIndex": 2,
+        "id": "el_cw88vejw",
+        "_inspectorPushed": true,
+        "null": "0.2",
+        "enterAnimation": [],
+        "y": "0vh",
+        "left": "0vw",
+        "marginTop": "2rem"
+      },
+      {
+        "type": "text",
+        "content": "有的人说，这是历史上的",
+        "x": "0vw",
+        "width": "75vw",
+        "fontFamily": "'Inter', sans-serif",
+        "fontSize": "2rem",
+        "fontWeight": "300",
+        "color": "#fff",
+        "zIndex": 2,
+        "id": "el_5jp15nwb",
+        "_inspectorPushed": true,
+        "lineHeight": 1.4,
+        "null": "0.2",
+        "enterAnimation": [
+          {
+            "type": "slideLeft",
+            "distance": 80,
+            "duration": 1,
+            "delay": 0,
+            "ease": "cubic"
+          }
+        ],
+        "y": "0vh",
+        "paddingRight": "20vw"
+      }
+    ],
+    "_inspectorPushed": true,
+    "enterAnimation": [
+      {
+        "type": "slideLeft",
+        "distance": 80,
+        "duration": 1,
+        "delay": 0,
+        "ease": "cubic"
+      }
+    ],
+    "marginBottom": "20vh"
+  }
+}

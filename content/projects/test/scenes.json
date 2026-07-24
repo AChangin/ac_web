@@ -264,8 +264,9 @@
           "type": "image",
           "src": "content/projects/test/frutigue-aero.png",
           "x": "224.6vw",
+          "y": "0vh",
           "width": "40vw",
-          "height": "30vw",
+          "height": "20vh",
           "objectFit": "cover",
           "zIndex": 0,
           "id": "el_bfh2bvid",
@@ -286,7 +287,37 @@
             }
           ],
           "null": "2",
-          "marginTop": "40vh"
+          "marginTop": "50vh"
+        },
+        {
+          "type": "image",
+          "src": "content/projects/test/workers.png",
+          "x": "257.5vw",
+          "y": "0vh",
+          "width": "40vw",
+          "height": "20vh",
+          "objectFit": "cover",
+          "zIndex": 0,
+          "id": "el_ppho8gem",
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "fade",
+              "duration": 2,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": "0.3",
+          "marginTop": "60vh",
+          "parallax": 0.3
         }
       ],
       "height": "100vh",
