@@ -560,7 +560,7 @@
           "fontSize": "2rem",
           "fontWeight": "300",
           "color": "#fff",
-          "zIndex": 2,
+          "zIndex": 0,
           "id": "el_fc0xp1iz",
           "_inspectorPushed": true,
           "lineHeight": 1.6,
@@ -636,7 +636,7 @@
           "fontSize": "10vw",
           "fontWeight": "900",
           "color": "#000000",
-          "zIndex": 2,
+          "zIndex": 3,
           "id": "el_5xahhjj0",
           "_inspectorPushed": true,
           "null": "0.2",
@@ -655,7 +655,7 @@
           "x": "1340vw",
           "width": "40vw",
           "height": "30vw",
-          "zIndex": 2,
+          "zIndex": 3,
           "children": [
             {
               "type": "rect",
@@ -664,7 +664,7 @@
               "background": "#000000",
               "opacity": 1,
               "borderRadius": "0px",
-              "zIndex": 1,
+              "zIndex": 3,
               "id": "el_pd9istlk",
               "_inspectorPushed": true,
               "top": "14vw"
@@ -677,7 +677,7 @@
               "fontSize": "10vw",
               "fontWeight": "900",
               "color": "#000000",
-              "zIndex": 2,
+              "zIndex": 3,
               "id": "el_2qlf3mzl",
               "_inspectorPushed": true,
               "null": "0.2",
@@ -697,7 +697,7 @@
               "fontSize": "10vw",
               "fontWeight": "900",
               "color": "#000000",
-              "zIndex": 2,
+              "zIndex": 3,
               "id": "el_atktnxbs",
               "_inspectorPushed": true,
               "null": "0.2",
@@ -732,9 +732,31 @@
           "background": "#ffffff",
           "opacity": 1,
           "borderRadius": "0px",
-          "zIndex": 0,
+          "zIndex": 2,
           "id": "el_a0hjweuz",
           "_inspectorPushed": true
+        },
+        {
+          "type": "image",
+          "src": "content/projects/test/marx.png",
+          "x": "1248.2vw",
+          "y": "44.3vh",
+          "width": "60vw",
+          "height": "30vh",
+          "objectFit": "contain",
+          "zIndex": 1,
+          "id": "el_m090bycl",
+          "_inspectorPushed": true,
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "parallax": 0.5
         }
       ],
       "height": "100vh",
