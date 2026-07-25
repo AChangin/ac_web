@@ -590,12 +590,12 @@
         {
           "type": "text",
           "content": "这里需要再解释一下:",
-          "x": "1305.1vw",
+          "x": "1250.5vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "1.4rem",
           "fontWeight": "300",
-          "color": "#fff",
+          "color": "#ffffff",
           "zIndex": 2,
           "id": "el_jpq0x21k",
           "_inspectorPushed": true,
@@ -625,7 +625,8 @@
             "label": "剩余价值"
           },
           "parallax": 0.2,
-          "top": "35vh"
+          "top": "35vh",
+          "y": "34.1vh"
         },
         {
           "type": "text",
@@ -634,7 +635,7 @@
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "10vw",
           "fontWeight": "900",
-          "color": "#fff",
+          "color": "#000000",
           "zIndex": 2,
           "id": "el_5xahhjj0",
           "_inspectorPushed": true,
@@ -660,7 +661,7 @@
               "type": "rect",
               "width": "30vw",
               "height": ".5vh",
-              "background": "#ffffff",
+              "background": "#000000",
               "opacity": 1,
               "borderRadius": "0px",
               "zIndex": 1,
@@ -675,7 +676,7 @@
               "fontFamily": "'Inter', sans-serif",
               "fontSize": "10vw",
               "fontWeight": "900",
-              "color": "#fff",
+              "color": "#000000",
               "zIndex": 2,
               "id": "el_2qlf3mzl",
               "_inspectorPushed": true,
@@ -695,7 +696,7 @@
               "fontFamily": "'Inter', sans-serif",
               "fontSize": "10vw",
               "fontWeight": "900",
-              "color": "#fff",
+              "color": "#000000",
               "zIndex": 2,
               "id": "el_atktnxbs",
               "_inspectorPushed": true,
@@ -722,6 +723,18 @@
               "ease": "cubic"
             }
           ]
+        },
+        {
+          "type": "rect",
+          "x": "1289.8vw",
+          "width": "100vw",
+          "height": "100vh",
+          "background": "#ffffff",
+          "opacity": 1,
+          "borderRadius": "0px",
+          "zIndex": 0,
+          "id": "el_a0hjweuz",
+          "_inspectorPushed": true
         }
       ],
       "height": "100vh",
