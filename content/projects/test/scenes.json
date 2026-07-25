@@ -127,7 +127,7 @@
         {
           "type": "text",
           "content": "嘎吱作响的齿轮预示着某天会迎来彻底的瘫痪。“永动机”式的社会发展变得不再可能，未来不会像小时候流行的Aero美学里描绘的那样完美，历史在除了那一两句消费主义编织的口号外也从未想要去兑现那个美好的承诺。",
-          "x": "200vw",
+          "x": "212vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -149,12 +149,13 @@
               "ease": "cubic"
             }
           ],
-          "letterSpacing": "0.2rem"
+          "letterSpacing": "0.2rem",
+          "y": "1.1vh"
         },
         {
           "type": "text",
           "content": "我们现今的状态没有灾难，但也没有一个可预见的未来。放早几年之前，可能还有人说这是危言耸听，可是现今的消费降级、劳工生存日益艰难以及全球保守主义抬头，更别说AI与人类劳动在将岗位上的愈演愈烈的争夺……",
-          "x": "250vw",
+          "x": "293.6vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -163,9 +164,9 @@
           "zIndex": 2,
           "id": "el_o7ebser3",
           "_inspectorPushed": true,
-          "marginTop": "35vh",
+          "marginTop": "40vh",
           "lineHeight": 1.6,
-          "parallax": 0.2,
+          "parallax": 0.15,
           "null": "0.2",
           "enterAnimation": [
             {
@@ -176,13 +177,13 @@
               "ease": "cubic"
             }
           ],
-          "y": "0vh",
+          "y": "1.1vh",
           "letterSpacing": "0.2rem"
         },
         {
           "type": "text",
           "content": "认为有上升就有下降，历史在进行自己的循环…...\n\n可是，但凡我们究其根本就会发现，它不仅表现为某种循环——一种循环只是某种特定时期、特定社会制度的危机-破坏-重建的外在表象——还表现为一种上升。当生产关系发生彻底的变化，制度演化为另外一种牢靠的体系的时候，源于其自身的结构性矛盾，由于变革与体系之间的张力，它从旧的循环会演变成一种新的循环。",
-          "x": "403.4vw",
+          "x": "459.3vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -203,17 +204,17 @@
               "ease": "cubic"
             }
           ],
-          "y": "30vh",
           "letterSpacing": "0.2rem",
           "chapter": {
             "enabled": false
-          }
+          },
+          "top": "30vh",
+          "bottom": "20vh"
         },
         {
           "type": "group",
           "id": "el_zeojgwe6",
-          "x": "443.6vw",
-          "y": "39.8vh",
+          "x": "414.3vw",
           "width": "40vw",
           "height": "30vw",
           "zIndex": 2,
@@ -272,17 +273,46 @@
               "ease": "cubic"
             }
           ],
-          "marginBottom": "20vh",
           "chapter": {
             "enabled": false,
             "label": "Memory"
-          }
+          },
+          "top": "30vh"
+        },
+        {
+          "type": "text",
+          "content": "不过不同的是，作为基底的物质基础与生产关系已然发生变化。正如我们已经度过的二十一世纪前1/4，世界仍处于全球资本主义主导的状态，我们仍面临资本主义自身不可调和的内生矛盾，在外就会体现为即将到来的经济危机。我们要历史唯物主义拨开各路意识形态的迷雾包括自称马克思主义和各路左翼的大帐篷，睁开眼睛好好看看世界的变与不变。",
+          "x": "561.8vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_thmfjtwz",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "y": "16.7vh",
+          "letterSpacing": "0.2rem",
+          "top": "25vh",
+          "bottom": "10vh"
         },
         {
           "type": "image",
           "src": "content/projects/test/frutigue-aero.png",
-          "x": "224.6vw",
-          "y": "0vh",
+          "x": "236.7vw",
+          "y": "1.1vh",
           "width": "40vw",
           "height": "20vh",
           "objectFit": "cover",
@@ -305,13 +335,14 @@
             }
           ],
           "null": "2",
-          "marginTop": "50vh"
+          "marginTop": "50vh",
+          "parallax": 0.2
         },
         {
           "type": "image",
           "src": "content/projects/test/workers.png",
-          "x": "257.5vw",
-          "y": "0vh",
+          "x": "299.6vw",
+          "y": "3.9vh",
           "width": "40vw",
           "height": "20vh",
           "objectFit": "cover",
@@ -338,36 +369,9 @@
           "parallax": 0.3
         },
         {
-          "type": "text",
-          "content": "不过不同的是，作为基底的物质基础与生产关系已然发生变化。正如我们已经度过的二十一世纪前1/4，世界仍处于全球资本主义主导的状态，我们仍面临资本主义自身不可调和的内生矛盾，在外就会体现为即将到来的经济危机。我们要历史唯物主义拨开各路意识形态的迷雾包括自称马克思主义和各路左翼的大帐篷，睁开眼睛好好看看世界的变与不变。",
-          "x": "500.7vw",
-          "width": "60vw",
-          "fontFamily": "'Inter', sans-serif",
-          "fontSize": "2rem",
-          "fontWeight": "300",
-          "color": "#fff",
-          "zIndex": 2,
-          "id": "el_thmfjtwz",
-          "_inspectorPushed": true,
-          "lineHeight": 1.6,
-          "parallax": 0.18,
-          "null": "0.18",
-          "enterAnimation": [
-            {
-              "type": "blur",
-              "amount": 20,
-              "duration": 1,
-              "delay": 0,
-              "ease": "cubic"
-            }
-          ],
-          "y": "26vh",
-          "letterSpacing": "0.2rem"
-        },
-        {
           "type": "gradient-mask",
           "src": "posts/tired_20260718.jpg",
-          "x": "0vw",
+          "x": "-50vw",
           "y": "0vh",
           "width": "40vw",
           "height": "100vh",
@@ -399,8 +403,8 @@
         {
           "type": "text",
           "content": "全球资本主义可能进入一个越来越难以解决自身矛盾的阶段",
-          "x": "711.3vw",
-          "y": "0vh",
+          "x": "657.2vw",
+          "y": "0.8vh",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "6vw",
@@ -435,7 +439,7 @@
         {
           "type": "text",
           "content": "过去的资本主义有一种强大的能力\n\n它即使面临自身必然到来的经济危机，依然可以靠对外战争摧毁旧秩序、技术创新来重建经济和产业。如同以往工业革命、电气化、信息革命所带来的新形态的生产生活，使得社会不断上升直到下一次危机的到来。每一次危机之后，资本主义都可以通过新的生产力扩张，重新建立积累周期。",
-          "x": "667.8vw",
+          "x": "750.6vw",
           "width": "60vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -458,12 +462,12 @@
           ],
           "letterSpacing": "0.2rem",
           "top": "30vh",
-          "bottom": "30vh"
+          "y": "26vh"
         },
         {
           "type": "text",
           "content": "  过去资本主义得以维持稳定的前提条件有:不断把蛋糕做大;资本主义还有其“外部\"用于不断扩张以获取市场;资本主义以技术进步不断创造新的产业和消费需求。\n\n  可是现在呢?过去两百年人口的大幅增长在如今开始进入了严重的停摆，资本主义的劳动和消费市场在面临萎缩;而且，原先没有被市场化、商品化的资本主义外部现在几乎被资本主义吸收:家庭生产、小农、手工业、教育、娱乐、婚姻.....近乎已经把所有东西都纳入价值计算体系，资本主义自己消灭了自己可用于扩张的外部。这样的外部，不仅体现在空间上，还体现在时间上。现代资本主义需要通过债务来提前透支未来，劳动者现在没有足够工资购买商品，资本主义就可以通过借贷来缓解危机，房贷、消费贷、信用卡.....不断刺激消费和透支未来。",
-          "x": "777.9vw",
+          "x": "849.2vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -492,7 +496,7 @@
         {
           "type": "text",
           "content": "而且AI技术的到来让这一切看起来似乎有些不一样了，在人工智能技术不断发展下，在部分领域的能力和效率已经足以替代掉人类，尤其是曾经被认为是无可替代的脑力劳动、创意工作，现今也可以被机器所取代。当技术越发成熟时，企业主大可使用Al来提高生产率，或雇佣少量掌握AI的技术人员来取代大量的活劳动。而此时若无新产业创造大量的岗位，市场上将面临越来越多的失业人员。",
-          "x": "881vw",
+          "x": "956.7vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -516,13 +520,12 @@
           "letterSpacing": "0.2rem",
           "top": "20vh",
           "bottom": "20vh",
-          "maxHeight": "80vh",
-          "y": "35.4vh"
+          "maxHeight": "80vh"
         },
         {
           "type": "text",
           "content": "这一步几乎是肯定的，相比于创造新岗位，A更擅长的是消灭现有岗位--几乎所有产业都可以同时使用它来减少劳动需求。所以问题就不同了，它不再是新产业吸收被淘汰的旧产业。而是所有产业同时提高自动化，让整个行业内的企业争相进行降本增效的操作，让整个就业市场上出卖劳动换取报酬的工人阶级来承担压力。AI是人类过去社会劳动和知识高度凝结后形成的新型生产资料，让企业中的资本有机构成越来越高，它正在让“死劳动”越来越强大，越来越能替代掉活劳动。在这样的制度之下，资本不再需要那么多的劳动者，但劳动者仍然必须依靠出卖劳动力来谋取生活资料。更矛盾的是，资本在不需要劳动者的同时，需要被阻断了收入来源的劳动者去消费完所生产的过剩商品以实现利润。",
-          "x": "970.4vw",
+          "x": "1061.9vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -546,13 +549,12 @@
           "letterSpacing": "0.2rem",
           "top": "20vh",
           "bottom": "20vh",
-          "maxHeight": "80vh",
-          "y": "13.8vh"
+          "maxHeight": "80vh"
         },
         {
           "type": "text",
           "content": "失去稳定的工作，工人将更倾向于存钱而不是花钱，压缩生活需求也更无消费的欲望，节衣缩食不消费看上去才是更理性的选择。当消费下降，大量过剩商品积压，企业为了保住利润，就会选择更彻底的去用自动化技术去代替活劳动。但马克思价值理论告诉我们，机器本身不会创造价值，只会把自身价值转移到产品中。",
-          "x": "1054.5vw",
+          "x": "1168.8vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -581,10 +583,145 @@
             }
           ],
           "letterSpacing": "0.2rem",
-          "top": "20vh",
-          "bottom": "20vh",
-          "maxHeight": "80vh",
-          "y": "59.3vh"
+          "maxHeight": "60vh",
+          "maxWidth": "100vw",
+          "top": "60vh"
+        },
+        {
+          "type": "text",
+          "content": "这里需要再解释一下:",
+          "x": "1305.1vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.4rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_jpq0x21k",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "null": "0.2",
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "rotate",
+              "amount": 30,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.1rem",
+          "maxHeight": "60vh",
+          "maxWidth": "100vw",
+          "chapter": {
+            "enabled": true,
+            "label": "剩余价值"
+          },
+          "parallax": 0.2,
+          "top": "35vh"
+        },
+        {
+          "type": "text",
+          "content": "利润率=",
+          "width": "50vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "10vw",
+          "fontWeight": "900",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_5xahhjj0",
+          "_inspectorPushed": true,
+          "null": "0.2",
+          "enterAnimation": [],
+          "marginTop": "3rem",
+          "x": "1295.3vw",
+          "chapter": {
+            "enabled": false,
+            "label": "a"
+          },
+          "top": "40vh"
+        },
+        {
+          "type": "group",
+          "id": "el_gvey0lh9",
+          "x": "1340vw",
+          "width": "40vw",
+          "height": "30vw",
+          "zIndex": 2,
+          "children": [
+            {
+              "type": "rect",
+              "width": "30vw",
+              "height": ".5vh",
+              "background": "#ffffff",
+              "opacity": 1,
+              "borderRadius": "0px",
+              "zIndex": 1,
+              "id": "el_pd9istlk",
+              "_inspectorPushed": true,
+              "top": "14vw"
+            },
+            {
+              "type": "text",
+              "content": "总资本",
+              "width": "50vw",
+              "fontFamily": "'Inter', sans-serif",
+              "fontSize": "10vw",
+              "fontWeight": "900",
+              "color": "#fff",
+              "zIndex": 2,
+              "id": "el_2qlf3mzl",
+              "_inspectorPushed": true,
+              "null": "0.2",
+              "enterAnimation": [],
+              "x": "0vw",
+              "chapter": {
+                "enabled": false,
+                "label": "a"
+              },
+              "top": "15vw"
+            },
+            {
+              "type": "text",
+              "content": "剩余价值",
+              "width": "50vw",
+              "fontFamily": "'Inter', sans-serif",
+              "fontSize": "10vw",
+              "fontWeight": "900",
+              "color": "#fff",
+              "zIndex": 2,
+              "id": "el_atktnxbs",
+              "_inspectorPushed": true,
+              "null": "0.2",
+              "enterAnimation": [],
+              "x": "0vw",
+              "chapter": {
+                "enabled": false,
+                "label": "a"
+              },
+              "top": "25vh",
+              "y": "0vh"
+            }
+          ],
+          "_inspectorPushed": true,
+          "top": "37vh",
+          "bottom": "30vh",
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ]
         }
       ],
       "height": "100vh",

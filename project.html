@@ -121,7 +121,8 @@ body{
         var elW = parseFloat(el.getAttribute('data-w')) || 300;
 
         // Parallax offset
-        var px = c.parallax ? scrollX * c.parallax : 0;
+        var anticipation = viewW * 0.5; // origin shifts left by half viewport
+        var px = c.parallax ? Math.max(0, scrollX - elX + anticipation) * c.parallax : 0;
         var visualX = elX + px;
         var visualInView = (visualX + elW > scrollX) && (visualX < scrollX + viewW);
 
