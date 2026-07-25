@@ -61,6 +61,27 @@ body{
   html{font-size:clamp(9px,2vw,15px)}
   .project-back{top:5vh;right:10vw;font-size:10vw}
 }
+
+/* ═══ PROGRESS BAR ═══ */
+.pb-wrap{position:fixed;z-index:200;left:50%;transform:translateX(-50%);pointer-events:none;opacity:1;transition:opacity 0.5s}
+.pb-wrap.pre-init{opacity:0;pointer-events:none}
+.pb-wrap.below-threshold{opacity:0;pointer-events:none}
+.pb-track{position:relative;overflow:visible;border-radius:3px}
+.pb-track-bg{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:3px;background:var(--pb-inactive,#888)}
+.pb-fill{position:absolute;top:0;left:0;height:100%;border-radius:3px;background:var(--pb-active,#fff);transition:width 0.15s linear}
+.pb-chapter{position:absolute;top:50%;width:5px;height:5px;border-radius:50%;background:var(--pb-inactive,#666);transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;transition:transform 0.25s cubic-bezier(0.25,0.8,0.25,1.2),background 0.25s,border-radius 0.2s,width 0.2s,box-shadow 0.25s;z-index:1}
+.pb-chapter:hover{transform:translate(-50%,-50%) scale(1.8);background:var(--pb-active,#fff);box-shadow:0 0 0 5px var(--pb-hover-ring,rgba(255,255,255,0.08));z-index:5}
+.pb-chapter.visited{background:var(--pb-active,#fff);z-index:2}
+.pb-chapter.current{height:5px;border-radius:3px;background:var(--pb-active,#fff);transform:translate(-50%,-50%);z-index:10}
+.pb-chapter.current:hover{transform:translate(-50%,-50%) scaleY(1.8);box-shadow:0 0 0 4px var(--pb-hover-ring,rgba(255,255,255,0.08))}
+.pb-label{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);font-family:'Inter',sans-serif;font-size:13px;font-weight:400;color:var(--pb-label,rgba(255,255,255,0.5));white-space:nowrap;pointer-events:none;transition:opacity 0.3s,color 0.3s;letter-spacing:0.02em;opacity:0}
+.pb-label.visible{opacity:1}
+.pb-label.active{color:var(--pb-label-active,#fff);opacity:1}
+.pb-pct{font-family:'Inter',sans-serif;font-size:10px;color:var(--pb-label,rgba(255,255,255,0.3));text-align:center;margin-top:6px;transition:color 0.5s;letter-spacing:0.03em}
+/* CSS variables — dark theme (default) */
+.pb-wrap{--pb-inactive:#666;--pb-active:#fff;--pb-label:rgba(255,255,255,0.5);--pb-label-active:#fff;--pb-hover-ring:rgba(255,255,255,0.06)}
+/* light theme override */
+.pb-wrap.pb-light{--pb-inactive:#999;--pb-active:#222;--pb-label:rgba(0,0,0,0.4);--pb-label-active:#000;--pb-hover-ring:rgba(0,0,0,0.06)}
 </style>
 </head>
 <body>
@@ -71,6 +92,7 @@ body{
 <div class="project-canvas" id="project-canvas">
   <div class="project-canvas-inner" id="project-canvas-inner"></div>
 </div>
+<div class="pb-wrap pre-init" id="pb-wrap"><div class="pb-track" id="pb-track"><div class="pb-track-bg"></div><div class="pb-fill" id="pb-fill"></div></div><div class="pb-pct" id="pb-pct"></div></div>
 
 <script src="js/project-data.js"></script>
 <script>
@@ -218,6 +240,10 @@ body{
     }
   };
 
+  // ═══ Shared helpers (used by initProject and ProgressBar) ═══
+  function u(v){ return typeof v === 'number' ? v + 'px' : v; }
+  function resolvePX(v){ if(typeof v==='number')return v; var n=parseFloat(v); if(!isNaN(n)){if(v.indexOf('vw')>=0)return n*window.innerWidth/100;if(v.indexOf('vh')>=0)return n*window.innerHeight/100;if(v.indexOf('rem')>=0)return n*16;if(v.indexOf('px')>=0)return n;return n}return 0 }
+
   function initProject(meta, narrative){
     projectMeta = meta;
     document.title = projectMeta.title + ' — AC';
@@ -230,9 +256,7 @@ body{
     // Apply page background
     if(narrative.pageBackground) document.body.style.background = narrative.pageBackground;
 
-    // Helper: number → px, string → use as-is (supports vw/vh/rem/%)
-    function u(v){ return typeof v === 'number' ? v + 'px' : v; }
-    function resolvePX(v){ if(typeof v==='number')return v; var n=parseFloat(v); if(!isNaN(n)){if(v.indexOf('vw')>=0)return n*window.innerWidth/100;if(v.indexOf('vh')>=0)return n*window.innerHeight/100;if(v.indexOf('rem')>=0)return n*16;if(v.indexOf('px')>=0)return n;return n}return 0 }
+    // u() and resolvePX() are defined at top level below
 
     // Apply all common layout/visual properties from config to element
     function applyLayout(el, cfg, offsetX, offsetY){
@@ -395,6 +419,11 @@ body{
     });
 
     loading.style.display = 'none';
+
+    // Init progress bar
+    if (narrative.progressBar && narrative.progressBar.enabled) {
+      setTimeout(function() { ProgressBar.init(narrative.progressBar, narrative); }, 100);
+    }
   }
 
   // ═══════════════════════════════════════
@@ -502,10 +531,170 @@ body{
   });
 
   // ═══════════════════════════════════════
-  //  MAIN RAF LOOP — float animations
+  //  PROGRESS BAR
+  // ═══════════════════════════════════════
+  var ProgressBar = {
+    config: null, container: null, track: null, fill: null, pctEl: null,
+    chapters: [], chapterEls: [], labelEls: [], activeIdx: -1, hoverIdx: -1,
+
+    init: function(config, narrative) {
+      this.config = config;
+      this.container = document.getElementById("pb-wrap");
+      this.track = document.getElementById("pb-track");
+      this.fill = document.getElementById("pb-fill");
+      this.pctEl = document.getElementById("pb-pct");
+      if (!this.container) return;
+      this.collectChapters(narrative);
+      this.buildDOM();
+      this.updateContrast();
+      this.container.classList.remove("pre-init");
+      this.update(scrollX);
+    },
+
+    collectChapters: function(narrative) {
+      var self = this; self.chapters = [];
+      function walk(elements, parentX) {
+        parentX = parentX || 0;
+        elements.forEach(function(el) {
+          var worldX = resolvePX(el.x || el.left || 0) + parentX;
+          if (el.chapter && el.chapter.enabled) {
+            self.chapters.push({ id: el.id, label: el.chapter.label || "Chapter", worldX: worldX });
+          }
+          if (el.type === "group" && el.children) walk(el.children, worldX);
+        });
+      }
+      narrative.scenes.forEach(function(sc) { walk(sc.elements, 0); });
+      self.chapters.sort(function(a, b) { return a.worldX - b.worldX; });
+    },
+
+    buildDOM: function() {
+      var self = this, cfg = this.config;
+      self.chapterEls.forEach(function(el) { if(el.parentNode) el.parentNode.removeChild(el); });
+      self.labelEls.forEach(function(el) { if(el.parentNode) el.parentNode.removeChild(el); });
+      self.chapterEls = []; self.labelEls = [];
+      var offPx = (cfg.offsetVh || 3) * window.innerHeight / 100;
+      self.container.style.top = cfg.position === "bottom" ? "auto" : offPx + "px";
+      self.container.style.bottom = cfg.position === "bottom" ? offPx + "px" : "auto";
+      self.container.style.width = cfg.width || "70vw";
+      self.track.style.height = (cfg.height || 4) + "px";
+      self.container.style.opacity = cfg.opacity !== undefined ? cfg.opacity : 1;
+      self.pctEl.style.display = cfg.showPercentage ? "" : "none";
+      if (cfg.showChapters && self.chapters.length) {
+        self.chapters.forEach(function(ch, i) {
+          var dot = document.createElement("div"); dot.className = "pb-chapter"; dot.setAttribute("data-idx", i);
+          dot.addEventListener("mouseenter", function() {
+            self.hoverIdx = parseInt(this.getAttribute("data-idx")); self.updateLabels();
+          });
+          dot.addEventListener("mouseleave", function() {
+            self.hoverIdx = -1; self.updateLabels();
+          });
+          dot.addEventListener("click", function(e) {
+            e.stopPropagation(); self.scrollTo(ch.worldX);
+          });
+          self.track.appendChild(dot); self.chapterEls.push(dot);
+          var lbl = document.createElement("span"); lbl.className = "pb-label";
+          lbl.textContent = ch.label; lbl.setAttribute("data-idx", i);
+          self.track.appendChild(lbl); self.labelEls.push(lbl);
+        });
+      }
+    },
+
+    getMaxScroll: function() {
+      var c = document.getElementById("project-canvas");
+      var cwPx = (c && c.offsetWidth) || resolvePX(String((c && c.style.width) || "100vw"));
+      return Math.max(0, cwPx - window.innerWidth);
+    },
+
+    update: function(sx) {
+      var self = ProgressBar;
+      if (!self.container || !self.config) return;
+      var maxScroll = self.getMaxScroll();
+      if (maxScroll <= 0) { self.container.style.opacity = '0'; return; }
+      var threshPx = (self.config.scrollThreshold || 0) * window.innerWidth / 100;
+      var visible = sx >= threshPx;
+      self.container.style.opacity = visible ? (self.config.opacity !== undefined ? self.config.opacity : 1) : '0';
+      self.container.style.pointerEvents = visible ? 'none' : 'none';
+      var progress = Math.max(0, Math.min(1, sx / maxScroll));
+      self.fill.style.width = (progress * 100) + "%";
+      if (self.config.showPercentage) self.pctEl.textContent = Math.round(progress * 100) + "%";
+      if (self.config.showChapters && self.chapters.length) {
+        var triggerOffset = window.innerWidth * 0.25; self.activeIdx = -1;
+        for (var i = self.chapters.length - 1; i >= 0; i--) {
+          if (self.chapters[i].worldX <= sx + triggerOffset) { self.activeIdx = i; break; }
+        }
+        self.chapterEls.forEach(function(dot, i) {
+          var cp = maxScroll > 0 ? Math.max(0, Math.min(1, self.chapters[i].worldX / maxScroll)) : 0;
+          dot.style.left = (cp * 100) + "%";
+          dot.classList.toggle("visited", i < self.activeIdx);
+          dot.classList.toggle("current", i === self.activeIdx);
+          // Current pill width = track width / 40 (proportional to total)
+          if (i === self.activeIdx && self.track) {
+            var tw = self.track.offsetWidth;
+            dot.style.width = Math.max(18, tw / 20) + "px";
+          } else {
+            dot.style.width = "";
+          }
+        });
+        self.labelEls.forEach(function(lbl, i) {
+          var cp = maxScroll > 0 ? Math.max(0, Math.min(1, self.chapters[i].worldX / maxScroll)) : 0;
+          lbl.style.left = (cp * 100) + "%";
+          lbl.classList.toggle("active", i === self.activeIdx);
+        });
+        self.updateLabels();
+      }
+    },
+
+    updateLabels: function() {
+      var self = this;
+      self.labelEls.forEach(function(lbl, i) {
+        lbl.classList.toggle("visible", (i === self.activeIdx) || (i === self.hoverIdx));
+      });
+    },
+
+    scrollTo: function(worldX) {
+      var dest = clampX(worldX);
+      if (isMobileDevice) {
+        // Mobile: smooth scroll via rAF since no lerp loop
+        stopInertia();
+        var startSx = scrollX, startT = performance.now(), duration = 400;
+        function anim(now) {
+          var t = Math.min(1, (now - startT) / duration);
+          var eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+          setScrollX(startSx + (dest - startSx) * eased);
+          if (t < 1) requestAnimationFrame(anim);
+        }
+        requestAnimationFrame(anim);
+      } else {
+        targetX = dest; velX = 0;
+      }
+    },
+
+    updateContrast: function() {
+      var self = this;
+      if (!self.config.autoContrast) { self.container.classList.add("pb-light"); return; }
+      var bg = document.body.style.background || getComputedStyle(document.body).backgroundColor || "";
+      var isLight = false;
+      if (bg.indexOf("rgb") >= 0) {
+        var m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (m) { var lum = (0.299*parseInt(m[1]) + 0.587*parseInt(m[2]) + 0.114*parseInt(m[3])) / 255; isLight = lum > 0.55; }
+      }
+      self.container.classList.toggle("pb-light", isLight);
+    },
+
+    destroy: function() {
+      if (this.container) this.container.classList.add("pre-init");
+      this.chapters = [];
+      this.chapterEls.forEach(function(el) { if(el.parentNode) el.parentNode.removeChild(el); });
+      this.labelEls.forEach(function(el) { if(el.parentNode) el.parentNode.removeChild(el); });
+    }
+  };
+  //  MAIN RAF LOOP — animations + progress bar
   // ═══════════════════════════════════════
   (function mainLoop(){
     NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
+    if (ProgressBar.container && ProgressBar.config) {
+      ProgressBar.update(scrollX);
+    }
     requestAnimationFrame(mainLoop);
   })();
 })();

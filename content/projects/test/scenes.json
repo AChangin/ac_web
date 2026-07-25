@@ -1,10 +1,10 @@
 {
-  "canvasWidth": "1200vw",
+  "canvasWidth": "2000vw",
   "scenes": [
     {
       "id": "opening",
       "x": 0,
-      "width": 3000,
+      "width": "3000vw",
       "elements": [
         {
           "type": "group",
@@ -83,7 +83,11 @@
           ],
           "_inspectorPushed": true,
           "name": "hero",
-          "id": "el_qjunuw5w"
+          "id": "el_qjunuw5w",
+          "chapter": {
+            "enabled": false,
+            "label": "Opening"
+          }
         },
         {
           "type": "text",
@@ -114,7 +118,11 @@
               "ease": "cubic"
             }
           ],
-          "null": ".1"
+          "null": ".1",
+          "chapter": {
+            "enabled": true,
+            "label": "前言"
+          }
         },
         {
           "type": "text",
@@ -196,7 +204,10 @@
             }
           ],
           "y": "30vh",
-          "letterSpacing": "0.2rem"
+          "letterSpacing": "0.2rem",
+          "chapter": {
+            "enabled": false
+          }
         },
         {
           "type": "group",
@@ -261,7 +272,11 @@
               "ease": "cubic"
             }
           ],
-          "marginBottom": "20vh"
+          "marginBottom": "20vh",
+          "chapter": {
+            "enabled": false,
+            "label": "Memory"
+          }
         },
         {
           "type": "image",
@@ -411,7 +426,11 @@
             }
           ],
           "null": ".1",
-          "paddingBottom": "40vh"
+          "paddingBottom": "40vh",
+          "chapter": {
+            "enabled": true,
+            "label": "我们的时代"
+          }
         },
         {
           "type": "text",
@@ -437,21 +456,25 @@
               "ease": "cubic"
             }
           ],
-          "y": "49.3vh",
-          "letterSpacing": "0.2rem"
+          "letterSpacing": "0.2rem",
+          "top": "30vh",
+          "bottom": "30vh"
         },
         {
-          "type": "image",
-          "src": "content/projects/test/lenin.png",
-          "x": "713.4vw",
-          "width": "20vw",
-          "height": "60vh",
-          "objectFit": "cover",
+          "type": "text",
+          "content": "  过去资本主义得以维持稳定的前提条件有:不断把蛋糕做大;资本主义还有其“外部\"用于不断扩张以获取市场;资本主义以技术进步不断创造新的产业和消费需求。\n\n  可是现在呢?过去两百年人口的大幅增长在如今开始进入了严重的停摆，资本主义的劳动和消费市场在面临萎缩;而且，原先没有被市场化、商品化的资本主义外部现在几乎被资本主义吸收:家庭生产、小农、手工业、教育、娱乐、婚姻.....近乎已经把所有东西都纳入价值计算体系，资本主义自己消灭了自己可用于扩张的外部。这样的外部，不仅体现在空间上，还体现在时间上。现代资本主义需要通过债务来提前透支未来，劳动者现在没有足够工资购买商品，资本主义就可以通过借贷来缓解危机，房贷、消费贷、信用卡.....不断刺激消费和透支未来。",
+          "x": "777.9vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
           "zIndex": 2,
-          "id": "el_nnpmql6d",
+          "id": "el_ief12xgf",
           "_inspectorPushed": true,
-          "y": "39.4vh",
-          "paddingBottom": "0px",
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
           "enterAnimation": [
             {
               "type": "blur",
@@ -461,14 +484,124 @@
               "ease": "cubic"
             }
           ],
-          "parallax": 0.1,
-          "null": "0.1",
-          "maxWidth": "40vw"
+          "letterSpacing": "0.2rem",
+          "top": "10vh",
+          "bottom": "20vh",
+          "maxHeight": "80vh"
+        },
+        {
+          "type": "text",
+          "content": "而且AI技术的到来让这一切看起来似乎有些不一样了，在人工智能技术不断发展下，在部分领域的能力和效率已经足以替代掉人类，尤其是曾经被认为是无可替代的脑力劳动、创意工作，现今也可以被机器所取代。当技术越发成熟时，企业主大可使用Al来提高生产率，或雇佣少量掌握AI的技术人员来取代大量的活劳动。而此时若无新产业创造大量的岗位，市场上将面临越来越多的失业人员。",
+          "x": "881vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_ufwvofvu",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "20vh",
+          "bottom": "20vh",
+          "maxHeight": "80vh",
+          "y": "35.4vh"
+        },
+        {
+          "type": "text",
+          "content": "这一步几乎是肯定的，相比于创造新岗位，A更擅长的是消灭现有岗位--几乎所有产业都可以同时使用它来减少劳动需求。所以问题就不同了，它不再是新产业吸收被淘汰的旧产业。而是所有产业同时提高自动化，让整个行业内的企业争相进行降本增效的操作，让整个就业市场上出卖劳动换取报酬的工人阶级来承担压力。AI是人类过去社会劳动和知识高度凝结后形成的新型生产资料，让企业中的资本有机构成越来越高，它正在让“死劳动”越来越强大，越来越能替代掉活劳动。在这样的制度之下，资本不再需要那么多的劳动者，但劳动者仍然必须依靠出卖劳动力来谋取生活资料。更矛盾的是，资本在不需要劳动者的同时，需要被阻断了收入来源的劳动者去消费完所生产的过剩商品以实现利润。",
+          "x": "970.4vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_8a6o4rfp",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "20vh",
+          "bottom": "20vh",
+          "maxHeight": "80vh",
+          "y": "13.8vh"
+        },
+        {
+          "type": "text",
+          "content": "失去稳定的工作，工人将更倾向于存钱而不是花钱，压缩生活需求也更无消费的欲望，节衣缩食不消费看上去才是更理性的选择。当消费下降，大量过剩商品积压，企业为了保住利润，就会选择更彻底的去用自动化技术去代替活劳动。但马克思价值理论告诉我们，机器本身不会创造价值，只会把自身价值转移到产品中。",
+          "x": "1054.5vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#fff",
+          "zIndex": 2,
+          "id": "el_fc0xp1iz",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.2,
+          "null": "0.2",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "20vh",
+          "bottom": "20vh",
+          "maxHeight": "80vh",
+          "y": "59.3vh"
         }
       ],
       "height": "100vh",
       "_inspectorPushed": true
     }
   ],
-  "pageBackground": "#000000"
+  "pageBackground": "#000000",
+  "progressBar": {
+    "enabled": true,
+    "position": "bottom",
+    "width": "60vw",
+    "height": 2,
+    "offsetVh": 6,
+    "showPercentage": false,
+    "showChapters": true,
+    "autoContrast": true,
+    "opacity": 0.5,
+    "scrollThreshold": 100
+  }
 }
