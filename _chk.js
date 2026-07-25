@@ -1,101 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#000">
-<title>Project — AC</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
-
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:clamp(8px,0.833vw,16px);-webkit-text-size-adjust:none}
-body{
-  font-family:'Inter',-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  background:#000;color:#fff;
-}
-
-/* ── Close button ── */
-.project-back{
-  position:fixed;top:2rem;right:5vw;z-index:100;
-  font-family:'Inter',sans-serif;font-size:6vw;font-weight:300;
-  color:rgba(255,255,255,0.5);text-decoration:none;
-  line-height:1;transition:color 0.3s ease;
-  pointer-events:all;
-}
-.project-back:hover{ color:#fff; }
-
-/* ── Canvas ── */
-.project-canvas{
-  position:fixed;top:0;left:0;
-  height:100vh;
-  will-change:transform;
-}
-.project-canvas-inner{
-  position:relative;
-  height:100vh;
-}
-
-/* ── Element base ── */
-.narrative-el{
-  position:absolute;
-  pointer-events:none;
-}
-.narrative-el.text{
-  white-space:normal;
-}
-
-/* ── Loading / Error ── */
-.project-loading{
-  position:fixed;inset:0;display:flex;
-  align-items:center;justify-content:center;
-  font-family:'Inter',sans-serif;font-size:1rem;
-  color:rgba(255,255,255,0.4);
-}
-
-@media(max-width:768px){
-  html{font-size:clamp(9px,2vw,15px)}
-  .project-back{top:5vh;right:10vw;font-size:10vw}
-}
-
-/* ═══ PROGRESS BAR ═══ */
-.pb-wrap{position:fixed;z-index:200;left:50%;transform:translateX(-50%);pointer-events:none;opacity:1;transition:opacity 0.5s}
-.pb-wrap.pre-init{opacity:0;pointer-events:none}
-.pb-wrap.below-threshold{opacity:0;pointer-events:none}
-.pb-track{position:relative;overflow:visible;border-radius:3px}
-.pb-track-bg{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:3px;background:var(--pb-inactive,#888)}
-.pb-fill{position:absolute;top:0;left:0;height:100%;border-radius:3px;background:var(--pb-active,#fff);transition:width 0.15s linear}
-.pb-chapter{position:absolute;top:50%;width:5px;height:5px;border-radius:50%;background:var(--pb-inactive,#666);transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;transition:transform 0.25s cubic-bezier(0.25,0.8,0.25,1.2),background 0.25s,border-radius 0.2s,width 0.2s,box-shadow 0.25s;z-index:1}
-.pb-chapter:hover{transform:translate(-50%,-50%) scale(1.8);background:var(--pb-active,#fff);box-shadow:0 0 0 5px var(--pb-hover-ring,rgba(255,255,255,0.08));z-index:5}
-.pb-chapter.visited{background:var(--pb-active,#fff);z-index:2}
-.pb-chapter.current{height:5px;border-radius:3px;background:var(--pb-active,#fff);transform:translate(-50%,-50%);z-index:10}
-.pb-chapter.current:hover{transform:translate(-50%,-50%) scaleY(1.8);box-shadow:0 0 0 4px var(--pb-hover-ring,rgba(255,255,255,0.08))}
-.pb-label{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);font-family:'Inter',sans-serif;font-size:13px;font-weight:400;color:var(--pb-label,rgba(255,255,255,0.5));white-space:nowrap;pointer-events:none;transition:opacity 0.3s,color 0.3s;letter-spacing:0.02em;opacity:0}
-.pb-label.visible{opacity:1}
-.pb-label.active{color:var(--pb-label-active,#fff);opacity:1}
-.pb-pct{font-family:'Inter',sans-serif;font-size:10px;color:var(--pb-label,rgba(255,255,255,0.3));text-align:center;margin-top:6px;transition:color 0.5s;letter-spacing:0.03em}
-/* CSS variables — dark theme (default) */
-.pb-wrap{--pb-inactive:#666;--pb-active:#fff;--pb-label:rgba(255,255,255,0.5);--pb-label-active:#fff;--pb-hover-ring:rgba(255,255,255,0.06)}
-/* light theme override */
-.pb-wrap.pb-light{--pb-inactive:#999;--pb-active:#222;--pb-label:rgba(0,0,0,0.4);--pb-label-active:#000;--pb-hover-ring:rgba(0,0,0,0.06)}
-</style>
-</head>
-<body>
-
-<a href="recents.html" class="project-back" title="Close">&times;</a>
-
-<div class="project-loading" id="project-loading">Loading...</div>
-<div class="project-canvas" id="project-canvas">
-  <div class="project-canvas-inner" id="project-canvas-inner"></div>
-</div>
-<div class="pb-wrap pre-init" id="pb-wrap"><div class="pb-track" id="pb-track"><div class="pb-track-bg"></div><div class="pb-fill" id="pb-fill"></div></div><div class="pb-pct" id="pb-pct"></div></div>
-
-<script src="js/project-data.js"></script>
-<script>
 (function(){
   // ═══════════════════════════════════════
   //  NarrativeEngine — scroll-driven animation
@@ -538,20 +441,8 @@ body{
     config: null, container: null, track: null, fill: null, pctEl: null,
     chapters: [], chapterEls: [], labelEls: [], activeIdx: -1, hoverIdx: -1,
 
-    _narrative: null,
-    _flatElements: null,
     init: function(config, narrative) {
       this.config = config;
-      this._narrative = narrative;
-      // Flatten all elements with world-x for quick lookup
-      this._flatElements = [];
-      var self = this;
-      function walk(arr, px) { px = px || 0; arr.forEach(function(el) {
-        var wx = resolvePX(el.x || el.left || 0) + px;
-        self._flatElements.push({ el: el, worldX: wx, w: resolvePX(el.width || 100), h: resolvePX(el.height || 100) });
-        if (el.type === 'group' && el.children) walk(el.children, wx);
-      });}
-      narrative.scenes.forEach(function(s) { walk(s.elements, 0); });
       this.container = document.getElementById("pb-wrap");
       this.track = document.getElementById("pb-track");
       this.fill = document.getElementById("pb-fill");
@@ -688,72 +579,46 @@ body{
       if (!self.config.autoContrast) { self.container.classList.add("pb-light"); return; }
       self._contrastFrame = (self._contrastFrame || 0) + 1;
       if (self._contrastFrame % 15 !== 0) return;
-      var lightVotes = 0, totalVotes = 0;
+      // === DEBUG SAMPLING DOTS ===
+      var dbg = document.getElementById("pb-debug");
+      if (!dbg) {
+        dbg = document.createElement("div"); dbg.id = "pb-debug";
+        dbg.style.cssText = "position:fixed;top:0;left:0;z-index:99999;pointer-events:none;font:10px monospace;";
+        document.body.appendChild(dbg);
+      }
+      var lightVotes = 0, totalVotes = 0, dotsHTML = "";
       for (var i = 0; i < 5; i++) {
         var sx = window.innerWidth * (0.1 + i * 0.2);
-        // Sample at bar's vertical position, not screen center
-        var sy = self.config.position === "bottom"
-          ? window.innerHeight - (self.config.offsetVh || 3) * window.innerHeight / 100
-          : (self.config.offsetVh || 3) * window.innerHeight / 100;
-        var canvasX = scrollX + sx;
-        var matches = [];
-        for (var ei = 0; ei < self._flatElements.length; ei++) {
-          var fe = self._flatElements[ei];
-          if (canvasX < fe.worldX || canvasX > fe.worldX + fe.w) continue;
-          var ey = resolvePX(fe.el.y || fe.el.top || 0);
-          // Element must span the bar's vertical position
-          if (sy < ey || sy > ey + fe.h) continue;
-          matches.push(fe.el);
-        }
-        var foundColor = "", foundSource = "";
-        for (var mi = matches.length - 1; mi >= 0; mi--) {
-          var ed = matches[mi];
-          if (ed.background && ed.background !== "transparent" && ed.background !== "rgba(0, 0, 0, 0)") {
-            foundColor = ed.background; foundSource = ed.type + ".bg"; break;
+        var sy = window.innerHeight * 0.5;
+        var el = document.elementFromPoint(sx, sy);
+        if (!el) continue;
+        var walk = el, bg = "", tag = el.tagName;
+        while (walk && walk !== document.documentElement) {
+          if (walk.nodeType === 1) {
+            bg = getComputedStyle(walk).backgroundColor || "";
+            tag = walk.tagName + (walk.className ? "." + String(walk.className).split(" ")[0] : "") + (walk.id ? "#" + walk.id : "");
+            if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") break;
           }
-          if (ed.color && ed.color !== "rgb(0, 0, 0)" && ed.color !== "#000" && ed.color !== "#000000") {
-            foundColor = ed.color; foundSource = ed.type + ".color";
+          walk = walk.parentElement;
+        }
+        if (!bg || bg === "rgba(0, 0, 0, 0)" || bg === "transparent") {
+          bg = getComputedStyle(document.body).backgroundColor || ""; tag = "BODY";
+        }
+        var isDot = false;
+        if (bg.indexOf("rgb") >= 0) {
+          var parts = bg.match(/rgba?((d+),s*(d+),s*(d+)/);
+          if (parts) {
+            var lum = (0.299*parseInt(parts[1]) + 0.587*parseInt(parts[2]) + 0.114*parseInt(parts[3])) / 255;
+            totalVotes++; if (lum > 0.5) { lightVotes++; isDot = true; }
           }
         }
-        if (!foundColor) { foundColor = self._narrative.pageBackground || "#000000"; foundSource = "pageBG"; }
-        // Parse RGB
-        var rr = 0, gg = 0, bb = 0;
-        if (foundColor.charAt(0) === "#") {
-          var hx = foundColor.substring(1);
-          if (hx.length === 3) hx = hx[0]+hx[0]+hx[1]+hx[1]+hx[2]+hx[2];
-          if (hx.length >= 6) { rr = parseInt(hx.substring(0,2),16); gg = parseInt(hx.substring(2,4),16); bb = parseInt(hx.substring(4,6),16); }
-        } else if (foundColor.indexOf("rgb") >= 0) {
-          var n2 = foundColor.substring(foundColor.indexOf("(")+1, foundColor.indexOf(")")).split(",");
-          if (n2.length >= 3) { rr = parseInt(n2[0]); gg = parseInt(n2[1]); bb = parseInt(n2[2]); }
-        }
-        var lum = (0.299*rr + 0.587*gg + 0.114*bb) / 255;
-        totalVotes++;
-        var isLight = lum > 0.5;
-        if (isLight) lightVotes++;
+        dotsHTML += "<span style="position:fixed;left:"+sx+"px;top:"+sy+"px;width:14px;height:14px;border-radius:50%;background:"+bg+";border:2px solid "+(isDot?"#000":"#fff")+";transform:translate(-50%,-50%)" title=""+tag+":"+bg+""></span>";
       }
       var isLight = totalVotes > 0 && lightVotes >= totalVotes * 0.5;
+      dotsHTML += "<div style="position:fixed;left:10px;top:50%;transform:translateY(40px);background:rgba(0,0,0,0.85);color:#0f0;padding:4px 8px;border-radius:3px;white-space:nowrap">"+lightVotes+"/"+totalVotes+" light → "+(isLight?"LIGHT":"DARK")+" mode</div>";
+      dbg.innerHTML = dotsHTML;
       self.container.classList.toggle("pb-light", isLight);
     },
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
 
@@ -778,7 +643,3 @@ body{
     requestAnimationFrame(mainLoop);
   })();
 })();
-</script>
-
-</body>
-</html>

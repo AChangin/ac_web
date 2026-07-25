@@ -525,7 +525,7 @@
         {
           "type": "text",
           "content": "这一步几乎是肯定的，相比于创造新岗位，A更擅长的是消灭现有岗位--几乎所有产业都可以同时使用它来减少劳动需求。所以问题就不同了，它不再是新产业吸收被淘汰的旧产业。而是所有产业同时提高自动化，让整个行业内的企业争相进行降本增效的操作，让整个就业市场上出卖劳动换取报酬的工人阶级来承担压力。AI是人类过去社会劳动和知识高度凝结后形成的新型生产资料，让企业中的资本有机构成越来越高，它正在让“死劳动”越来越强大，越来越能替代掉活劳动。在这样的制度之下，资本不再需要那么多的劳动者，但劳动者仍然必须依靠出卖劳动力来谋取生活资料。更矛盾的是，资本在不需要劳动者的同时，需要被阻断了收入来源的劳动者去消费完所生产的过剩商品以实现利润。",
-          "x": "1061.9vw",
+          "x": "1062.1vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -549,7 +549,8 @@
           "letterSpacing": "0.2rem",
           "top": "20vh",
           "bottom": "20vh",
-          "maxHeight": "80vh"
+          "maxHeight": "80vh",
+          "y": "20.1vh"
         },
         {
           "type": "text",
@@ -727,7 +728,7 @@
         {
           "type": "rect",
           "x": "1289.8vw",
-          "width": "100vw",
+          "width": "220vw",
           "height": "100vh",
           "background": "#ffffff",
           "opacity": 1,
@@ -757,6 +758,36 @@
             }
           ],
           "parallax": 0.5
+        },
+        {
+          "type": "text",
+          "content": "在我们熟知的体系里，企业的利润直接来源就是剩余价值，剩余价值产生于生产过程而不是流通过程。\n\n在流通过程，如果一个人买商品赚了钱:比如1000块买入，1200块卖出。看似赚了200，但所有人都这样，有人买贵，有人卖贵。那么这种交换只能是分配已有价值，而没有产生新的价值。而劳动力是一种特殊的商品，比如一个工人一天的工资为200块，但是他创造的价值有500块，中间被抽走的300元就是剩余价值。因此剩余价值产生于生产领域，但是剩余价值产生了，不代表企业一定拿到利润了，如果市场不愿买下所有生产出来的商品，那么其中一部分价值将无法实现。",
+          "x": "1401vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#000000",
+          "zIndex": 2,
+          "id": "el_bmiztecp",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "20vh",
+          "maxHeight": "80vh",
+          "y": "27vh",
+          "marginBottom": "20vh"
         }
       ],
       "height": "100vh",
@@ -770,10 +801,10 @@
     "width": "60vw",
     "height": 2,
     "offsetVh": 6,
+    "scrollThreshold": 100,
     "showPercentage": false,
     "showChapters": true,
     "autoContrast": true,
-    "opacity": 0.5,
-    "scrollThreshold": 100
+    "opacity": 0.5
   }
 }
