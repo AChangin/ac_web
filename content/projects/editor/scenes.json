@@ -1,0 +1,11 @@
+{
+  "canvasWidth": "200vw",
+  "scenes": [
+    {
+      "id": "opening",
+      "x": 0,
+      "width": "100vw",
+      "elements": []
+    }
+  ]
+}

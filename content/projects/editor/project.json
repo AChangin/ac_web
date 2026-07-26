@@ -1,0 +1,9 @@
+{
+  "slug": "editor",
+  "title": "可视化个人媒体页面编辑器",
+  "type": "PROJECT",
+  "icon": "icons/project.svg",
+  "date": "2026 AUG",
+  "description": "",
+  "cover": "posts/editor-cover.webp"
+}
