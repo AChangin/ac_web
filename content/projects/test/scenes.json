@@ -528,7 +528,7 @@
         },
         {
           "type": "text",
-          "content": "这一步几乎是肯定的，相比于创造新岗位，A更擅长的是消灭现有岗位--几乎所有产业都可以同时使用它来减少劳动需求。所以问题就不同了，它不再是新产业吸收被淘汰的旧产业。而是所有产业同时提高自动化，让整个行业内的企业争相进行降本增效的操作，让整个就业市场上出卖劳动换取报酬的工人阶级来承担压力。AI是人类过去社会劳动和知识高度凝结后形成的新型生产资料，让企业中的资本有机构成越来越高，它正在让“死劳动”越来越强大，越来越能替代掉活劳动。在这样的制度之下，资本不再需要那么多的劳动者，但劳动者仍然必须依靠出卖劳动力来谋取生活资料。更矛盾的是，资本在不需要劳动者的同时，需要被阻断了收入来源的劳动者去消费完所生产的过剩商品以实现利润。",
+          "content": "这一步几乎是肯定的，相比于创造新岗位，AI更擅长的是消灭现有岗位--几乎所有产业都可以同时使用它来减少劳动需求。所以问题就不同了，它不再是新产业吸收被淘汰的旧产业。而是所有产业同时提高自动化，让整个行业内的企业争相进行降本增效的操作，让整个就业市场上出卖劳动换取报酬的工人阶级来承担压力。AI是人类过去社会劳动和知识高度凝结后形成的新型生产资料，让企业中的资本有机构成越来越高，它正在让“死劳动”越来越强大，越来越能替代掉活劳动。在这样的制度之下，资本不再需要那么多的劳动者，但劳动者仍然必须依靠出卖劳动力来谋取生活资料。更矛盾的是，资本在不需要劳动者的同时，需要被阻断了收入来源的劳动者去消费完所生产的过剩商品以实现利润。",
           "x": "1164.1vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
@@ -793,6 +793,69 @@
           "mWidth": "90vw",
           "mobile": {
             "width": "90vw"
+          }
+        },
+        {
+          "type": "text",
+          "content": "言归正传，资本越来越依靠机器生产，但机器本身又不能创造新的价值。剩余价值来源于活劳动，但资本竞争迫使资本家不断减少活劳动..这正是AI技术下资本主义最吊诡的地方。",
+          "x": "1653.5vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_s0957wa0",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "marginBottom": "20vh",
+          "mobile": {},
+          "y": "19.3vh",
+          "chapter": {
+            "enabled": false
+          }
+        },
+        {
+          "type": "text",
+          "content": "充满矛盾的未来",
+          "x": "1792.2vw",
+          "width": "75vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "6vw",
+          "fontWeight": "600",
+          "color": "#fff",
+          "zIndex": 0,
+          "id": "el_zzq4f735",
+          "_inspectorPushed": true,
+          "marginTop": "30vh",
+          "enterAnimation": [
+            {
+              "type": "scale",
+              "from": 0.1,
+              "duration": 1.5,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": ".1",
+          "paddingBottom": "40vh",
+          "chapter": {
+            "enabled": true,
+            "label": "矛盾的未来"
           }
         }
       ],

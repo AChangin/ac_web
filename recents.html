@@ -235,7 +235,7 @@ body{
              left 0.55s cubic-bezier(0.22,1,0.36,1);
 }
 .is-large .recents-project-number{
-  font-size:14rem;top:-3rem;left:-2.5rem;
+  font-size:14rem;top:-3rem;left:1rem;
 }
 .is-small .recents-project-number{
   font-size:8rem;top:50%;left:0.3rem;transform:translateY(-50%);
@@ -588,6 +588,46 @@ html{-ms-overflow-style:none;scrollbar-width:none}
         if(activeProject !== 0) swapTo(0);
       });
     }
+
+    // Auto-contrast: sample image behind number, set number color
+    function sampleContrast(){
+      recentsStage.querySelectorAll('.recents-project-image img').forEach(function(img){
+        if(!img.complete||!img.naturalWidth){img.addEventListener('load',function(){applyImgContrast(img)});if(!img.src.endsWith('#loaded')){img.src+='#loaded'}}
+        else{applyImgContrast(img)}
+      });
+    }
+    setTimeout(sampleContrast,300);
+    setTimeout(sampleContrast,1000); // retry after delay
+  }
+
+  function applyImgContrast(img){
+    try{
+      img.crossOrigin='anonymous';
+      var canvas=document.createElement('canvas');
+      var ctx=canvas.getContext('2d',{willReadFrequently:true});
+      var iw=img.naturalWidth||img.width||300;
+      var ih=img.naturalHeight||img.height||200;
+      if(iw<10||ih<10)return;
+      canvas.width=iw;canvas.height=ih;
+      try{ctx.drawImage(img,0,0,iw,ih)}catch(e){console.warn('drawImage failed (CORS?):',e.message);return;}
+      var numEl=img.parentElement.querySelector('.recents-project-number');
+      if(!numEl)return;
+      var card=numEl.closest('.recents-project');
+      var isLarge=card&&card.classList.contains('is-large');
+      // Sample top-left region where large number sits
+      var sx=isLarge?0:Math.floor(iw*0.02);
+      var sy=isLarge?0:Math.floor(ih*0.05);
+      var sw=isLarge?Math.floor(iw*0.35):Math.floor(iw*0.25);
+      var sh=isLarge?Math.floor(ih*0.50):Math.floor(ih*0.55);
+      if(sw<10)sw=iw;if(sh<10)sh=ih;
+      var data=ctx.getImageData(sx,sy,sw,sh).data;
+      var total=0,count=data.length/4;
+      for(var i=0;i<data.length;i+=4){
+        total+=0.299*data[i]+0.587*data[i+1]+0.114*data[i+2];
+      }
+      var avg=total/count;
+      numEl.style.color=avg>128?'#000':'#fff';
+    }catch(e){console.warn('Contrast error:',e)}
   }
 
   function swapTo(newActive){
