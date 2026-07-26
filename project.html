@@ -268,8 +268,11 @@ body{
       else if(cfg.top !== undefined) el.style.top = u(typeof cfg.top === 'number' ? cfg.top + offsetY : cfg.top);
       if(cfg.right !== undefined) el.style.right = u(cfg.right);
       if(cfg.bottom !== undefined) el.style.bottom = u(cfg.bottom);
-      if(cfg.width) el.style.width = u(cfg.width);
-      if(cfg.height) el.style.height = u(cfg.height);
+      var isMobile=window.innerWidth<=768;
+      var mw=(cfg.mobile&&cfg.mobile.width)?cfg.mobile.width:null;
+      var mh=(cfg.mobile&&cfg.mobile.height)?cfg.mobile.height:null;
+      if(cfg.width) el.style.width = u(isMobile&&mw?mw:cfg.width);
+      if(cfg.height) el.style.height = u(isMobile&&mh?mh:cfg.height);
       if(cfg.minWidth) el.style.minWidth = u(cfg.minWidth);
       if(cfg.maxWidth) el.style.maxWidth = u(cfg.maxWidth);
       if(cfg.minHeight) el.style.minHeight = u(cfg.minHeight);
@@ -313,7 +316,7 @@ body{
       }
       var ax = cfg.x || cfg.left || 0;
       el.setAttribute('data-x', typeof ax === 'number' ? ax + offsetX : resolvePX(ax));
-      el.setAttribute('data-w', typeof (cfg.width||100) === 'number' ? (cfg.width||100) : resolvePX(cfg.width) || 100);
+      var dw2=(isMobile&&mw?mw:cfg.width)||100;el.setAttribute('data-w', typeof dw2 === 'number' ? dw2 : resolvePX(dw2) || 100);
     }
 
     // Recursive element renderer
