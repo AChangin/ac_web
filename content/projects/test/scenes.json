@@ -492,9 +492,9 @@
           "top": "10vh",
           "bottom": "20vh",
           "maxHeight": "80vh",
-          "mWidth": "120vw",
+          "mWidth": "100vw",
           "mobile": {
-            "width": "120vw"
+            "width": "100vw"
           }
         },
         {
