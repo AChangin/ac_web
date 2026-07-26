@@ -695,8 +695,8 @@ function renderMobileFields(el){
   return h;
 }
 // ═══ BIND MOBILE FIELDS ═══
-function bindMobileFields(){inspectorFields.querySelectorAll('[data-key=\"mWidth (vw)\"],[data-key=\"mHeight (vh)\"]').forEach(function(inp){
-  var key=inp.getAttribute('data-key');var unit=inp.getAttribute('data-unit');var field=key==='mWidth (vw)'?'width':'height';
+function bindMobileFields(){inspectorFields.querySelectorAll('[data-key=\"mWidth\"],[data-key=\"mHeight\"]').forEach(function(inp){
+  var key=inp.getAttribute('data-key');var unit=inp.getAttribute('data-unit');var field=key==='mWidth'?'width':'height';
   inp.addEventListener('input',function(){var f=findById(state.selectedElId,state.scenesData.scenes);if(!f)return;if(!f.el._inspectorPushed){pushHistory();f.el._inspectorPushed=true}
     if(!f.el.mobile)f.el.mobile={};var v=inp.value;f.el.mobile[field]=unit?parseVal(v,unit):v;renderPreview()})})}
 
