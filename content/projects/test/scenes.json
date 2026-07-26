@@ -370,7 +370,7 @@
         },
         {
           "type": "gradient-mask",
-          "src": "posts/tired_20260718.jpg",
+          "src": "content/projects/test/drown-world.webp",
           "x": "-50vw",
           "y": "0vh",
           "width": "40vw",
@@ -593,8 +593,7 @@
           "letterSpacing": "0.2rem",
           "maxHeight": "60vh",
           "maxWidth": "100vw",
-          "top": "60vh",
-          "y": "58.7vh"
+          "bottom": "20vh"
         },
         {
           "type": "text",
