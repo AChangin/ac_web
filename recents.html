@@ -193,7 +193,7 @@ body{
   display:flex;
   flex-direction:column;
   gap:1rem;
-  overflow:hidden;
+  overflow:visible;
 }
 
 /* ── Project card (same as before) ── */
@@ -243,7 +243,7 @@ body{
 
 .recents-project-info{
   display:flex;flex-direction:column;justify-content:flex-start;
-  padding:0 2.5rem;flex:1;min-width:0;margin-bottom: 3rem;
+  padding:0 2.5rem;flex:1;min-width:0;margin-bottom: 1rem;
 }
 .is-small .recents-project-info{ padding:0 1.2rem; }
 .recents-project-type{
@@ -258,7 +258,7 @@ body{
   color:rgba(255,255,255,0.45);
 }
 .recents-project-title{
-  font-family:'Playfair Display',Georgia,serif;
+  font-family:'Inter, sans-serif';
   font-weight:600;letter-spacing:-0.02em;color:#fff;
   margin:0.4rem 0 0.4rem 0;line-height:1.1;
   transition:font-size 0.55s cubic-bezier(0.22,1,0.36,1);
@@ -323,7 +323,7 @@ body{
   position:relative;
 }
 .browse-card:hover{ opacity:0.85; }
-.browse-card:hover .browse-card-image img{ transform:scale(1.03); }
+.browse-card:hover .browse-card-image img:first-child{ transform:scale(1.03); }
 .browse-card:hover .browse-card-line{ background:rgba(0,0,0,0.15); }
 
 .browse-card-image{
@@ -334,7 +334,7 @@ body{
   position:relative;
   margin-bottom:1.2rem;
 }
-.browse-card-image img{
+.browse-card-image img:first-child{
   width:100%;height:100%;
   object-fit:cover;display:block;
   transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);
@@ -351,7 +351,7 @@ body{
   color:rgba(0,0,0,0.4);
 }
 .browse-card-title{
-  font-family:'Playfair Display',Georgia,serif;
+  font-family:'Inter, sans-serif';
   font-size:1.8rem;font-weight:600;
   letter-spacing:-0.02em;color:#111;
   margin-bottom:0.3rem;line-height:1.15;
@@ -556,6 +556,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
           '<img src="' + proj.cover + '" alt="">' +
           '<div class="recents-project-number">' + pad(proj.number) + '</div>' +
         '</div>' +
+        (proj.pinnedRecents?'<img src="public/pin_top.svg" style="position:absolute;top:-1rem;left:-1rem;width:2rem;height:2rem;z-index:2";filter: drop-shadow(5px 6px 3px rgb(0 0 0 / 0.8)); title="Pinned in Recents">':'') +
         '<div class="recents-project-info">' +
           '<div class="recents-project-type">' +
             '<img src="' + proj.icon + '" alt=""><span>' + proj.type + '</span>' +
@@ -591,7 +592,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
 
     // Auto-contrast: sample image behind number, set number color
     function sampleContrast(){
-      recentsStage.querySelectorAll('.recents-project-image img').forEach(function(img){
+      recentsStage.querySelectorAll('.recents-project-image > img:first-child').forEach(function(img){
         if(!img.complete||!img.naturalWidth){img.addEventListener('load',function(){applyImgContrast(img)});if(!img.src.endsWith('#loaded')){img.src+='#loaded'}}
         else{applyImgContrast(img)}
       });
@@ -661,6 +662,8 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       card.innerHTML =
         '<div class="browse-card-image">' +
           '<img src="' + proj.cover + '" alt="">' +
+        '</div>' +
+        (proj.pinnedBrowse?'<img src="public/pin_top.svg" style="position:absolute;top:1rem;right:1rem;width:2rem;height:2rem;z-index:2" title="Pinned in Browse">':'') +
         '</div>' +
         '<div class="browse-card-type">' +
           '<img src="' + proj.icon + '" alt=""><span>' + proj.type + '</span>' +
@@ -1057,6 +1060,11 @@ html{-ms-overflow-style:none;scrollbar-width:none}
   ACProjectData.loadAllProjects()
     .then(function(projects){
       allProjects = ACProjectData.sortByDate(projects);
+      // Pinned first (Recents pin), then by date
+      allProjects.sort(function(a,b){if(a.pinnedRecents&&!b.pinnedRecents)return -1;if(!a.pinnedRecents&&b.pinnedRecents)return 1;return 0});
+
+      // Browse sort: pinned first (Browse pin), then by date
+      var browseProjects = allProjects.slice().sort(function(a,b){if(a.pinnedBrowse&&!b.pinnedBrowse)return -1;if(!a.pinnedBrowse&&b.pinnedBrowse)return 1;return 0});
 
       // Recents: 2 most recent
       recentsData = allProjects.slice(0, 2);
@@ -1064,7 +1072,7 @@ html{-ms-overflow-style:none;scrollbar-width:none}
       renderRecents();
 
       // Browse: all projects
-      renderBrowse(allProjects);
+      renderBrowse(browseProjects);
 
       // Setup horizontal scroll
       scrollSetup = setupHorizontalScroll();

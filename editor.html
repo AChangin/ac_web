@@ -268,6 +268,8 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#1a1
     <div class="modal-row"><label>date</label><input id="ep-date"></div>
     <div class="modal-row"><label>cover</label><input id="ep-cover"></div>
     <div class="modal-row"><label>description</label><textarea id="ep-desc"></textarea></div>
+    <div class="modal-row"><label>Pin Recents</label><input type="checkbox" id="ep-pin-recents" style="width:auto;flex:none;margin-left:0"></div>
+    <div class="modal-row"><label>Pin Browse</label><input type="checkbox" id="ep-pin-browse" style="width:auto;flex:none;margin-left:0"></div>
     <div class="modal-btns"><button class="btn-cancel" id="ep-cancel">Cancel</button><button class="btn-create" id="ep-save">Save</button></div>
   </div>
 </div>
@@ -780,6 +782,8 @@ document.getElementById('btn-edit-meta').addEventListener('click',function(){
   document.getElementById('ep-date').value=state.projectMeta.date||'';
   document.getElementById('ep-cover').value=state.projectMeta.cover||'';
   document.getElementById('ep-desc').value=state.projectMeta.description||'';
+  document.getElementById('ep-pin-recents').checked=!!state.projectMeta.pinnedRecents;
+  document.getElementById('ep-pin-browse').checked=!!state.projectMeta.pinnedBrowse;
   epModal.classList.add('show');
 });
 document.getElementById('ep-cancel').addEventListener('click',function(){epModal.classList.remove('show')});
@@ -792,6 +796,8 @@ document.getElementById('ep-save').addEventListener('click',function(){
   state.projectMeta.date=document.getElementById('ep-date').value.trim();
   state.projectMeta.cover=document.getElementById('ep-cover').value.trim();
   state.projectMeta.description=document.getElementById('ep-desc').value.trim();
+  state.projectMeta.pinnedRecents=document.getElementById('ep-pin-recents').checked;
+  state.projectMeta.pinnedBrowse=document.getElementById('ep-pin-browse').checked;
   document.title='Editor — '+state.projectMeta.title;
   var opt=projectSelect.querySelector('option[value="'+state.projectSlug+'"]');if(opt)opt.textContent=state.projectMeta.title;
   apiPost('/api/save-project',{slug:state.projectSlug,data:state.projectMeta}).then(function(){alert('Saved: '+state.projectMeta.title)}).catch(function(e){alert('Save failed: '+e.message)});

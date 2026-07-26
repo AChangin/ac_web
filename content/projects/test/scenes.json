@@ -1,5 +1,5 @@
 {
-  "canvasWidth": "2000vw",
+  "canvasWidth": "2500vw",
   "scenes": [
     {
       "id": "opening",
@@ -832,7 +832,7 @@
         {
           "type": "text",
           "content": "充满矛盾的未来",
-          "x": "1792.2vw",
+          "x": "1758.9vw",
           "width": "75vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "6vw",
@@ -856,6 +856,176 @@
           "chapter": {
             "enabled": true,
             "label": "矛盾的未来"
+          },
+          "y": "0vh"
+        },
+        {
+          "type": "text",
+          "content": "不仅是人工智能技术为代表的新生产力与生产资料私人、官僚占有存在着矛盾，还有全球化大生产与民族主义、国家主义的矛盾，老牌帝国主义国家与亚洲新生帝国主义国家的矛盾。同时对于现在革命者而言，先锋队理论在当前资产阶级国家机器利用先进技术的镇压下存在理论张力，国际上20世纪无产阶级专政的实践均以失败告终，列宁式政党的尸体变成为修正主义摇旗呐喊的官僚垄断资产阶级政党，革命的集中制政党变为了官僚集中吸血的专政手段......",
+          "x": "1784.4vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_cz4ny3ny",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "marginBottom": "20vh",
+          "mobile": {},
+          "y": "17.8vh",
+          "chapter": {
+            "enabled": false
+          }
+        },
+        {
+          "type": "text",
+          "content": "在历史上，大规模经济危机发生之后，人们不会自动变成社会主义者。同一种危机可能产生社会主义，也可能产生法西斯主义、民族主义、宗教原教旨主义等。人们肉身和精神上的痛苦很有可能被解释成民族矛盾、道德问题，进而资产阶级政府不惜一切代价发动战争，资本主义这个问题的滋生的土壤就可以继续掩盖",
+          "x": "1951.4vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_yqoetq87",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.2,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "30vh",
+          "maxHeight": "80vh",
+          "marginBottom": "20vh",
+          "mobile": {},
+          "chapter": {
+            "enabled": false
+          }
+        },
+        {
+          "type": "text",
+          "content": "我们尚且不清楚未来战争会以怎样的形式爆发，我们也不知道列宁主义在严密镇压的当下还有多少生存空间，我们甚至不清楚现阶段我们该干什么，尤其是在这样的时间节点",
+          "x": "2078.3vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_1hj8cwum",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.2,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "10vh",
+          "maxHeight": "80vh",
+          "marginBottom": "20vh",
+          "mobile": {},
+          "chapter": {
+            "enabled": false
+          }
+        },
+        {
+          "type": "text",
+          "content": "但颇有希望的是，我们的物质基础已经发生了剧烈变化，社会的生产力经过资本主义近百年来的发展，已经超越了以往的任何时代，就看无产阶级能否比资产阶级更能掌握它。我并不认为现今阶段能做太多的事情，因为新的理论是在新的实践中总结出来的，它还可能产生于我们现在还无法完全理解的新的阶级斗争形式，AI、平台劳动、算法管理、数字化资本、全球供应链重组，都可能产生新的阶级关系。这不是少数人嘴里喊着正确的理论和政治宣言能喊出来的，因此，在危机与变革到来前的漫漫长夜里，在日益加深的阶级斗争中，新一代的马克思主义者是否能够客观、科学地认识和消化掉这一切，且在实践中总结出当下和未来斗争的经验，至关重要。",
+          "x": "2228.7vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_mq8uv1p6",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "reveal",
+              "duration": 0.8,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "10vh",
+          "maxHeight": "80vh",
+          "marginBottom": "20vh",
+          "mobile": {
+            "width": "100vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "y": "18.1vh",
+          "mWidth": "100vw"
+        },
+        {
+          "type": "text",
+          "content": "——危机并非明天就到来，但它开始用小刀割肉，漫长且折磨。",
+          "x": "2090.5vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "5rem",
+          "fontWeight": "500",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_waaxi2p3",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.2,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "40vh",
+          "maxHeight": "80vh",
+          "marginBottom": "50vh",
+          "mobile": {},
+          "chapter": {
+            "enabled": false
           }
         }
       ],
