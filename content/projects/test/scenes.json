@@ -1,5 +1,5 @@
 {
-  "canvasWidth": "2500vw",
+  "canvasWidth": "3500vw",
   "scenes": [
     {
       "id": "opening",
@@ -467,7 +467,7 @@
         {
           "type": "text",
           "content": "  过去资本主义得以维持稳定的前提条件有:不断把蛋糕做大;资本主义还有其“外部\"用于不断扩张以获取市场;资本主义以技术进步不断创造新的产业和消费需求。\n\n  可是现在呢?过去两百年人口的大幅增长在如今开始进入了严重的停摆，资本主义的劳动和消费市场在面临萎缩;而且，原先没有被市场化、商品化的资本主义外部现在几乎被资本主义吸收:家庭生产、小农、手工业、教育、娱乐、婚姻.....近乎已经把所有东西都纳入价值计算体系，资本主义自己消灭了自己可用于扩张的外部。这样的外部，不仅体现在空间上，还体现在时间上。现代资本主义需要通过债务来提前透支未来，劳动者现在没有足够工资购买商品，资本主义就可以通过借贷来缓解危机，房贷、消费贷、信用卡.....不断刺激消费和透支未来。",
-          "x": "847.7vw",
+          "x": "847.6vw",
           "width": "80vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "2rem",
@@ -495,7 +495,8 @@
           "mWidth": "100vw",
           "mobile": {
             "width": "100vw"
-          }
+          },
+          "y": "10vh"
         },
         {
           "type": "text",
@@ -1007,7 +1008,7 @@
           "zIndex": 2,
           "id": "el_waaxi2p3",
           "_inspectorPushed": true,
-          "lineHeight": 1.6,
+          "lineHeight": 1.4,
           "parallax": 0.2,
           "null": "0.18",
           "enterAnimation": [
@@ -1027,6 +1028,340 @@
           "chapter": {
             "enabled": false
           }
+        },
+        {
+          "type": "text",
+          "content": "社会主义是什么？",
+          "x": "2460.2vw",
+          "y": "0vh",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "10vw",
+          "fontWeight": "600",
+          "color": "#fff",
+          "zIndex": 1,
+          "id": "el_mdyh00f3",
+          "_inspectorPushed": true,
+          "marginTop": "35vh",
+          "enterAnimation": [
+            {
+              "type": "fade",
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "scale",
+              "from": 0.1,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "null": ".1",
+          "paddingBottom": "40vh",
+          "chapter": {
+            "enabled": true,
+            "label": "社会主义是什么？"
+          }
+        },
+        {
+          "type": "text",
+          "content": "即使我们再一次成功砸烂了旧世界，我们仍需要被提问到:\n你们如何建立一个从未有过的新世界?",
+          "x": "2481.2vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_4jjz4q7f",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "slideUp",
+              "distance": 120,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "80vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "80vw"
+        },
+        {
+          "type": "text",
+          "content": "毛教员在上世纪60、70年代无产阶级专政下的继续革命最终失败后，\n留下了宝贵的历史教训和迷茫的我们。",
+          "x": "2481.4vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_5z2f2d4g",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            },
+            {
+              "type": "slideUp",
+              "distance": 120,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "80vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "80vw",
+          "bottom": "30vh"
+        },
+        {
+          "type": "text",
+          "content": "历史的经验和理论的原则我们是必须要了解和坚持的，但在新的条件下走过去的老路可不一定行的通。马克思主义不是教条主义，也不是说抛弃过去的理论，只靠实践来取得成功。我们恰恰要求高度重视理论，但反对把理论公式化、教条化。\n\n从毛泽东领导的革命我们就不难看出，他没有把马克思主义当成一套\"革命应该长什么样“的标准答案，而是把它当作一种分析社会现实矛盾、寻找革命突破口、并通过实践不断校正的方法。",
+          "x": "2657.9vw",
+          "width": "80vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_6jru9wvi",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "mobile": {},
+          "chapter": {
+            "enabled": false
+          },
+          "y": "15vh"
+        },
+        {
+          "type": "text",
+          "content": "马克思也没有像空想社会主义者那样，预先去设计一套完整的\"社会主义蓝图”，他受制于当时的历史条件也没有预先设计一套脱离实际的、完整的、可直接照搬的计划经济指南。但有些方向性的、原则性的判断则是明确的，让那些叫嚣着马克思主义理论过时的人看看吧，如今有哪些现实是脱离价值规律的?如今有哪些生产资料不是落在资产阶级的手里?如今有哪个市场经济不是倒向最终的经济危机?只要这些要素还没被消除，马克思就仍然是我们的同代人，马克思主义就还没到过时的那一天，马克思主义者恰恰才是最希望马克思主义能够\"过时”的人。",
+          "x": "2800vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_ul9lwcr4",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "80vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "80vw",
+          "y": "15vh"
+        },
+        {
+          "type": "text",
+          "content": "马克思在《哥达纲领批判》中讨论了共产主义社会的两个阶段，最初的阶段我们仍受过去社会(资产阶级法权、物质仍然稀缺因此只能按劳分配)的限制，而第二阶段则是我们熟知的”各尽所能，按需分配”。可是他并没有给出\"需求如何统计\"、“如何计算社会必要劳动时间”、“中央计划还是地方计划”、“计划周期是按月还是按年”、“企业之间如何协调......等等。马克思有意拒绝描绘未来社会主义的蓝图，这其实是马克思和空想社会主义者的重要差别，他永远是基于对现实生产力和生产关系发展的考察，他深知处于落后条件的自己无法为未来处于新条件的人设计出一套完美的方案。",
+          "x": "2953.2vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_9mjh6k97",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "80vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "80vw",
+          "y": "15vh"
+        },
+        {
+          "type": "text",
+          "content": "相较于马克思，他没能亲眼看见无产阶级专政下苏联和中国的实践。而作为生活在21世纪的我们，是有目共睹的:指令型计划经济的低效、官僚包办代替、地方瞒报和并非全知全能的中央、资产阶级法权和新生资产阶级的反攻...列宁式政党形式在曾经的革命时期有它的绝对必要性，它是无产阶级力量的强大保证。可是在建设社会主义的道路上，起码是在马克思所理解的“自由人的联合\"的社会里，不见得一定是未来形式的代表。换句话说，先锋队是否能顺应历史条件地\"从群众中来，到群众中去”，引导无产阶级觉醒阶级自觉，最终将权力归还到无产阶级，这是对先锋队是否“先锋”的考验。而对于指令型的计划经济，它不能代表所有的计划经济，更不能代表一个超越性的、未来的、作为无产阶级栽培自身阶级自觉的公有制经济土壤。",
+          "x": "3100vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_j4mcorvx",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "100vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "100vw"
+        },
+        {
+          "type": "text",
+          "content": "值得兴奋的是，从2025至今，我们时隔四十年重新听到了人们对计划经济的思考，我们也亲眼目睹了人工智能等计算机技术使得复杂调配系统的建构得以实现，信息通讯技术使得我们构建社会主义民主的手段越来越多，成本越来越低。\n\n这并不意味着未来的社会会按照我们的预想好的”剧本\"去发展，而是这样符合时代特征的马克思式的科学研究可以让我们未来建设新世界的手段越来越多，让一个逐渐清晰的、先进的、超越的、无产阶级专政下的未来得以实现。",
+          "x": "3370.2vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "2rem",
+          "fontWeight": "300",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_z2ptd3ef",
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.4,
+          "null": "0.18",
+          "enterAnimation": [
+            {
+              "type": "blur",
+              "amount": 20,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "letterSpacing": "0.2rem",
+          "top": "15vh",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "80vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "80vw",
+          "y": "19.6vh"
+        },
+        {
+          "type": "text",
+          "content": "关于我们现在能做的，其实也不少。",
+          "x": "3250.5vw",
+          "width": "60vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "6rem",
+          "fontWeight": "600",
+          "color": "#ffffff",
+          "zIndex": 2,
+          "id": "el_oyafk8lq",
+          "_inspectorPushed": true,
+          "lineHeight": 1.4,
+          "parallax": 0.2,
+          "null": "0.18",
+          "enterAnimation": [],
+          "letterSpacing": "0.2rem",
+          "maxHeight": "80vh",
+          "mobile": {
+            "width": "100vw"
+          },
+          "chapter": {
+            "enabled": false
+          },
+          "mWidth": "100vw",
+          "bottom": "35vh"
+        },
+        {
+          "type": "rect",
+          "x": "2450vw",
+          "y": "0vh",
+          "width": "500vw",
+          "height": "100vh",
+          "background": "#660000",
+          "opacity": 1,
+          "borderRadius": "0px",
+          "zIndex": 0,
+          "id": "el_wqt24svj",
+          "_inspectorPushed": true,
+          "parallax": 0.4
+        },
+        {
+          "type": "rect",
+          "y": "0vh",
+          "width": "180vw",
+          "height": "100vh",
+          "background": "#660000",
+          "opacity": 1,
+          "borderRadius": "0px",
+          "zIndex": 0,
+          "id": "el_kakkobc8",
+          "_inspectorPushed": true,
+          "right": "0vw"
         }
       ],
       "height": "100vh",
