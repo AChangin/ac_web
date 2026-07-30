@@ -1,5 +1,5 @@
 {
-  "canvasWidth": "200vw",
+  "canvasWidth": "1000vw",
   "scenes": [
     {
       "id": "opening",
@@ -25,7 +25,13 @@
               "ease": "cubic"
             }
           ],
-          "parallax": 0.2
+          "parallax": 0.2,
+          "mHeight": "80vh",
+          "mobile": {
+            "height": "80vh"
+          },
+          "background": "rgba(0,0,0,0.00)",
+          "opacity": 1
         },
         {
           "type": "image",
@@ -47,7 +53,11 @@
               "delay": 0,
               "ease": "cubic"
             }
-          ]
+          ],
+          "mHeight": "60vh",
+          "mobile": {
+            "height": "60vh"
+          }
         },
         {
           "type": "group",
