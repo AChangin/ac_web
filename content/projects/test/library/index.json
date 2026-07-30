@@ -5,8 +5,13 @@
     "svg",
     "group",
     "hero",
+    "rect",
+    "glass",
+    "gradient-mask",
     "intro",
-    "text-bodyparagraph"
+    "text-bodyparagraph",
+    "img-gradient",
+    "cover"
   ],
   "animations": [],
   "effects": []

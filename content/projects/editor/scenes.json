@@ -5,7 +5,148 @@
       "id": "opening",
       "x": 0,
       "width": "100vw",
-      "elements": []
+      "elements": [
+        {
+          "type": "image",
+          "src": "content/projects/editor/editor-ui.webp",
+          "x": "100vw",
+          "y": "13.2vh",
+          "height": "60vh",
+          "objectFit": "contain",
+          "zIndex": 0,
+          "id": "el_9tfjbhtm",
+          "_inspectorPushed": true,
+          "top": "30vh",
+          "enterAnimation": [
+            {
+              "type": "fade",
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ],
+          "parallax": 0.2
+        },
+        {
+          "type": "image",
+          "src": "content/projects/editor/create-component.webp",
+          "x": "125vw",
+          "y": "20vh",
+          "height": "50vh",
+          "objectFit": "contain",
+          "zIndex": 0,
+          "id": "el_nzoptbwc",
+          "_inspectorPushed": true,
+          "top": "20vh",
+          "parallax": 0.1,
+          "enterAnimation": [
+            {
+              "type": "slideLeft",
+              "distance": 80,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "width": "40vw",
+          "height": "100vh",
+          "zIndex": 1,
+          "children": [
+            {
+              "type": "group",
+              "padding": "2rem",
+              "children": [
+                {
+                  "type": "svg",
+                  "src": "icons/project.svg",
+                  "width": "3rem",
+                  "height": "3rem",
+                  "svgColor": "#000000",
+                  "id": "el_aqd5e5i0",
+                  "_inspectorPushed": true
+                },
+                {
+                  "type": "text",
+                  "content": "NOTE",
+                  "fontSize": "3rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Inter', sans-serif",
+                  "marginBottom": "-1rem",
+                  "color": "#000000",
+                  "marginTop": "1rem",
+                  "id": "el_47h8vkf1",
+                  "_inspectorPushed": true
+                }
+              ],
+              "id": "el_wzqix59p",
+              "_inspectorPushed": true,
+              "name": "info",
+              "marginTop": "5vh",
+              "left": "5vw"
+            },
+            {
+              "type": "group",
+              "bottom": "5vh",
+              "padding": "2rem",
+              "marginBottom": "20",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "可视化个人媒体页面编辑器",
+                  "fontSize": "6rem",
+                  "fontWeight": "800",
+                  "fontFamily": "'Inter', sans-serif",
+                  "marginBottom": "1rem",
+                  "color": "#e67519",
+                  "id": "el_1nex6ix6",
+                  "_inspectorPushed": true,
+                  "maxWidth": "80vw"
+                },
+                {
+                  "type": "text",
+                  "content": "2026 JUL",
+                  "fontSize": "12rem",
+                  "fontWeight": "800",
+                  "color": "#000000",
+                  "id": "el_45yxbgaw",
+                  "_inspectorPushed": true,
+                  "maxWidth": "90vw",
+                  "lineHeight": 0.9,
+                  "marginTop": "1rem"
+                }
+              ],
+              "id": "el_vq7tsv9s",
+              "_inspectorPushed": true,
+              "name": "title",
+              "left": "5vw"
+            }
+          ],
+          "_inspectorPushed": true,
+          "name": "hero",
+          "chapter": {
+            "enabled": false,
+            "label": "Opening"
+          },
+          "id": "el_dvnvexpz"
+        }
+      ],
+      "height": "100vh"
     }
-  ]
+  ],
+  "pageBackground": "#ffffff",
+  "progressBar": {
+    "enabled": false,
+    "position": "bottom",
+    "width": "70vw",
+    "height": 4,
+    "offsetVh": 3,
+    "scrollThreshold": 0,
+    "showPercentage": false,
+    "showChapters": true,
+    "autoContrast": true,
+    "opacity": 1
+  }
 }

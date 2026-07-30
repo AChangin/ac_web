@@ -1,0 +1,24 @@
+{
+  "id": "img-gradient",
+  "name": "img-gradient",
+  "category": "component",
+  "type": "gradient-mask",
+  "icon": "?",
+  "description": "Custom component",
+  "defaults": {
+    "type": "gradient-mask",
+    "src": "content/projects/test/drown-world.webp",
+    "width": "40vw",
+    "height": "100vh",
+    "objectFit": "cover",
+    "direction": "to left",
+    "startAlpha": 0,
+    "startPos": "0%",
+    "endAlpha": 1,
+    "endPos": "100%",
+    "zIndex": 0,
+    "_inspectorPushed": true,
+    "parallax": 0.5,
+    "null": "0.5"
+  }
+}
