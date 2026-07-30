@@ -11,7 +11,7 @@
           "src": "content/projects/editor/editor-ui.webp",
           "x": "100vw",
           "y": "13.2vh",
-          "height": "60vh",
+          "height": "80vh",
           "objectFit": "contain",
           "zIndex": 0,
           "id": "el_9tfjbhtm",
@@ -26,9 +26,9 @@
             }
           ],
           "parallax": 0.2,
-          "mHeight": "80vh",
+          "mHeight": "60vh",
           "mobile": {
-            "height": "80vh"
+            "height": "60vh"
           },
           "background": "rgba(0,0,0,0.00)",
           "opacity": 1
@@ -38,12 +38,11 @@
           "src": "content/projects/editor/create-component.webp",
           "x": "125vw",
           "y": "20vh",
-          "height": "50vh",
+          "height": "60vh",
           "objectFit": "contain",
           "zIndex": 0,
           "id": "el_nzoptbwc",
           "_inspectorPushed": true,
-          "top": "20vh",
           "parallax": 0.1,
           "enterAnimation": [
             {
@@ -54,10 +53,11 @@
               "ease": "cubic"
             }
           ],
-          "mHeight": "60vh",
+          "mHeight": "40vh",
           "mobile": {
-            "height": "60vh"
-          }
+            "height": "40vh"
+          },
+          "bottom": "20vh"
         },
         {
           "type": "group",
@@ -141,6 +141,20 @@
             "label": "Opening"
           },
           "id": "el_dvnvexpz"
+        },
+        {
+          "type": "text",
+          "content": "页面设定",
+          "x": "279.6vw",
+          "width": "40vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "6vw",
+          "fontWeight": "600",
+          "color": "#000000",
+          "zIndex": 2,
+          "id": "el_h4p3osoj",
+          "_inspectorPushed": true,
+          "bottom": "20vh"
         }
       ],
       "height": "100vh"
@@ -148,15 +162,15 @@
   ],
   "pageBackground": "#ffffff",
   "progressBar": {
-    "enabled": false,
-    "position": "bottom",
-    "width": "70vw",
+    "enabled": true,
+    "position": "top",
+    "width": "50vw",
     "height": 4,
     "offsetVh": 3,
-    "scrollThreshold": 0,
-    "showPercentage": false,
+    "scrollThreshold": 100,
+    "showPercentage": true,
     "showChapters": true,
     "autoContrast": true,
-    "opacity": 1
+    "opacity": 0.4
   }
 }

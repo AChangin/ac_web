@@ -248,6 +248,7 @@ body{
 
   function initProject(meta, narrative){
     projectMeta = meta;
+    _buildFlatEls(narrative);
     document.title = projectMeta.title + ' — AC';
 
     // Set canvas width + enable native horizontal scroll
@@ -777,10 +778,61 @@ body{
   };
   //  MAIN RAF LOOP — animations + progress bar
   // ═══════════════════════════════════════
-  (function mainLoop(){
+  // Build flat element list once for contrast (same logic as ProgressBar._flatElements)
+// Auto-contrast close button — EXACT same logic as ProgressBar.updateContrast
+// Uses flat element list (data model), not elementFromPoint (DOM)
+var _flatEls = null, _pageBg = '#000000';
+function _buildFlatEls(narrative) {
+  _flatEls = [];
+  _pageBg = narrative.pageBackground || '#000000';
+  function walk(arr, px) { px = px || 0; arr.forEach(function(el) {
+    var wx = resolvePX(el.x || el.left || 0) + px;
+    _flatEls.push({ el: el, worldX: wx, w: resolvePX(el.width || 100), h: resolvePX(el.height || 100) });
+    if (el.type === 'group' && el.children) walk(el.children, wx);
+  });}
+  narrative.scenes.forEach(function(s) { walk(s.elements, 0); });
+  }
+
+(function mainLoop(){
     NarrativeEngine.update(scrollX, window.innerWidth, window.innerHeight);
     if (ProgressBar.container && ProgressBar.config) {
       ProgressBar.update(scrollX);
+    }
+    // Button contrast — same data-model approach as ProgressBar.updateContrast
+    var closeBtn = document.querySelector('.project-back');
+    if (closeBtn && _flatEls && _flatEls.length) {
+      // Sampling offset relative to button center (adjustable by dragging red dot)
+      if (!window._sampleOffX) window._sampleOffX = 0;
+      var cr = closeBtn.getBoundingClientRect();
+      var baseSX = cr.left + cr.width/2 + window._sampleOffX;
+      var canvasX = scrollX + baseSX;
+      var vh = window.innerHeight;
+      var sampleYs = [vh*0.08, vh*0.24, vh*0.40, vh*0.56, vh*0.72, vh*0.88]; // 6 evenly spaced
+      function sampleColor(sy) {
+        for (var ei = _flatEls.length - 1; ei >= 0; ei--) {
+          var fe = _flatEls[ei];
+          if (canvasX < fe.worldX || canvasX > fe.worldX + fe.w) continue;
+          var ey = resolvePX(fe.el.y || fe.el.top || 0);
+          if (sy < ey || sy > ey + fe.h) continue;
+          if (fe.el.background && fe.el.background !== 'transparent' && fe.el.background !== 'rgba(0, 0, 0, 0)') return fe.el.background;
+          if (fe.el.color && fe.el.color !== 'rgb(0, 0, 0)' && fe.el.color !== '#000' && fe.el.color !== '#000000') return fe.el.color;
+        }
+        return _pageBg;
+      }
+      function calcLum(fc) {
+        var rr=0,gg=0,bb=0;
+        if (fc.charAt(0)==='#') { var hx=fc.substring(1); if(hx.length===3)hx=hx[0]+hx[0]+hx[1]+hx[1]+hx[2]+hx[2]; if(hx.length>=6){rr=parseInt(hx.substring(0,2),16);gg=parseInt(hx.substring(2,4),16);bb=parseInt(hx.substring(4,6),16)} }
+        else if (fc.indexOf('rgb')>=0) { var m=fc.match(/[\d.]+/g); if(m&&m.length>=3){rr=parseFloat(m[0]);gg=parseFloat(m[1]);bb=parseFloat(m[2])} }
+        return 0.299*rr + 0.587*gg + 0.114*bb;
+      }
+      var votes = { light: 0, dark: 0 }, colors = [];
+      for (var si = 0; si < sampleYs.length; si++) {
+        var c = sampleColor(sampleYs[si]);
+        colors.push(c);
+        if (calcLum(c) > 128) votes.light++; else votes.dark++;
+      }
+      var isLight = votes.light >= votes.dark;
+      closeBtn.style.color = isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)';
     }
     requestAnimationFrame(mainLoop);
   })();
