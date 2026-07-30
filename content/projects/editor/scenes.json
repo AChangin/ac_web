@@ -166,9 +166,9 @@
     "position": "top",
     "width": "50vw",
     "height": 4,
-    "offsetVh": 3,
+    "offsetVh": 6,
     "scrollThreshold": 100,
-    "showPercentage": true,
+    "showPercentage": false,
     "showChapters": true,
     "autoContrast": true,
     "opacity": 0.4
