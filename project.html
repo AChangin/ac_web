@@ -264,13 +264,31 @@ body{
     // Apply all common layout/visual properties from config to element
     function applyLayout(el, cfg, offsetX, offsetY){
       offsetX = offsetX || 0; offsetY = offsetY || 0;
-      if(cfg.x !== undefined) el.style.left = u(typeof cfg.x === 'number' ? cfg.x + offsetX : cfg.x);
-      else if(cfg.left !== undefined) el.style.left = u(typeof cfg.left === 'number' ? cfg.left + offsetX : cfg.left);
-      if(cfg.y !== undefined) el.style.top = u(typeof cfg.y === 'number' ? cfg.y + offsetY : cfg.y);
-      else if(cfg.top !== undefined) el.style.top = u(typeof cfg.top === 'number' ? cfg.top + offsetY : cfg.top);
-      if(cfg.right !== undefined) el.style.right = u(cfg.right);
-      if(cfg.bottom !== undefined) el.style.bottom = u(cfg.bottom);
       var isMobile=window.innerWidth<=768;
+      // Mobile overrides: mobile.x/y/left/top/right/bottom, numbers default to vw/vh
+      var mx = (isMobile && cfg.mobile && cfg.mobile.x !== undefined) ? cfg.mobile.x : null;
+      var my = (isMobile && cfg.mobile && cfg.mobile.y !== undefined) ? cfg.mobile.y : null;
+      var ml = (isMobile && cfg.mobile && cfg.mobile.left !== undefined) ? cfg.mobile.left : null;
+      var mt = (isMobile && cfg.mobile && cfg.mobile.top !== undefined) ? cfg.mobile.top : null;
+      var mr = (isMobile && cfg.mobile && cfg.mobile.right !== undefined) ? cfg.mobile.right : null;
+      var mb = (isMobile && cfg.mobile && cfg.mobile.bottom !== undefined) ? cfg.mobile.bottom : null;
+      function mu(v, isVW){ if(typeof v==='number') return isVW ? v+'vw' : v+'vh'; return v; }
+
+      if(mx !== null) el.style.left = mu(mx, true);
+      else if(ml !== null) el.style.left = mu(ml, true);
+      else if(cfg.x !== undefined) el.style.left = u(typeof cfg.x === 'number' ? cfg.x + offsetX : cfg.x);
+      else if(cfg.left !== undefined) el.style.left = u(typeof cfg.left === 'number' ? cfg.left + offsetX : cfg.left);
+
+      if(my !== null) el.style.top = mu(my, false);
+      else if(mt !== null) el.style.top = mu(mt, false);
+      else if(cfg.y !== undefined) el.style.top = u(typeof cfg.y === 'number' ? cfg.y + offsetY : cfg.y);
+      else if(cfg.top !== undefined) el.style.top = u(typeof cfg.top === 'number' ? cfg.top + offsetY : cfg.top);
+
+      if(mr !== null) el.style.right = mu(mr, true);
+      else if(cfg.right !== undefined) el.style.right = u(cfg.right);
+      if(mb !== null) el.style.bottom = mu(mb, false);
+      else if(cfg.bottom !== undefined) el.style.bottom = u(cfg.bottom);
+
       var mw=(cfg.mobile&&cfg.mobile.width)?cfg.mobile.width:null;
       var mh=(cfg.mobile&&cfg.mobile.height)?cfg.mobile.height:null;
       if(cfg.width) el.style.width = u(isMobile&&mw?mw:cfg.width);
@@ -316,8 +334,8 @@ body{
         if(cfg.color || cfg.type === 'text') el.style.textShadow = sh.offsetX + ' ' + sh.offsetY + ' ' + (sh.blur||'0') + ' ' + sh.color;
         else el.style.boxShadow = sh.offsetX + ' ' + sh.offsetY + ' ' + (sh.blur||'0') + ' ' + sh.color;
       }
-      var ax = cfg.x || cfg.left || 0;
-      el.setAttribute('data-x', typeof ax === 'number' ? ax + offsetX : resolvePX(ax));
+      var ax = (isMobile && mx !== null) ? mx : (cfg.x || cfg.left || 0);
+      el.setAttribute('data-x', typeof ax === 'number' ? (isMobile && mx !== null ? ax * window.innerWidth / 100 : ax + offsetX) : resolvePX(ax));
       var dw2=(isMobile&&mw?mw:cfg.width)||100;el.setAttribute('data-w', typeof dw2 === 'number' ? dw2 : resolvePX(dw2) || 100);
     }
 
