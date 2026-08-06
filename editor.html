@@ -692,13 +692,16 @@ function bindEffectFields(){inspectorFields.querySelectorAll('[data-ekey]').forE
 function renderMobileFields(el){
   var mob=el.mobile||{};
   var h='<div class="sec-label">Mobile Overrides <span style="color:#555;font-weight:400">(optional)</span></div>';
-  h+='<div style="font-size:9px;color:#666;padding:0 10px 3px">Override size when viewport ≤ 768px</div>';
+  h+='<div style="font-size:9px;color:#666;padding:0 10px 3px">Override when viewport ≤ 768px. Numbers default to vw/vh.</div>';
+  h+=rowL('mX (vw)',mob.x,'text','vw');h+=rowL('mY (vh)',mob.y,'text','vh');
   h+=rowL('mWidth (vw)',mob.width,'text','vw');h+=rowL('mHeight (vh)',mob.height,'text','vh');
   return h;
 }
 // ═══ BIND MOBILE FIELDS ═══
-function bindMobileFields(){inspectorFields.querySelectorAll('[data-key=\"mWidth\"],[data-key=\"mHeight\"]').forEach(function(inp){
-  var key=inp.getAttribute('data-key');var unit=inp.getAttribute('data-unit');var field=key==='mWidth'?'width':'height';
+function bindMobileFields(){inspectorFields.querySelectorAll('[data-key=\"mX\"],[data-key=\"mY\"],[data-key=\"mWidth\"],[data-key=\"mHeight\"]').forEach(function(inp){
+  var key=inp.getAttribute('data-key');var unit=inp.getAttribute('data-unit');
+  var fieldMap={mX:'x',mY:'y',mWidth:'width',mHeight:'height'};
+  var field=fieldMap[key]||key;
   inp.addEventListener('input',function(){var f=findById(state.selectedElId,state.scenesData.scenes);if(!f)return;if(!f.el._inspectorPushed){pushHistory();f.el._inspectorPushed=true}
     if(!f.el.mobile)f.el.mobile={};var v=inp.value;f.el.mobile[field]=unit?parseVal(v,unit):v;renderPreview()})})}
 
