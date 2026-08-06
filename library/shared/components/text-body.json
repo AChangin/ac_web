@@ -1,0 +1,32 @@
+{
+  "id": "text-body",
+  "name": "text-body",
+  "category": "component",
+  "type": "text",
+  "icon": "T",
+  "description": "Custom component",
+  "defaults": {
+    "type": "text",
+    "content": "过去的资本主义有一种强大的能力\n\n它即使面临自身必然到来的经济危机，依然可以靠对外战争摧毁旧秩序、技术创新来重建经济和产业。如同以往工业革命、电气化、信息革命所带来的新形态的生产生活，使得社会不断上升直到下一次危机的到来。每一次危机之后，资本主义都可以通过新的生产力扩张，重新建立积累周期。",
+    "width": "60vw",
+    "fontFamily": "'Inter', sans-serif",
+    "fontSize": "2rem",
+    "fontWeight": "300",
+    "color": "#fff",
+    "zIndex": 2,
+    "_inspectorPushed": true,
+    "lineHeight": 1.6,
+    "parallax": 0.18,
+    "null": "0.18",
+    "enterAnimation": [
+      {
+        "type": "blur",
+        "amount": 20,
+        "duration": 1,
+        "delay": 0,
+        "ease": "cubic"
+      }
+    ],
+    "letterSpacing": "0.2rem"
+  }
+}

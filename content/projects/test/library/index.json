@@ -8,10 +8,11 @@
     "rect",
     "glass",
     "gradient-mask",
+    "cover",
     "intro",
     "text-bodyparagraph",
     "img-gradient",
-    "cover"
+    "text-body"
   ],
   "animations": [],
   "effects": []

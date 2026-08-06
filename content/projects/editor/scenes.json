@@ -9,7 +9,7 @@
         {
           "type": "image",
           "src": "content/projects/editor/editor-ui.webp",
-          "x": "100vw",
+          "x": "99.7vw",
           "y": "13.2vh",
           "height": "80vh",
           "objectFit": "contain",
@@ -145,7 +145,7 @@
         {
           "type": "text",
           "content": "页面设定",
-          "x": "279.6vw",
+          "x": "200vw",
           "width": "40vw",
           "fontFamily": "'Inter', sans-serif",
           "fontSize": "6vw",
@@ -154,7 +154,40 @@
           "zIndex": 2,
           "id": "el_h4p3osoj",
           "_inspectorPushed": true,
-          "bottom": "20vh"
+          "y": "60vh",
+          "mX": "200vw",
+          "mobile": {
+            "x": "200vw",
+            "y": "70vh"
+          },
+          "mY": "70vh"
+        },
+        {
+          "type": "text",
+          "content": "一个可横向滚动的条状空间，里面能容纳编排图像、文字、视频、gif、动画等视觉内容。通过编辑器，可以用熟悉的图形界面与可复用的组件而非代码来完成内容的制作。",
+          "width": "50vw",
+          "fontFamily": "'Inter', sans-serif",
+          "fontSize": "1.5rem",
+          "fontWeight": "300",
+          "color": "#000000",
+          "zIndex": 2,
+          "_inspectorPushed": true,
+          "lineHeight": 1.6,
+          "parallax": 0.18,
+          "null": "0.18",
+          "enterAnimation": [],
+          "letterSpacing": "0.2rem",
+          "id": "el_0p77azxo",
+          "x": "200vw",
+          "y": "25vh",
+          "mX": "240vw",
+          "mobile": {
+            "x": "240vw",
+            "width": "100vw",
+            "y": "70vh"
+          },
+          "mWidth": "100vw",
+          "mY": "70vh"
         }
       ],
       "height": "100vh"
