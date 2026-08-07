@@ -265,7 +265,16 @@
             "x": "350vw",
             "y": "20vh"
           },
-          "mY": "20vh"
+          "mY": "20vh",
+          "enterAnimation": [
+            {
+              "type": "slideUp",
+              "distance": 120,
+              "duration": 1,
+              "delay": 0,
+              "ease": "cubic"
+            }
+          ]
         }
       ],
       "height": "100vh"
