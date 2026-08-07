@@ -10,13 +10,11 @@
           "type": "image",
           "src": "content/projects/editor/editor-ui.webp",
           "x": "99.7vw",
-          "y": "13.2vh",
-          "height": "80vh",
-          "objectFit": "contain",
+          "objectFit": "fill",
           "zIndex": 0,
           "id": "el_9tfjbhtm",
           "_inspectorPushed": true,
-          "top": "30vh",
+          "top": "12vh",
           "enterAnimation": [
             {
               "type": "fade",
@@ -26,19 +24,19 @@
             }
           ],
           "parallax": 0.2,
-          "mHeight": "60vh",
           "mobile": {
-            "height": "60vh"
+            "width": "180vw"
           },
           "background": "rgba(0,0,0,0.00)",
-          "opacity": 1
+          "opacity": 1,
+          "mWidth": "180vw",
+          "width": "80vw"
         },
         {
           "type": "image",
           "src": "content/projects/editor/create-component.webp",
           "x": "125vw",
           "y": "20vh",
-          "height": "60vh",
           "objectFit": "contain",
           "zIndex": 0,
           "id": "el_nzoptbwc",
@@ -53,11 +51,11 @@
               "ease": "cubic"
             }
           ],
-          "mHeight": "40vh",
           "mobile": {
-            "height": "40vh"
+            "width": "140vw"
           },
-          "bottom": "20vh"
+          "mWidth": "140vw",
+          "width": "60vw"
         },
         {
           "type": "group",
